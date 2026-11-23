@@ -1,0 +1,195 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MM Logo Paper Motion</title>
+<style>
+:root{--navy:#0B1020;--mid:#193051;--gold:#C9A86A;--cream:#f1e8d4}
+html,body{margin:0;height:100%;background:var(--navy);overflow:hidden}
+canvas{display:block;width:100%;height:100%}
+.tag{position:fixed;left:0;right:0;bottom:7.5%;text-align:center;color:var(--cream);font:500 clamp(11px,1.35vw,19px)/1 Inter,"Helvetica Neue",Arial,sans-serif;text-transform:uppercase;opacity:0;pointer-events:none}
+.tag i{display:block;width:0;height:1px;background:var(--gold);margin:0 auto 16px}
+.hud{position:fixed;right:16px;top:16px}
+button{font:600 13px system-ui;color:var(--cream);background:rgba(241,232,212,.08);border:1px solid rgba(241,232,212,.25);border-radius:999px;padding:8px 16px;cursor:pointer}
+button:hover{background:var(--gold);color:var(--navy)}
+body.cap .hud{display:none}
+</style></head><body>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<div class="tag" id="tag"><i></i><span>MM Paper Industry</span></div>
+<div class="hud"><button id="replay">Replay</button></div>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const CAP = new URLSearchParams(location.search).has('capture');
+if (CAP) document.body.classList.add('cap');
+const DUR = 13;                       // seconds of animation
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+const easeIO = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+const lerp = (a, b, t) => a + (b - a) * t;
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+// Catmull-Rom through keyframes [[t,v],...]
+function keyed(k, t) {
+  let i = 0; while (i < k.length - 2 && t > k[i + 1][0]) i++;
+  const p0 = k[Math.max(0, i - 1)], p1 = k[i], p2 = k[i + 1], p3 = k[Math.min(k.length - 1, i + 2)];
+  const h = p2[0] - p1[0], u = clamp((t - p1[0]) / h);
+  const m1 = (p2[1] - p0[1]) / (p2[0] - p0[0]) * h, m2 = (p3[1] - p1[1]) / (p3[0] - p1[0]) * h;
+  const u2 = u * u, u3 = u2 * u;
+  return (2 * u3 - 3 * u2 + 1) * p1[1] + (u3 - 2 * u2 + u) * m1 + (-2 * u3 + 3 * u2) * p2[1] + (u3 - u2) * m2;
+}
+
+/* ---------- renderer / scene ---------- */
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(CAP ? 1 : Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = .95;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.prepend(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0B1020);
+const pm = new THREE.PMREMGenerator(renderer);
+scene.environment = pm.fromScene(new RoomEnvironment(), .04).texture; scene.environmentIntensity = .45;
+const cam = new THREE.PerspectiveCamera(32, 16 / 9, .1, 100);
+
+const spot = new THREE.SpotLight(0xfff1dc, 750, 0, .62, 1, 2);
+spot.position.set(-3.5, 4.5, 12); spot.target.position.set(0, 0, 0);
+spot.castShadow = true; spot.shadow.mapSize.set(2048, 2048); spot.shadow.radius = 5; spot.shadow.bias = -.0004; spot.shadow.normalBias = .02;
+spot.shadow.camera.near = 6; spot.shadow.camera.far = 30;
+scene.add(spot, spot.target);
+const rim = new THREE.DirectionalLight(0x7fa0ff, .9); rim.position.set(6, 3, -4); scene.add(rim);
+const gold = new THREE.PointLight(0xC9A86A, 60, 30, 2); scene.add(gold);
+scene.add(new THREE.HemisphereLight(0x8aa0d0, 0x0B1020, .25));
+
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(80, 50), new THREE.MeshStandardMaterial({ color: 0x12274a, roughness: .95 }));
+wall.position.z = -2.2; wall.receiveShadow = true; scene.add(wall);
+
+/* ---------- paper material ---------- */
+function paperTex() {
+  const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d');
+  x.fillStyle = '#808080'; x.fillRect(0, 0, 256, 256); const r = rng(7);
+  for (let i = 0; i < 9000; i++) { const v = 100 + r() * 60 | 0; x.fillStyle = `rgba(${v},${v},${v},.35)`; x.fillRect(r() * 256, r() * 256, 1 + r() * 2, 1); }
+  for (let i = 0; i < 700; i++) { const v = r() > .5 ? 170 : 90; x.strokeStyle = `rgba(${v},${v},${v},.25)`; x.lineWidth = .6; x.beginPath(); const px = r() * 256, py = r() * 256, a = r() * 6.28, l = 4 + r() * 12; x.moveTo(px, py); x.lineTo(px + Math.cos(a) * l, py + Math.sin(a) * l); x.stroke(); }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; return t;
+}
+const grain = paperTex();
+const paperMat = (hex, o = {}) => new THREE.MeshPhysicalMaterial({
+  color: hex, roughness: .62, metalness: 0, bumpMap: grain, bumpScale: .5,
+  sheen: 1, sheenRoughness: .45, sheenColor: new THREE.Color(0xffffff), clearcoat: .12, clearcoatRoughness: .6, ...o });
+
+/* ---------- MM logo as two paper sheets (alpha-cut to the letterforms) ---------- */
+const LOGO_D = "M466.87,180.62Q467.23,180.50 467.13,180.33Q467.04,180.17 464.77,179.05Q462.50,177.93 460.89,176.88Q459.28,175.83 457.64,174.40Q456.00,172.96 454.97,171.56Q453.93,170.17 452.88,168.33Q451.84,166.50 451.31,164.92Q450.78,163.33 450.47,160.17Q450.16,157.00 450.29,153.08Q450.42,149.17 450.50,91.75Q450.58,34.33 450.78,32.91Q450.98,31.50 451.49,29.87Q452.00,28.23 453.05,26.20Q454.10,24.17 455.80,22.20Q457.50,20.22 458.25,19.60Q459.00,18.98 460.96,17.83Q462.91,16.67 462.91,16.50Q462.91,16.33 442.21,16.27Q421.50,16.21 420.91,16.36Q420.33,16.50 403.80,42.75Q387.28,69.00 372.05,94.19Q356.83,119.38 356.41,119.60Q356.00,119.82 355.51,119.57Q355.03,119.33 349.33,110.41Q343.64,101.50 337.87,92.91Q332.10,84.33 310.24,50.41Q288.37,16.50 287.85,16.38Q287.33,16.27 249.50,16.29Q211.67,16.30 211.00,16.98Q210.33,17.67 206.76,23.17Q203.19,28.67 174.25,74.34Q145.31,120.00 144.91,120.30Q144.50,120.59 144.17,120.38Q143.83,120.17 135.48,108.59Q127.12,97.00 99.90,58.02Q72.67,19.03 72.00,18.63Q71.33,18.23 70.16,17.84Q69.00,17.44 65.91,16.86Q62.83,16.27 36.41,16.21Q10.00,16.16 9.36,16.33Q8.71,16.50 10.11,17.09Q11.50,17.67 13.84,18.39Q16.17,19.10 19.50,20.59Q22.83,22.07 26.27,24.04Q29.70,26.00 32.35,28.05Q35.00,30.10 37.39,32.47Q39.78,34.83 41.30,36.91Q42.81,39.00 43.50,41.09Q44.19,43.17 44.45,45.00Q44.72,46.83 44.64,97.00Q44.57,147.17 44.13,150.67Q43.69,154.17 42.77,156.75Q41.84,159.33 40.80,161.33Q39.76,163.33 38.72,164.92Q37.67,166.50 36.25,168.13Q34.83,169.76 33.25,171.26Q31.67,172.77 30.34,173.79Q29.00,174.80 26.54,176.31Q24.08,177.83 21.34,179.00Q18.59,180.17 18.52,180.33Q18.44,180.50 18.55,180.61Q18.67,180.72 44.50,180.75Q70.33,180.78 70.84,180.64Q71.35,180.50 71.26,180.31Q71.17,180.12 69.00,178.98Q66.82,177.83 65.35,176.83Q63.89,175.83 62.61,174.75Q61.33,173.67 59.71,172.00Q58.09,170.33 57.03,169.00Q55.96,167.67 54.52,165.08Q53.07,162.50 51.95,159.08Q50.83,155.67 50.48,153.42Q50.13,151.17 50.10,101.00Q50.07,50.83 50.22,50.50Q50.36,50.17 50.77,50.06Q51.17,49.95 51.52,50.14Q51.86,50.33 57.82,59.25Q63.78,68.17 71.76,80.50Q79.74,92.83 90.28,109.41Q100.82,126.00 111.80,144.25Q122.78,162.50 124.39,165.48Q126.00,168.46 126.25,168.58Q126.50,168.70 129.08,164.10Q131.67,159.51 139.83,144.06Q148.00,128.60 154.03,118.22Q160.06,107.83 180.03,76.05Q200.00,44.26 200.42,44.10Q200.83,43.94 201.17,44.06Q201.50,44.19 201.63,44.59Q201.77,45.00 201.63,98.92Q201.50,152.83 201.24,155.50Q200.98,158.17 200.45,160.33Q199.92,162.50 199.38,163.83Q198.85,165.17 198.27,166.25Q197.70,167.33 196.67,168.75Q195.64,170.17 193.99,171.91Q192.33,173.66 190.42,175.16Q188.50,176.65 186.58,177.68Q184.67,178.71 182.82,179.44Q180.98,180.17 180.87,180.33Q180.75,180.50 180.87,180.58Q180.98,180.67 222.07,180.81Q263.17,180.95 269.50,180.82Q275.83,180.70 280.41,180.77Q285.00,180.85 285.25,180.76Q285.51,180.67 285.42,180.37Q285.33,180.06 283.08,178.96Q280.83,177.86 278.83,176.35Q276.84,174.83 275.44,173.58Q274.04,172.33 272.55,170.50Q271.06,168.67 270.05,167.00Q269.04,165.33 268.01,163.00Q266.99,160.67 266.43,158.42Q265.86,156.17 265.56,154.17Q265.25,152.17 265.25,107.33Q265.25,62.50 265.32,55.84Q265.40,49.17 265.53,48.84Q265.67,48.52 266.00,48.51Q266.33,48.50 266.58,48.73Q266.83,48.96 274.29,61.31Q281.76,73.67 296.77,99.42Q311.78,125.17 320.83,141.09Q329.88,157.00 332.95,162.75Q336.02,168.50 336.26,168.69Q336.50,168.88 336.84,168.61Q337.17,168.33 338.59,165.50Q340.00,162.67 343.77,156.00Q347.54,149.33 353.76,137.83Q359.98,126.33 366.02,115.83Q372.06,105.33 387.10,80.41Q402.14,55.50 405.57,49.99Q409.00,44.48 409.50,44.20Q410.00,43.92 410.34,44.03Q410.67,44.13 410.80,44.48Q410.93,44.83 410.83,98.33Q410.73,151.83 410.40,155.00Q410.08,158.17 409.51,160.58Q408.95,163.00 408.40,164.25Q407.85,165.50 406.84,167.18Q405.83,168.86 404.75,170.17Q403.67,171.48 402.50,172.64Q401.33,173.80 399.35,175.31Q397.37,176.83 395.60,177.79Q393.83,178.75 391.91,179.46Q390.00,180.17 389.88,180.33Q389.76,180.50 390.29,180.68Q390.83,180.85 399.00,180.77Q407.17,180.69 410.50,180.81Q413.83,180.93 414.91,180.81Q416.00,180.68 436.41,180.67Q456.83,180.65 457.66,180.76Q458.50,180.88 459.25,180.77Q460.00,180.67 463.25,180.71Q466.50,180.75 466.87,180.62Z M249.62,173.68Q249.17,173.86 248.67,173.66Q248.17,173.46 246.55,171.73Q244.93,170.00 243.91,168.17Q242.88,166.33 242.21,164.08Q241.54,161.83 241.29,159.42Q241.04,157.00 241.22,130.09Q241.41,103.17 241.41,68.17Q241.40,33.17 241.61,31.42Q241.81,29.67 242.32,27.67Q242.83,25.67 243.21,24.75Q243.59,23.83 243.96,23.59Q244.33,23.34 244.75,23.46Q245.17,23.59 246.24,24.30Q247.30,25.00 249.00,26.41Q250.70,27.83 252.69,29.93Q254.67,32.02 255.70,33.34Q256.74,34.67 257.78,36.42Q258.82,38.17 259.49,40.25Q260.16,42.33 260.23,43.50Q260.29,44.67 260.25,97.59Q260.21,150.50 259.65,153.92Q259.10,157.33 258.50,159.33Q257.91,161.33 256.93,163.67Q255.94,166.00 254.38,168.26Q252.83,170.53 251.46,172.01Q250.08,173.50 249.62,173.68Z";
+const K = .02, PX0 = 6, PX1 = 470, PY0 = 14, PY1 = 183, CX = 238, CY = 98.5, SPLIT = 251;
+const NS = 240, LAYERS = 4, TH = .05;
+const mats = [paperMat(0xf1e8d4, { side: THREE.DoubleSide, alphaTest: .5 }), paperMat(0xC9A86A, { side: THREE.DoubleSide, alphaTest: .5 })];
+const R = rng(31), qI = new THREE.Quaternion(), strips = [], root = new THREE.Group(); scene.add(root);
+const d2 = new Path2D(LOGO_D);
+function maskTex(x0, x1) {
+  const f = 6, w = Math.round((x1 - x0) * f), h = Math.round((PY1 - PY0) * f);
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
+  g.fillStyle = '#000'; g.fillRect(0, 0, w, h); g.save(); g.scale(f, f); g.translate(-x0, -PY0);
+  g.beginPath(); g.rect(x0, PY0, x1 - x0, PY1 - PY0); g.clip(); g.fillStyle = '#fff'; g.fill(d2, 'evenodd'); g.restore();
+  const t = new THREE.CanvasTexture(c); t.anisotropy = 8; t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; return t;
+}
+[[PX0, SPLIT], [SPLIT, PX1]].forEach(([x0, x1], li) => {
+  const W = (x1 - x0) * K, H = (PY1 - PY0) * K, NU = Math.round(W * 16), NV = Math.round(H * 16);
+  const S = { li, W, H, NU, NV, L: W, hh: H / 2, xc: ((x0 + x1) / 2 - CX) * K, yc: (CY - (PY0 + PY1) / 2) * K,
+    delay: .3 + li * .6, dur: 3.8, dir: li ? -1 : 1, ph: li * 2.1 + .7, twist: li ? 1.3 : -1.1,
+    from: new THREE.Vector3((R() - .5) * 20, 7 + R() * 4, 4 + R() * 5), ctrl: new THREE.Vector3((R() - .5) * 12, (R() - .3) * 5, 5 + R() * 3),
+    qFrom: new THREE.Quaternion().setFromEuler(new THREE.Euler((R() - .5) * 6, (R() - .5) * 6, (R() - .5) * 8)),
+    ty: new Float32Array(NS + 1), tz: new Float32Array(NS + 1), tth: new Float32Array(NS + 1) };
+  S.home = new THREE.Vector3(S.xc, S.yc, 0);
+  const nu = NU + 1, nv = NV + 1, N = nu * nv; S.N = N;
+  S.fa = new Float32Array(N); S.fb = new Float32Array(N);
+  const g = new THREE.BufferGeometry(), uv = new Float32Array(N * LAYERS * 2), idx = [];
+  for (let j = 0; j < nv; j++) for (let i = 0; i < nu; i++) { const n = j * nu + i; S.fa[n] = i / NU * W; S.fb[n] = (j / NV - .5) * H; for (let l = 0; l < LAYERS; l++) { uv[(l * N + n) * 2] = i / NU; uv[(l * N + n) * 2 + 1] = j / NV; } }
+  for (let l = 0; l < LAYERS; l++) for (let j = 0; j < NV; j++) for (let i = 0; i < NU; i++) { const a = l * N + j * nu + i, b = a + 1, c = a + nu, d = c + 1; idx.push(a, b, c, b, d, c); }
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * LAYERS * 3), 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); g.setIndex(idx);
+  const m = mats[li].clone(); m.alphaMap = maskTex(x0, x1); m.bumpMap = grain.clone(); m.bumpMap.repeat.set(5, 3); m.bumpMap.needsUpdate = true;
+  S.geo = g; S.mesh = new THREE.Mesh(g, m); S.mesh.castShadow = S.mesh.receiveShadow = true; S.mesh.frustumCulled = false;
+  S.grp = new THREE.Group(); S.grp.add(S.mesh); root.add(S.grp); strips.push(S);
+});
+
+const endFade = t => 1 - .55 * smooth(11, 13, t);
+function waveAt(x, t) { const xw = lerp(-6.5, 6.5, smooth(7.4, 10.4, t)); return Math.exp(-Math.pow((x - xw) / 1.4, 2)) * smooth(7.2, 7.6, t) * (1 - smooth(10.2, 10.8, t)); }
+function kappa(S, s, t, front) {
+  const m = smooth(0, 1, (s - front) / .5), kr = S.dir / (.14 + .12 * (S.L - s)), ph = S.ph;
+  const amp = (1 + 1.6 * waveAt(S.xc - S.L / 2 + s, t)) * endFade(t);
+  const ki = S.dir * (.30 * Math.sin(1.0 * s + t * .8 + ph) + .18 * Math.sin(2.4 * s - t * 1.1 + 2 * ph)
+    + .8 * Math.exp(-(S.L - s) / .7) * (.8 + .3 * Math.sin(t * .9 + ph)) - .5 * Math.exp(-s / .6) * (.8 + .3 * Math.sin(t * .8 + ph * 3))) * amp;
+  return m * kr + (1 - m) * ki;
+}
+function updateStrip(S, t) {
+  const p = clamp((t - S.delay) / S.dur), pu = smooth(.22, .9, p), front = -.45 + pu * (S.L + 1.1), ds = S.L / NS, ef0 = endFade(t);
+  let th = 0; S.ty[0] = S.tz[0] = S.tth[0] = 0;
+  for (let k = 1; k <= NS; k++) { const kp = kappa(S, (k - .5) * ds, t, front), tm = th + kp * ds / 2; th += kp * ds; S.tth[k] = th; S.ty[k] = S.ty[k - 1] + Math.cos(tm) * ds; S.tz[k] = S.tz[k - 1] + Math.sin(tm) * ds; }
+  const fm = NS / 2, km = NS / 2 - 1 | 0, am = fm - km, cmx = lerp(S.ty[km], S.ty[km + 1], am), cmz = lerp(S.tz[km], S.tz[km + 1], am);
+  const pos = S.geo.attributes.position.array, N = S.N, hh = S.hh;
+  const bowA = (.16 * Math.sin(t * .8 + S.ph) + .12 * S.dir) * (.6 + .4 * ef0) * (1 - .7 * (1 - pu));
+  for (let n = 0; n < N; n++) {
+    const a = S.fa[n], b = S.fb[n], f = clamp(a / ds, 0, NS - .001), k = f | 0, q = f - k;
+    const thv = lerp(S.tth[k], S.tth[k + 1], q), cx = lerp(S.ty[k], S.ty[k + 1], q) - cmx, cz = lerp(S.tz[k], S.tz[k + 1], q) - cmz;
+    const phi = S.twist * (1 - pu) * (.6 + .4 * Math.sin(a * .8)) + .09 * Math.sin(1.1 * a + t * .7 + S.ph * 1.7) * ef0;
+    const st = Math.sin(thv), ct = Math.cos(thv), sp = Math.sin(phi), cp = Math.cos(phi), bn = b / hh;
+    const dx = -sp * st, dy = cp, dz = sp * ct, nx = -cp * st, ny = -sp, nz = cp * ct;
+    const extra = (.07 * Math.sin(1.6 * b + 1.3 * a + t * 1.2 + S.ph) + .04 * Math.sin(3.4 * b - 1.7 * a + t * .9)) * (.4 + .6 * ef0) + bowA * bn * bn;
+    for (let l = 0; l < LAYERS; l++) {
+      const h = extra + (l / (LAYERS - 1) - .5) * TH, o = (l * N + n) * 3;
+      pos[o] = cx + b * dx + nx * h; pos[o + 1] = b * dy + ny * h; pos[o + 2] = cz + b * dz + nz * h;
+    }
+  }
+  S.geo.attributes.position.needsUpdate = true; S.geo.computeVertexNormals();
+  const ef = 1 - Math.pow(1 - p, 3), a0 = (1 - ef) * (1 - ef), a1 = 2 * (1 - ef) * ef;
+  S.grp.position.set(S.home.x + S.from.x * a0 + S.ctrl.x * a1, S.home.y + S.from.y * a0 + S.ctrl.y * a1, S.from.z * a0 + S.ctrl.z * a1);
+  S.grp.quaternion.copy(S.qFrom).slerp(qI, easeIO(clamp(p * 1.1)));
+}
+
+/* ---------- loose background sheets ---------- */
+const sheets = []; const SR = rng(5);
+const sheetCols = [0xf1e8d4, 0xC9A86A, 0x2c4a7c, 0x3a5a90, 0xC9A86A, 0xf1e8d4];
+for (let i = 0; i < 14; i++) {
+  const g = new THREE.PlaneGeometry(1.5, 2.1, 10, 14);
+  const side = SR() > .5 ? 1 : -1;
+  const m = new THREE.Mesh(g, paperMat(sheetCols[i % sheetCols.length], { side: THREE.DoubleSide }));
+  m.castShadow = true; m.receiveShadow = true; m.frustumCulled = false; scene.add(m);
+  sheets.push({ m, base: g.attributes.position.array.slice(), x: side * ((i < 10 ? 4.6 : 6.8) + SR() * 4) + (SR() - .5) * 1.5, z: i < 10 ? -1.9 + SR() * 1.0 : 1.5 + SR() * 2.5, y0: SR() * 16, spd: .3 + SR() * .35, ph: SR() * 6.28, rs: .35 + SR() * .6, sc: .7 + SR() * 1.0, curl: .4 + SR() * .7, back: i < 10 });
+}
+function updateSheets(t) {
+  sheets.forEach(s => {
+    const a = s.m.geometry.attributes.position.array, b = s.base, kk = s.curl * (1 + .5 * Math.sin(t * .6 + s.ph));
+    for (let i = 0; i < a.length; i += 3) {
+      const x = b[i], y = b[i + 1], ang = kk * y;
+      a[i] = x; a[i + 1] = Math.sin(ang) / kk; a[i + 2] = (1 - Math.cos(ang)) / kk + .14 * Math.sin(x * 3 + y * 1.5 + t * 1.3 + s.ph);
+    }
+    s.m.geometry.attributes.position.needsUpdate = true; s.m.geometry.computeVertexNormals();
+    const y = 9 - ((s.y0 + t * s.spd) % 18);
+    s.m.position.set(s.x + Math.sin(t * .5 + s.ph) * .6, y, s.z);
+    s.m.rotation.set(t * s.rs * .6 + s.ph, t * s.rs * .45, t * s.rs * .3); s.m.scale.setScalar(Math.max(.001, s.sc * (s.back ? 1 - smooth(11, 12.4, t) : 1 - smooth(9.5, 10.8, t))));
+  });
+}
+
+/* ---------- frame ---------- */
+const tagEl = document.getElementById('tag'), line = tagEl.querySelector('i');
+let fitD = 1;
+function resize() {
+  const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); cam.aspect = w / h;
+  fitD = Math.max(1, 5.3 / (Math.tan(cam.fov * Math.PI / 360) * cam.aspect) / 11); cam.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+
+function frame(t) {
+  t = clamp(t, 0, DUR + .01);
+  strips.forEach(S => updateStrip(S, t)); updateSheets(t);
+  const sway = 1 - smooth(11, 13, t);
+  const az = keyed([[0, -.6], [5, -.28], [9, .32], [13, 0]], t) + .015 * Math.sin(t * .7) * sway;
+  const el = keyed([[0, .1], [5, .06], [9, .12], [13, 0]], t) + .01 * Math.sin(t * .9) * sway;
+  const D = keyed([[0, 14.5], [5, 13], [9, 12.4], [13, 12.2]], t) * fitD;
+  cam.position.set(Math.sin(az) * Math.cos(el) * D, Math.sin(el) * D, Math.cos(az) * Math.cos(el) * D); cam.lookAt(0, 0, 0);
+  gold.position.set(Math.sin(t * .8) * 7, Math.cos(t * .6) * 3 + 2, 5);
+  const ta = smooth(10.6, 11.9, t);
+  tagEl.style.opacity = ta; tagEl.style.letterSpacing = (.85 - .3 * ta) + 'em'; tagEl.style.transform = `translateY(${(1 - ta) * 10}px)`; line.style.width = (ta * 64) + 'px';
+  renderer.render(scene, cam);
+}
+window.__frame = t => { frame(t); return true; };
+window.__DUR = DUR; window.__ready = true;
+
+if (!CAP) {
+  let t0 = performance.now(); document.getElementById('replay').onclick = () => t0 = performance.now();
+  renderer.setAnimationLoop(now => { const t = (now - t0) / 1000; if (t > DUR + 2) t0 = now; frame(Math.min(t, DUR)); });
+} else frame(0);
+</script></body></html>

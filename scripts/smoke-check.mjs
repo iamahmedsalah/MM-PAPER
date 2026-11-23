@@ -53,7 +53,11 @@ async function runSmokeChecks() {
   assert.match(enHtml, /application\/ld\+json/);
   assert.match(enHtml, /href[Ll]ang="ar"/);
   assert.match(enHtml, /favicon\.svg/);
+  assert.match(enHtml, /favicon-light\.svg/);
+  assert.match(enHtml, /favicon-dark\.svg/);
   assert.match(enHtml, /apple-touch-icon\.png/);
+  assert.match(enHtml, /<meta name="theme-color"/);
+  assert.match(enHtml, /<meta name="color-scheme"/);
   assert.equal(enHtml.includes('sales@mmpaper.com'), false, 'Legacy placeholder email leaked into /en');
 
   const arRes = await fetch(`${BASE}/ar`);
@@ -62,7 +66,11 @@ async function runSmokeChecks() {
   assert.match(arHtml, /lang="ar"/);
   assert.match(arHtml, /dir="rtl"/);
   assert.match(arHtml, /favicon\.svg/);
+  assert.match(arHtml, /favicon-light\.svg/);
+  assert.match(arHtml, /favicon-dark\.svg/);
   assert.match(arHtml, /apple-touch-icon\.png/);
+  assert.match(arHtml, /<meta name="theme-color"/);
+  assert.match(arHtml, /<meta name="color-scheme"/);
   assert.match(arHtml, /إم إم لصناعة الورق/);
   assert.match(arHtml, /شركة مصرية رائدة/);
   assert.match(arHtml, /مستورد ومورد رئيسي/);
@@ -88,13 +96,16 @@ async function runSmokeChecks() {
   const assets = [
     '/favicon.ico',
     '/favicon.svg',
+    '/favicon-light.svg',
+    '/favicon-dark.svg',
     '/apple-touch-icon.png',
     '/favicon-16.png',
     '/favicon-32.png',
     '/android-chrome-192.png',
     '/android-chrome-512.png',
-    '/mm-logo-dark.svg',
-    '/mm-logo-light.svg',
+    '/brand/mm-logo-dark.svg',
+    '/brand/mm-logo-light.svg',
+    '/media/mm-logo-paper-motion.webm',
   ];
   for (const asset of assets) {
     const res = await fetch(`${BASE}${asset}`);

@@ -5,6 +5,15 @@ import type { ReactNode } from 'react';
 
 const PAPER_EASE = [0.22, 1, 0.36, 1] as const;
 
+const lineVariants = {
+  hidden: { y: '105%', opacity: 0 },
+  visible: (i: number) => ({
+    y: 0,
+    opacity: 1,
+    transition: { duration: 0.65, delay: i * 0.12, ease: PAPER_EASE },
+  }),
+};
+
 export function Reveal({
   children,
   delay = 0,
@@ -27,7 +36,7 @@ export function Reveal({
   );
 }
 
-/** Headline that slides up line by line. */
+/** Headline that slides up line by line without clipping IntersectionObserver triggers. */
 export function LineReveal({
   lines,
   className,
@@ -38,22 +47,21 @@ export function LineReveal({
   immediate?: boolean;
 }) {
   return (
-    <span className={className}>
+    <motion.span
+      className={className ? `block ${className}` : 'block'}
+      initial="hidden"
+      animate={immediate ? 'visible' : undefined}
+      whileInView={immediate ? undefined : 'visible'}
+      viewport={immediate ? undefined : { once: true, amount: 0.1 }}
+    >
       {lines.map((line, i) => (
         <span key={i} className="block overflow-hidden pb-1">
-          <motion.span
-            className="block"
-            initial={{ y: '110%' }}
-            animate={immediate ? { y: 0 } : undefined}
-            whileInView={immediate ? undefined : { y: 0 }}
-            viewport={immediate ? undefined : { once: true }}
-            transition={{ duration: 0.65, delay: i * 0.12, ease: PAPER_EASE }}
-          >
+          <motion.span className="block" custom={i} variants={lineVariants}>
             {line}
           </motion.span>
         </span>
       ))}
-    </span>
+    </motion.span>
   );
 }
 

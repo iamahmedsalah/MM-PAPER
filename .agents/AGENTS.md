@@ -13,7 +13,7 @@ Read `.agents/skills/mm-groups-full-stack-engineer/SKILL.md` and the specialist 
 - **3 Main Anchor Colors**: `#193051` (Brand Navy), `#C9A86A` (Brand Gold), `#0B1020` (Brand Midnight), plus Cream `#F1E8D4`.
 - Use semantic RGB theme tokens (`canvas`, `canvasAlt`, `surface`, `surfaceHover`, `contrastBand`, `contrastInk`, `ink`, `inkMuted`, `inkSubtle`, `accent`, `accentStrong`, `accentInk`, `line`) so both **dark** (`[data-theme="dark"]`) and **light** (`[data-theme="light"]`) themes remain WCAG AA compliant.
 - **Typography**: `Sora` + `Inter` for English; `Cairo` for Arabic. Never apply wide `letter-spacing` to Arabic glyphs (use `.tracking-brand`).
-- **Official Artwork**: Official serif `MM` monogram (`mm-logo-dark.svg` Cream `#F1E8D4` on Dark; `mm-logo-light.svg` Navy `#193051` on Light), root favicon kit (`favicon.ico`, `favicon.svg`, `apple-touch-icon.png`, `android-chrome-*.png`), and `public/mm-3d-logo/*`. Keep source assets intact and never fabricate certifications, offices, or external connections.
+- **Official Artwork**: Official serif `MM` monogram (`public/brand/mm-logo-dark.svg` Cream `#F1E8D4` on Dark; `public/brand/mm-logo-light.svg` Navy `#193051` on Light), root favicon kit (`favicon.ico`, `favicon.svg`, `favicon-light.svg`, `favicon-dark.svg`, `apple-touch-icon.png`, `android-chrome-*.png`), `public/media/mm-logo-paper-motion.webm`, and non-runtime design/3D CAD source files archived in `assets/brand-kit/*`. Keep source assets intact and never fabricate certifications, offices, or external connections.
 
 ## Specialist Skills
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   MM_LOGO_CREAM,
@@ -12,37 +12,40 @@ import { useLang } from '../../i18n/LanguageContext';
 import { useTheme } from '../../theme/ThemeContext';
 
 const PAPER_EASE = [0.22, 1, 0.36, 1] as const;
-const SESSION_KEY = 'mm-preloader-shown';
+const SWITCH_KEY = 'mm-lang-switching';
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
-/** Branded first-visit entrance curtain. Skips on in-app locale switches and reduced motion. */
+/** Branded curtain that plays on initial load (900ms) and lifts upward cleanly after language switches (680ms). */
 export default function Preloader() {
-  const { t, isTransitioning } = useLang();
+  const { t } = useLang();
   const { theme } = useTheme();
   const [visible, setVisible] = useState(true);
+  const [barDuration, setBarDuration] = useState(0.85);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let alreadyShown = false;
+    if (reduced) {
+      setVisible(false);
+      return;
+    }
+
+    let isLangSwitch = false;
     try {
-      alreadyShown = window.sessionStorage.getItem(SESSION_KEY) === '1';
-      if (!alreadyShown) {
-        window.sessionStorage.setItem(SESSION_KEY, '1');
-      }
+      isLangSwitch = window.sessionStorage.getItem(SWITCH_KEY) === '1';
+      window.sessionStorage.removeItem(SWITCH_KEY);
     } catch {
       // sessionStorage unavailable
     }
 
-    if (reduced || alreadyShown) {
-      setVisible(false);
-      return;
-    }
+    const durationMs = isLangSwitch ? 680 : 900;
+    setBarDuration(isLangSwitch ? 0.62 : 0.85);
 
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
     const timer = window.setTimeout(() => {
       setVisible(false);
-    }, 950);
+    }, durationMs);
 
     return () => {
       window.clearTimeout(timer);
@@ -54,7 +57,7 @@ export default function Preloader() {
 
   return (
     <AnimatePresence>
-      {visible && !isTransitioning && (
+      {visible && (
         <motion.div
           role="status"
           aria-label={t.preloader.loading}
@@ -71,7 +74,7 @@ export default function Preloader() {
               aria-hidden
               initial={{ opacity: 0, y: 14, scale: 0.94 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.55, ease: PAPER_EASE }}
+              transition={{ duration: 0.5, ease: PAPER_EASE }}
             >
               <path d={MM_SERIF_LOGO_PATH} fill={logoFill} fillRule="evenodd" />
             </motion.svg>
@@ -79,7 +82,7 @@ export default function Preloader() {
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: 0.25, ease: PAPER_EASE }}
+              transition={{ duration: 0.35, delay: 0.2, ease: PAPER_EASE }}
               className="space-y-2"
             >
               <p className="tracking-brand font-heading text-xs font-semibold text-ink sm:text-sm">
@@ -93,7 +96,7 @@ export default function Preloader() {
                 className="h-full origin-left bg-gold rtl:origin-right"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
-                transition={{ duration: 0.85, ease: PAPER_EASE }}
+                transition={{ duration: barDuration, ease: PAPER_EASE }}
               />
             </div>
           </div>

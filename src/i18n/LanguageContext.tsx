@@ -67,6 +67,9 @@ export function LanguageProvider({
 
       try {
         window.localStorage.setItem(STORAGE_KEY, next);
+        if (!reduced) {
+          window.sessionStorage.setItem('mm-lang-switching', '1');
+        }
       } catch {
         // storage disabled
       }

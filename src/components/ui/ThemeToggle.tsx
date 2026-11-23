@@ -70,7 +70,7 @@ export default function ThemeToggle({
       onClick={cycleTheme}
       aria-label={`${current.label} — ${next.toLabel}`}
       title={`${current.label} — ${next.toLabel}`}
-      className={`inline-flex h-[44px] shrink-0 items-center justify-center gap-1.5 rounded-full border border-line/25 bg-surface/85 px-2.5 text-accent backdrop-blur-sm transition-colors duration-200 hover:border-gold hover:bg-surfaceHover sm:px-3 ${className}`}
+      className={`inline-flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full border border-line/25 bg-surface/85 text-accent backdrop-blur-sm transition-colors duration-200 hover:border-gold hover:bg-surfaceHover ${className}`}
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
@@ -81,10 +81,9 @@ export default function ThemeToggle({
           transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
           className="inline-flex"
         >
-          <CurrentIcon size={17} strokeWidth={1.85} aria-hidden />
+          <CurrentIcon size={18} strokeWidth={1.85} aria-hidden />
         </motion.span>
       </AnimatePresence>
-      <span className="hidden text-xs font-semibold text-ink sm:inline">{current.label}</span>
     </button>
   );
 }

@@ -2,9 +2,9 @@ name: Deploy to Vercel
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
   workflow_dispatch:
     inputs:
       environment:
@@ -31,10 +31,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js 24
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: npm
@@ -65,10 +65,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js 24
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: npm
@@ -87,7 +87,7 @@ jobs:
 
       - name: Pull Vercel environment configuration
         run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ inputs.environment }}" = "production" ]; then
+          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ] || [ "${{ inputs.environment }}" = "production" ]; then
             vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
           else
             vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
@@ -95,7 +95,7 @@ jobs:
 
       - name: Build Vercel artifacts
         run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ inputs.environment }}" = "production" ]; then
+          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ] || [ "${{ inputs.environment }}" = "production" ]; then
             vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
           else
             vercel build --token=${{ secrets.VERCEL_TOKEN }}
@@ -104,7 +104,7 @@ jobs:
       - name: Deploy prebuilt artifacts to Vercel
         id: deploy_step
         run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ inputs.environment }}" = "production" ]; then
+          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ] || [ "${{ inputs.environment }}" = "production" ]; then
             URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
           else
             URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})

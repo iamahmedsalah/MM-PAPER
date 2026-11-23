@@ -12,6 +12,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
+  colorScheme: 'dark light',
   themeColor: [
     { media: '(prefers-color-scheme: dark)', color: '#0B1020' },
     { media: '(prefers-color-scheme: light)', color: '#F7F4EC' },
@@ -54,12 +55,15 @@ export async function generateMetadata({
     },
     icons: {
       icon: [
+        { url: '/favicon-light.svg', media: '(prefers-color-scheme: light)', type: 'image/svg+xml' },
+        { url: '/favicon-dark.svg', media: '(prefers-color-scheme: dark)', type: 'image/svg+xml' },
         { url: '/favicon.svg', type: 'image/svg+xml' },
-        { url: '/favicon.ico', sizes: '48x48' },
-        { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
-        { url: '/favicon-16.png', sizes: '16x16', type: 'image/png' },
       ],
+      shortcut: ['/favicon.ico'],
       apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+    },
+    other: {
+      'msapplication-TileColor': '#193051',
     },
     alternates: {
       canonical: `/${locale}`,
