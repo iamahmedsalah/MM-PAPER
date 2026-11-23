@@ -37,3 +37,4 @@ Configure these in **Vercel Project Settings → Environment Variables** (and op
 
 - **`.github/workflows/ci.yml`**: Runs on pushes and PRs to `main` / `develop` (`npm ci`, secret hygiene check, `typecheck`, `lint`, `test`, `next build`, `test:smoke`, and critical `npm audit`).
 - **`.github/workflows/deploy-vercel.yml`**: Runs validation & smoke tests first, then pulls Vercel config, builds prebuilt output, and deploys **Production** on pushes to `main` (or manual `workflow_dispatch`), and **Preview** on internal pull requests targeting `main`.
+- **`.github/dependabot.yml`**: Automated weekly dependency PRs every Monday at `08:00` (`Africa/Cairo`) for `npm` (grouped into `nextjs-react`, `ui-and-3d`, and `dev-tooling`) and `github-actions`, each validated automatically by `ci.yml`.
