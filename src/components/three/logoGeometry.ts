@@ -1,30 +1,65 @@
 import * as THREE from 'three';
-const W = 3.2, H = 4, T = 0.8, YV = 0.9, G = 1.1, H1 = 2.9, GAP = 0.03, D = 0.7;
-export const M_W = W, M_H = H, M_GAP = 0.8;
+
+export const LOGO_WIDTH = 7.2;
 
 function rng(seed: number) {
   return () => {
-    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
     let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
+
 export const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const easeOut = (p: number) => 1 - Math.pow(1 - p, 3);
 const easeIO = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
 const backOut = (p: number) => {
-  const c1 = 1.4, c3 = c1 + 1;
+  const c1 = 1.4;
+  const c3 = c1 + 1;
   return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2);
 };
 
-function stripPolys(): [number, number][][] {
-  const hw = W / 2, g = GAP;
-  const legL: [number, number][] = [[0, 0], [T, 0], [T, H], [0, H]];
-  const diagL: [number, number][] = [[T + g, H1], [hw - g / 2, YV], [hw - g / 2, YV + G], [T + g, H]];
-  const mir = (p: [number, number][]) => p.map(([x, y]) => [W - x, y] as [number, number]).reverse();
-  return [legL, diagL, mir(diagL), mir(legL)];
-}
+// Traced serif M1 & M2 outer contours from public/mm-3d-logo/index.html (482 x 192 viewport).
+const SERIF_M_RINGS: readonly (readonly [number, number][])[] = [
+  [
+    [211.67, 16.3], [210.33, 17.67], [203.19, 28.67], [145.31, 120.0], [144.5, 120.59], [143.83, 120.17],
+    [127.12, 97.0], [72.67, 19.03], [71.33, 18.23], [69.0, 17.44], [62.83, 16.27], [10.0, 16.16],
+    [8.71, 16.5], [11.5, 17.67], [16.17, 19.1], [22.83, 22.07], [29.7, 26.0], [35.0, 30.1],
+    [39.78, 34.83], [42.81, 39.0], [44.19, 43.17], [44.72, 46.83], [44.57, 147.17], [43.69, 154.17],
+    [41.84, 159.33], [39.76, 163.33], [37.67, 166.5], [34.83, 169.76], [31.67, 172.77], [29.0, 174.8],
+    [24.08, 177.83], [18.59, 180.17], [18.44, 180.5], [18.67, 180.72], [70.33, 180.78], [71.35, 180.5],
+    [71.17, 180.12], [66.82, 177.83], [63.89, 175.83], [61.33, 173.67], [58.09, 170.33], [55.96, 167.67],
+    [53.07, 162.5], [50.83, 155.67], [50.13, 151.17], [50.07, 50.83], [50.36, 50.17], [51.17, 49.95],
+    [51.86, 50.33], [63.78, 68.17], [79.74, 92.83], [100.82, 126.0], [122.78, 162.5], [126.0, 168.46],
+    [126.5, 168.7], [131.67, 159.51], [148.0, 128.6], [160.06, 107.83], [200.0, 44.26], [200.83, 43.94],
+    [201.5, 44.19], [201.77, 45.0], [201.5, 152.83], [200.98, 158.17], [199.92, 162.5], [198.85, 165.17],
+    [197.7, 167.33], [195.64, 170.17], [192.33, 173.66], [188.5, 176.65], [184.67, 178.71], [180.98, 180.17],
+    [180.75, 180.5], [180.98, 180.67], [251.0, 180.91], [251.0, 172.51], [250.08, 173.5], [249.17, 173.86],
+    [248.17, 173.46], [244.93, 170.0], [242.88, 166.33], [241.54, 161.83], [241.04, 157.0], [241.41, 103.17],
+    [241.4, 33.17], [241.81, 29.67], [242.83, 25.67], [243.59, 23.83], [244.33, 23.34], [245.17, 23.59],
+    [247.3, 25.0], [250.7, 27.83], [251.0, 28.15], [251.0, 16.28],
+  ],
+  [
+    [467.04, 180.17], [462.5, 177.93], [459.28, 175.83], [456.0, 172.96], [453.93, 170.17], [451.84, 166.5],
+    [450.78, 163.33], [450.16, 157.0], [450.42, 149.17], [450.58, 34.33], [450.98, 31.5], [452.0, 28.23],
+    [454.1, 24.17], [457.5, 20.22], [459.0, 18.98], [462.91, 16.67], [462.91, 16.33], [421.5, 16.21],
+    [420.33, 16.5], [387.28, 69.0], [356.83, 119.38], [356.0, 119.82], [355.03, 119.33], [343.64, 101.5],
+    [332.1, 84.33], [288.37, 16.5], [287.33, 16.27], [252.0, 16.28], [252.0, 29.2], [254.67, 32.02],
+    [256.74, 34.67], [258.82, 38.17], [260.16, 42.33], [260.29, 44.67], [260.21, 150.5], [259.1, 157.33],
+    [257.91, 161.33], [255.94, 166.0], [252.83, 170.53], [252.0, 171.43], [252.0, 180.91], [263.17, 180.95],
+    [275.83, 180.7], [285.0, 180.85], [285.51, 180.67], [285.33, 180.06], [280.83, 177.86], [276.84, 174.83],
+    [274.04, 172.33], [271.06, 168.67], [269.04, 165.33], [266.99, 160.67], [265.86, 156.17], [265.25, 152.17],
+    [265.25, 62.5], [265.4, 49.17], [265.67, 48.52], [266.33, 48.5], [266.83, 48.96], [281.76, 73.67],
+    [311.78, 125.17], [329.88, 157.0], [336.02, 168.5], [336.5, 168.88], [337.17, 168.33], [340.0, 162.67],
+    [347.54, 149.33], [359.98, 126.33], [372.06, 105.33], [402.14, 55.5], [409.0, 44.48], [410.0, 43.92],
+    [410.67, 44.13], [410.93, 44.83], [410.73, 151.83], [410.08, 158.17], [408.95, 163.0], [407.85, 165.5],
+    [405.83, 168.86], [403.67, 171.48], [401.33, 173.8], [397.37, 176.83], [393.83, 178.75], [390.0, 180.17],
+    [389.76, 180.5], [390.83, 180.85], [407.17, 180.69], [413.83, 180.93], [416.0, 180.68], [456.83, 180.65],
+    [458.5, 180.88], [460.0, 180.67], [466.5, 180.75], [467.23, 180.5],
+  ],
+];
 
 export function createPaperGrainTexture(repeat = 2): THREE.CanvasTexture {
   const c = document.createElement('canvas');
@@ -43,7 +78,10 @@ export function createPaperGrainTexture(repeat = 2): THREE.CanvasTexture {
     x.strokeStyle = `rgba(${v},${v},${v},.25)`;
     x.lineWidth = 0.6;
     x.beginPath();
-    const px = r() * 256, py = r() * 256, a = r() * 6.28, l = 4 + r() * 12;
+    const px = r() * 256;
+    const py = r() * 256;
+    const a = r() * 6.28;
+    const l = 4 + r() * 12;
     x.moveTo(px, py);
     x.lineTo(px + Math.cos(a) * l, py + Math.sin(a) * l);
     x.stroke();
@@ -63,74 +101,79 @@ export interface StripPiece {
   delay: number;
 }
 
-export function buildLogoRoot(goldHex: number, tintHex: number) {
+export function buildLogoRoot(logoHex: number, sheenHex: number) {
   const root = new THREE.Group();
-  const grain = createPaperGrainTexture(2);
-  const mats = [goldHex, tintHex].map(
-    (hex) =>
-      new THREE.MeshPhysicalMaterial({
-        color: new THREE.Color(hex),
-        roughness: 0.55,
-        metalness: 0,
-        bumpMap: grain,
-        bumpScale: 0.6,
-        sheen: 1,
-        sheenRoughness: 0.5,
-        sheenColor: new THREE.Color(0xffffff),
-        clearcoat: 0.15,
-        clearcoatRoughness: 0.6,
-      })
-  );
+  const grain = createPaperGrainTexture(3);
+  const mat = new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color(logoHex),
+    roughness: 0.48,
+    metalness: 0,
+    bumpMap: grain,
+    bumpScale: 0.45,
+    sheen: 0.28,
+    sheenRoughness: 0.65,
+    sheenColor: new THREE.Color(sheenHex),
+    clearcoat: 0.15,
+    clearcoatRoughness: 0.5,
+  });
+
+  const allPts = SERIF_M_RINGS.flat();
+  const allXs = allPts.map((p) => p[0]);
+  const allYs = allPts.map((p) => p[1]);
+  const xMin = Math.min(...allXs);
+  const xMax = Math.max(...allXs);
+  const xMid = (xMin + xMax) / 2;
+  const yMid = (Math.min(...allYs) + Math.max(...allYs)) / 2;
+  const scale = LOGO_WIDTH / (xMax - xMin);
+  const depth = 34;
+  const bev = 2.2;
 
   const letters: THREE.Group[] = [];
   const pieces: StripPiece[] = [];
   const r = rng(11);
-  const polys = stripPolys();
-  const bev = 0.05;
 
-  [0, 1].forEach((li) => {
+  SERIF_M_RINGS.forEach((ring, li) => {
+    const lxs = ring.map((p) => p[0]);
+    const cx = (Math.min(...lxs) + Math.max(...lxs)) / 2;
     const grp = new THREE.Group();
-    grp.position.x = (li ? 1 : -1) * (W + M_GAP) / 2;
+    grp.position.set((cx - xMid) * scale, 0, 0);
     root.add(grp);
     letters.push(grp);
-    polys.forEach((poly, k) => {
-      const s = new THREE.Shape(poly.map(([px, py]) => new THREE.Vector2(px - W / 2, py - H / 2)));
-      const geo = new THREE.ExtrudeGeometry(s, {
-        depth: D,
-        bevelEnabled: true,
-        bevelSize: bev,
-        bevelOffset: -bev,
-        bevelThickness: 0.07,
-        bevelSegments: 3,
-        curveSegments: 1,
-      });
-      geo.translate(0, 0, -D / 2);
-      geo.computeBoundingBox();
-      const ctr = new THREE.Vector3();
-      geo.boundingBox!.getCenter(ctr);
-      ctr.z = 0;
-      geo.translate(-ctr.x, -ctr.y, 0);
-      const m = new THREE.Mesh(geo, mats[li]);
-      m.position.copy(ctr);
-      grp.add(m);
-      pieces.push({
-        mesh: m,
-        home: ctr.clone(),
-        fromPos: new THREE.Vector3((r() - 0.5) * 16, 6 + r() * 6, 3 + r() * 6),
-        fromQuat: new THREE.Quaternion().setFromEuler(
-          new THREE.Euler((r() - 0.5) * 7, (r() - 0.5) * 7, (r() - 0.5) * 9)
-        ),
-        flutter: r() * 6.28,
-        delay: (li * 4 + k) * 0.11 + li * 0.15,
-      });
+
+    const shape = new THREE.Shape(ring.map(([px, py]) => new THREE.Vector2(px - cx, yMid - py)));
+    const geo = new THREE.ExtrudeGeometry(shape, {
+      depth,
+      bevelEnabled: true,
+      bevelSize: bev,
+      bevelOffset: -bev,
+      bevelThickness: 2.4,
+      bevelSegments: 3,
+      curveSegments: 2,
+    });
+    geo.translate(0, 0, -depth / 2);
+    geo.scale(scale, scale, scale);
+
+    const mesh = new THREE.Mesh(geo, mat);
+    grp.add(mesh);
+
+    const home = new THREE.Vector3(0, 0, 0);
+    pieces.push({
+      mesh,
+      home,
+      fromPos: new THREE.Vector3(li === 0 ? -6.2 : 6.2, 6 + r() * 4, 4 + r() * 4),
+      fromQuat: new THREE.Quaternion().setFromEuler(
+        new THREE.Euler((r() - 0.5) * 6, (r() - 0.5) * 6, (r() - 0.5) * 7)
+      ),
+      flutter: r() * 6.28,
+      delay: li * 0.26,
     });
   });
 
-  return { root, letters, pieces, mats };
+  return { root, letters, pieces, mats: [mat] };
 }
 
 export const INTRO_DUR = 1.5;
-export const INTRO_TOTAL = 3.2;
+export const INTRO_TOTAL = 2.2;
 const qIdentity = new THREE.Quaternion();
 
 export function pieceAt(pc: StripPiece, t: number) {

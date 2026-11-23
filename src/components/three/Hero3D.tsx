@@ -14,8 +14,7 @@ import {
   createSheetData,
   easeIO,
   INTRO_TOTAL,
-  M_GAP,
-  M_W,
+  LOGO_WIDTH,
 } from './logoGeometry';
 
 interface SheetFinish {
@@ -24,44 +23,71 @@ interface SheetFinish {
 }
 
 interface ThemePalette {
-  m1: number;
-  m2: number;
+  logoColor: number;
+  emissiveColor: number;
+  emissiveIntensity: number;
+  sheenColor: number;
+  sheen: number;
+  clearcoat: number;
+  roughness: number;
+  envMapIntensity: number;
+  specularIntensity: number;
+  bumpScale: number;
   sheets: readonly [SheetFinish, SheetFinish, SheetFinish];
   envIntensity: number;
   ambient: number;
   key: number;
+  rimIntensity: number;
   orbColor: number;
   orbIntensity: number;
 }
 
 const HERO_PALETTES: Record<ThemeMode, ThemePalette> = {
   dark: {
-    m1: 0xc9a86a,
-    m2: 0x4e74a8,
+    logoColor: 0xf1e8d4,
+    emissiveColor: 0x000000,
+    emissiveIntensity: 0,
+    sheenColor: 0xffe9b8,
+    sheen: 0.28,
+    clearcoat: 0.15,
+    roughness: 0.48,
+    envMapIntensity: 1,
+    specularIntensity: 1,
+    bumpScale: 0.45,
     sheets: [
       { color: 0xefe9da, opacity: 0.78 },
       { color: 0xc9a86a, opacity: 0.62 },
       { color: 0x466694, opacity: 0.58 },
     ],
-    envIntensity: 0.65,
-    ambient: 0.28,
-    key: 1.4,
+    envIntensity: 0.6,
+    ambient: 0.32,
+    key: 1.5,
+    rimIntensity: 0.9,
     orbColor: 0xffe2b0,
-    orbIntensity: 40,
+    orbIntensity: 36,
   },
   light: {
-    m1: 0x193051,
-    m2: 0xc9a86a,
+    logoColor: 0x152946,
+    emissiveColor: 0x000000,
+    emissiveIntensity: 0,
+    sheenColor: 0x000000,
+    sheen: 0,
+    clearcoat: 0,
+    roughness: 0.92,
+    envMapIntensity: 0,
+    specularIntensity: 0,
+    bumpScale: 0.14,
     sheets: [
       { color: 0xfffdf8, opacity: 0.88 },
-      { color: 0xc9a86a, opacity: 0.56 },
-      { color: 0x294872, opacity: 0.36 },
+      { color: 0xc9a86a, opacity: 0.58 },
+      { color: 0x193051, opacity: 0.44 },
     ],
-    envIntensity: 0.95,
-    ambient: 0.48,
-    key: 1.7,
-    orbColor: 0xfff7e6,
-    orbIntensity: 28,
+    envIntensity: 0.55,
+    ambient: 0.68,
+    key: 1.45,
+    rimIntensity: 0.3,
+    orbColor: 0x193051,
+    orbIntensity: 0,
   },
 };
 
@@ -118,14 +144,16 @@ export default function Hero3D({ scrollRef }: { scrollRef: React.RefObject<numbe
     envRoom.dispose();
     scene.environment = envTex;
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.28);
-    const keyLight = new THREE.DirectionalLight(0xfff1dc, 1.4);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.32);
+    const keyLight = new THREE.DirectionalLight(0xfff1dc, 1.5);
     keyLight.position.set(4, 7, 9);
-    const orbLight = new THREE.PointLight(0xffe2b0, 40, 30);
-    scene.add(ambientLight, keyLight, orbLight);
+    const rimLight = new THREE.DirectionalLight(0x9ab6ff, 0.9);
+    rimLight.position.set(5, 3, -5);
+    const orbLight = new THREE.PointLight(0xffe2b0, 36, 30);
+    scene.add(ambientLight, keyLight, rimLight, orbLight);
 
     const initialPal = HERO_PALETTES[latestThemeRef.current];
-    const { root, letters, pieces, mats } = buildLogoRoot(initialPal.m1, initialPal.m2);
+    const { root, letters, pieces, mats } = buildLogoRoot(initialPal.logoColor, initialPal.sheenColor);
     scene.add(root);
 
     const sheetGeos = createFloatingSheetGeometries();
@@ -162,8 +190,18 @@ export default function Hero3D({ scrollRef }: { scrollRef: React.RefObject<numbe
 
     const applyTheme = (mode: ThemeMode) => {
       const pal = HERO_PALETTES[mode];
-      mats[0]?.color.setHex(pal.m1);
-      mats[1]?.color.setHex(pal.m2);
+      mats.forEach((mat) => {
+        mat.color.setHex(pal.logoColor);
+        mat.emissive.setHex(pal.emissiveColor);
+        mat.emissiveIntensity = pal.emissiveIntensity;
+        mat.sheenColor.setHex(pal.sheenColor);
+        mat.sheen = pal.sheen;
+        mat.clearcoat = pal.clearcoat;
+        mat.roughness = pal.roughness;
+        mat.envMapIntensity = pal.envMapIntensity;
+        mat.specularIntensity = pal.specularIntensity;
+        mat.bumpScale = pal.bumpScale;
+      });
       pal.sheets.forEach((finish, idx) => {
         if (sheetMats[idx]) {
           sheetMats[idx].color.setHex(finish.color);
@@ -173,6 +211,7 @@ export default function Hero3D({ scrollRef }: { scrollRef: React.RefObject<numbe
       scene.environmentIntensity = pal.envIntensity;
       ambientLight.intensity = pal.ambient;
       keyLight.intensity = pal.key;
+      rimLight.intensity = pal.rimIntensity;
       orbLight.color.setHex(pal.orbColor);
       orbLight.intensity = pal.orbIntensity;
     };
@@ -190,8 +229,8 @@ export default function Hero3D({ scrollRef }: { scrollRef: React.RefObject<numbe
       cam.aspect = aspect;
       compactMode = aspect < 0.9;
       const halfTan = Math.tan((cam.fov * Math.PI) / 360);
-      const need = ((2 * M_W + M_GAP) * (compactMode ? 2.25 : 1.35)) / 2;
-      cam.position.z = Math.max(need / (halfTan * aspect), compactMode ? 15 : 13);
+      const need = (LOGO_WIDTH * (compactMode ? 2.15 : 1.35)) / 2;
+      cam.position.z = Math.max(need / (halfTan * aspect), compactMode ? 14.5 : 12.5);
       cam.updateProjectionMatrix();
     };
     resize();
@@ -346,11 +385,11 @@ export default function Hero3D({ scrollRef }: { scrollRef: React.RefObject<numbe
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden>
         <BrandLogo
           decorative
-          className={`w-[min(48vw,200px)] -translate-y-12 opacity-40 sm:w-[min(56vw,340px)] sm:translate-y-0 sm:opacity-75 ${
+          className={`w-[min(52vw,210px)] -translate-y-12 opacity-45 sm:w-[min(56vw,340px)] sm:translate-y-0 sm:opacity-80 ${
             reduced ? '' : 'animate-[float_6s_ease-in-out_infinite]'
           }`}
           width={340}
-          height={196}
+          height={136}
         />
         {!reduced && (
           <div className="pointer-events-none absolute inset-0 overflow-hidden">

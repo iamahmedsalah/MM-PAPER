@@ -53,8 +53,13 @@ export async function generateMetadata({
       },
     },
     icons: {
-      icon: '/mm-logo-dark.svg',
-      apple: '/mm-logo-dark.svg',
+      icon: [
+        { url: '/favicon.svg', type: 'image/svg+xml' },
+        { url: '/favicon.ico', sizes: '48x48' },
+        { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/favicon-16.png', sizes: '16x16', type: 'image/png' },
+      ],
+      apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
     },
     alternates: {
       canonical: `/${locale}`,
@@ -72,13 +77,13 @@ export async function generateMetadata({
       siteName: dict.brand,
       title: dict.seo.title,
       description: dict.seo.description,
-      images: ['/mm-logo-dark.svg'],
+      images: ['/android-chrome-512.png'],
     },
     twitter: {
       card: 'summary_large_image',
       title: dict.seo.title,
       description: dict.seo.description,
-      images: ['/mm-logo-dark.svg'],
+      images: ['/android-chrome-512.png'],
     },
   };
 }
@@ -96,7 +101,7 @@ export default async function LocaleLayout({
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
   return (
-    <html lang={locale} dir={dir} data-theme="dark" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang={locale} dir={dir} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <ThemeInit />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

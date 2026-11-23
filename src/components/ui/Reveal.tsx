@@ -28,7 +28,15 @@ export function Reveal({
 }
 
 /** Headline that slides up line by line. */
-export function LineReveal({ lines, className }: { lines: string[]; className?: string }) {
+export function LineReveal({
+  lines,
+  className,
+  immediate = false,
+}: {
+  lines: string[];
+  className?: string;
+  immediate?: boolean;
+}) {
   return (
     <span className={className}>
       {lines.map((line, i) => (
@@ -36,8 +44,9 @@ export function LineReveal({ lines, className }: { lines: string[]; className?: 
           <motion.span
             className="block"
             initial={{ y: '110%' }}
-            whileInView={{ y: 0 }}
-            viewport={{ once: true }}
+            animate={immediate ? { y: 0 } : undefined}
+            whileInView={immediate ? undefined : { y: 0 }}
+            viewport={immediate ? undefined : { once: true }}
             transition={{ duration: 0.65, delay: i * 0.12, ease: PAPER_EASE }}
           >
             {line}

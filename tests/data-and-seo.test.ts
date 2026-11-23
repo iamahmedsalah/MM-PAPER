@@ -66,11 +66,13 @@ test('JSON-LD schema outputs Organization, WebSite, and 6-item OfferCatalog with
 
     const org = graph[0] as {
       '@type': string;
+      logo: string;
       foundingDate: string;
       sameAs: string[];
       contactPoint: { telephone: string; email: string };
     };
     assert.equal(org['@type'], 'Organization');
+    assert.ok(org.logo.endsWith('/android-chrome-512.png'));
     assert.equal(org.foundingDate, '2006');
     assert.equal(org.sameAs.length, 4);
     assert.equal(org.contactPoint.telephone, '+20-11-3233-2148');

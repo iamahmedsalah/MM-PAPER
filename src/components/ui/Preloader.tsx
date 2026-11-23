@@ -2,20 +2,37 @@
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MM_LOGO_PATHS } from './logoPaths';
+import {
+  MM_LOGO_CREAM,
+  MM_LOGO_NAVY,
+  MM_LOGO_VIEWBOX,
+  MM_SERIF_LOGO_PATH,
+} from './logoPaths';
 import { useLang } from '../../i18n/LanguageContext';
 import { useTheme } from '../../theme/ThemeContext';
 
 const PAPER_EASE = [0.22, 1, 0.36, 1] as const;
+const SESSION_KEY = 'mm-preloader-shown';
 
-/** Branded initial paper-strip entrance curtain. Bypasses instantaneously under reduced motion. */
+/** Branded first-visit entrance curtain. Skips on in-app locale switches and reduced motion. */
 export default function Preloader() {
-  const { t } = useLang();
+  const { t, isTransitioning } = useLang();
   const { theme } = useTheme();
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let alreadyShown = false;
+    try {
+      alreadyShown = window.sessionStorage.getItem(SESSION_KEY) === '1';
+      if (!alreadyShown) {
+        window.sessionStorage.setItem(SESSION_KEY, '1');
+      }
+    } catch {
+      // sessionStorage unavailable
+    }
+
+    if (reduced || alreadyShown) {
       setVisible(false);
       return;
     }
@@ -33,12 +50,11 @@ export default function Preloader() {
     };
   }, []);
 
-  const primaryColor = theme === 'dark' ? '#F4EFE3' : '#193051';
-  const accentColor = '#C9A86A';
+  const logoFill = theme === 'dark' ? MM_LOGO_CREAM : MM_LOGO_NAVY;
 
   return (
     <AnimatePresence>
-      {visible && (
+      {visible && !isTransitioning && (
         <motion.div
           role="status"
           aria-label={t.preloader.loading}
@@ -48,31 +64,17 @@ export default function Preloader() {
           className="mm-preloader fixed inset-0 z-[100] flex h-[100dvh] flex-col items-center justify-center bg-canvas px-6"
         >
           <div className="flex flex-col items-center gap-6 text-center">
-            <svg
+            <motion.svg
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="-20 -20 760 440"
-              className="h-20 w-auto sm:h-24"
+              viewBox={MM_LOGO_VIEWBOX}
+              className="h-16 w-auto sm:h-20"
               aria-hidden
+              initial={{ opacity: 0, y: 14, scale: 0.94 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.55, ease: PAPER_EASE }}
             >
-              {MM_LOGO_PATHS.map((strip, idx) => (
-                <motion.path
-                  key={idx}
-                  d={strip.d}
-                  fill={strip.letter === 0 ? primaryColor : accentColor}
-                  initial={{
-                    opacity: 0,
-                    x: strip.initialOffset.x,
-                    y: strip.initialOffset.y,
-                  }}
-                  animate={{ opacity: 1, x: 0, y: 0 }}
-                  transition={{
-                    duration: 0.45,
-                    delay: idx * 0.045,
-                    ease: PAPER_EASE,
-                  }}
-                />
-              ))}
-            </svg>
+              <path d={MM_SERIF_LOGO_PATH} fill={logoFill} fillRule="evenodd" />
+            </motion.svg>
 
             <motion.div
               initial={{ opacity: 0, y: 8 }}

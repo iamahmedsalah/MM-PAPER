@@ -52,6 +52,8 @@ async function runSmokeChecks() {
   assert.match(enHtml, /sales@mmpaperindustry\.com/);
   assert.match(enHtml, /application\/ld\+json/);
   assert.match(enHtml, /href[Ll]ang="ar"/);
+  assert.match(enHtml, /favicon\.svg/);
+  assert.match(enHtml, /apple-touch-icon\.png/);
   assert.equal(enHtml.includes('sales@mmpaper.com'), false, 'Legacy placeholder email leaked into /en');
 
   const arRes = await fetch(`${BASE}/ar`);
@@ -59,6 +61,8 @@ async function runSmokeChecks() {
   const arHtml = await arRes.text();
   assert.match(arHtml, /lang="ar"/);
   assert.match(arHtml, /dir="rtl"/);
+  assert.match(arHtml, /favicon\.svg/);
+  assert.match(arHtml, /apple-touch-icon\.png/);
   assert.match(arHtml, /إم إم لصناعة الورق/);
   assert.match(arHtml, /شركة مصرية رائدة/);
   assert.match(arHtml, /مستورد ومورد رئيسي/);
@@ -81,12 +85,23 @@ async function runSmokeChecks() {
   const manifestJson = await manifestRes.json();
   assert.equal(manifestJson.name, 'MM Paper Industry');
 
-  for (const asset of ['/mm-logo-dark.svg', '/mm-logo-light.svg']) {
+  const assets = [
+    '/favicon.ico',
+    '/favicon.svg',
+    '/apple-touch-icon.png',
+    '/favicon-16.png',
+    '/favicon-32.png',
+    '/android-chrome-192.png',
+    '/android-chrome-512.png',
+    '/mm-logo-dark.svg',
+    '/mm-logo-light.svg',
+  ];
+  for (const asset of assets) {
     const res = await fetch(`${BASE}${asset}`);
     assert.equal(res.status, 200, `Asset ${asset} returned ${res.status}`);
   }
 
-  console.log(`Smoke check passed on ${BASE}: /, /en, /ar, /robots.txt, /sitemap.xml, /manifest.webmanifest, SVGs.`);
+  console.log(`Smoke check passed on ${BASE}: /, /en, /ar, /robots.txt, /sitemap.xml, /manifest.webmanifest, favicons, and SVGs.`);
 }
 
 const server = spawn(process.execPath, [NEXT_BIN, 'start', '-p', String(PORT), '-H', HOST], {

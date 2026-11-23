@@ -7,6 +7,7 @@ import { GoldLink } from './ui/Buttons';
 import LanguageToggle from './ui/LanguageToggle';
 import ThemeToggle from './ui/ThemeToggle';
 import { useLang } from '../i18n/LanguageContext';
+import { SECTION_IDS, scrollToSection } from '../lib/scroll';
 
 const PAPER_EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -14,6 +15,7 @@ export default function Navbar() {
   const { t, lang } = useLang();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
 
   const links = [
     { href: '#home', label: t.nav.home },
@@ -25,11 +27,39 @@ export default function Navbar() {
     { href: '#contact', label: t.nav.contact },
   ];
 
+  const handleNavClick = (event: React.MouseEvent<HTMLAnchorElement>, href: string, closeDrawer = false) => {
+    event.preventDefault();
+    if (closeDrawer) setOpen(false);
+    scrollToSection(href);
+  };
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 64);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    const sections = SECTION_IDS.map((id) => document.getElementById(id)).filter(
+      (el): el is HTMLElement => el !== null
+    );
+    if (sections.length === 0) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible?.target.id) {
+          setActiveSection(visible.target.id);
+        }
+      },
+      { rootMargin: '-35% 0px -50% 0px', threshold: [0.1, 0.35, 0.6] }
+    );
+
+    sections.forEach((sec) => io.observe(sec));
+    return () => io.disconnect();
   }, []);
 
   useEffect(() => {
@@ -63,32 +93,44 @@ export default function Navbar() {
         >
           <a
             href="#home"
+            onClick={(e) => handleNavClick(e, '#home')}
             className="flex min-h-[44px] min-w-0 items-center gap-2.5 rounded-sm"
             aria-label={t.a11y.backHome}
           >
-            <BrandLogo className="h-7 w-auto shrink-0 sm:h-8" alt={t.brand} width={72} height={36} />
+            <BrandLogo className="h-7 w-auto shrink-0 sm:h-8" alt={t.brand} width={80} height={32} />
             <span className="tracking-brand hidden truncate text-xs font-semibold text-ink sm:block">
               {t.brand}
             </span>
           </a>
 
           <ul className="hidden items-center gap-5 xl:flex">
-            {links.map((l) => (
-              <li key={l.href}>
-                <a
-                  href={l.href}
-                  className="text-sm font-medium text-inkMuted transition-colors duration-200 hover:text-accent"
-                >
-                  {l.label}
-                </a>
-              </li>
-            ))}
+            {links.map((l) => {
+              const isActive = activeSection === l.href.slice(1);
+              return (
+                <li key={l.href}>
+                  <a
+                    href={l.href}
+                    onClick={(e) => handleNavClick(e, l.href)}
+                    aria-current={isActive ? 'location' : undefined}
+                    className={`text-sm font-medium transition-colors duration-200 hover:text-accent ${
+                      isActive ? 'text-accent' : 'text-inkMuted'
+                    }`}
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
 
           <div className="flex shrink-0 items-center gap-2">
             <ThemeToggle />
             <LanguageToggle compact />
-            <GoldLink href="#contact" className="hidden !min-h-[44px] !px-5 !py-2.5 lg:inline-flex">
+            <GoldLink
+              href="#contact"
+              onClick={(e) => handleNavClick(e, '#contact')}
+              className="hidden !min-h-[44px] !px-5 !py-2.5 lg:inline-flex"
+            >
               {t.nav.quote}
             </GoldLink>
             <button
@@ -168,27 +210,39 @@ export default function Navbar() {
 
               <div className="flex flex-1 flex-col overflow-y-auto px-5 py-4">
                 <ul className="flex flex-col">
-                  {links.map((l) => (
-                    <li key={l.href}>
-                      <a
-                        href={l.href}
-                        onClick={() => setOpen(false)}
-                        className="flex min-h-[48px] items-center border-b border-line/10 text-base font-medium text-ink transition-colors hover:text-accent"
-                      >
-                        {l.label}
-                      </a>
-                    </li>
-                  ))}
+                  {links.map((l) => {
+                    const isActive = activeSection === l.href.slice(1);
+                    return (
+                      <li key={l.href}>
+                        <a
+                          href={l.href}
+                          onClick={(e) => handleNavClick(e, l.href, true)}
+                          aria-current={isActive ? 'location' : undefined}
+                          className={`flex min-h-[48px] items-center border-b border-line/10 text-base font-medium transition-colors hover:text-accent ${
+                            isActive ? 'text-accent' : 'text-ink'
+                          }`}
+                        >
+                          {l.label}
+                        </a>
+                      </li>
+                    );
+                  })}
                 </ul>
 
-                <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-sm border border-line/15 bg-surface/60 p-3">
-                  <LanguageToggle />
-                  <ThemeToggle />
+                <div className="mt-6 flex flex-col gap-3 rounded-sm border border-line/15 bg-surface/60 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <LanguageToggle />
+                  </div>
+                  <ThemeToggle segmented className="w-full justify-between" />
                 </div>
               </div>
 
               <div className="border-t border-line/15 px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-4">
-                <GoldLink href="#contact" onClick={() => setOpen(false)} className="w-full">
+                <GoldLink
+                  href="#contact"
+                  onClick={(e) => handleNavClick(e, '#contact', true)}
+                  className="w-full"
+                >
                   {t.nav.quote}
                 </GoldLink>
               </div>

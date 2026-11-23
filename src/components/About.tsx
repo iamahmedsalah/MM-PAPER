@@ -35,7 +35,7 @@ export default function About() {
             </div>
           </Reveal>
           <Reveal delay={0.28}>
-            <BrandLogo variant="inverse" alt={t.about.monogramAlt} className="mt-10 h-14 w-auto" width={140} height={70} />
+            <BrandLogo variant="inverse" alt={t.about.monogramAlt} className="mt-10 h-14 w-auto" width={140} height={56} />
           </Reveal>
         </div>
 

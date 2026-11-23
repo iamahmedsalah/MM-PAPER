@@ -3,12 +3,16 @@ import Script from 'next/script';
 const themeBootScript = `
 (function () {
   try {
-    var theme = localStorage.getItem('mm-theme');
-    if (theme !== 'light' && theme !== 'dark') {
-      theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    var pref = localStorage.getItem('mm-theme');
+    if (pref !== 'light' && pref !== 'dark' && pref !== 'system') {
+      pref = 'system';
     }
-    document.documentElement.dataset.theme = theme;
-    document.documentElement.style.colorScheme = theme;
+    var resolved = pref === 'light' || pref === 'dark'
+      ? pref
+      : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    document.documentElement.dataset.theme = resolved;
+    document.documentElement.dataset.themePref = pref;
+    document.documentElement.style.colorScheme = resolved;
   } catch (e) {}
 })();
 `;

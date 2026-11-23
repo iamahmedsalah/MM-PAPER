@@ -4,6 +4,7 @@ import BrandLogo from './ui/BrandLogo';
 import { SocialIcon } from './ui/SocialIcons';
 import { socialChannels } from '../data/socials';
 import { useLang } from '../i18n/LanguageContext';
+import { scrollToSection } from '../lib/scroll';
 
 export default function Footer() {
   const { t, L } = useLang();
@@ -18,13 +19,23 @@ export default function Footer() {
     { label: t.nav.contact, href: '#contact' },
   ];
 
+  const handleLinkClick = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    event.preventDefault();
+    scrollToSection(href);
+  };
+
   return (
     <footer className="border-t border-line/15 bg-canvas">
       <div className="mx-auto max-w-7xl px-5 py-12 sm:py-14 md:px-8">
         <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
           <div>
-            <a href="#home" className="inline-flex min-h-[44px] items-center gap-3" aria-label={t.a11y.backTop}>
-              <BrandLogo className="h-9 w-auto" alt={t.brand} width={84} height={42} />
+            <a
+              href="#home"
+              onClick={(e) => handleLinkClick(e, '#home')}
+              className="inline-flex min-h-[44px] items-center gap-3"
+              aria-label={t.a11y.backTop}
+            >
+              <BrandLogo className="h-9 w-auto" alt={t.brand} width={90} height={36} />
               <span className="tracking-brand text-xs font-semibold text-ink">{t.brand}</span>
             </a>
             <p className="mt-4 max-w-xs text-sm leading-[160%] text-inkMuted">{t.footer.tagline}</p>
@@ -37,6 +48,7 @@ export default function Footer() {
                 <li key={l.href}>
                   <a
                     href={l.href}
+                    onClick={(e) => handleLinkClick(e, l.href)}
                     className="inline-flex min-h-[44px] items-center text-sm text-inkMuted transition-colors hover:text-accent"
                   >
                     {l.label}

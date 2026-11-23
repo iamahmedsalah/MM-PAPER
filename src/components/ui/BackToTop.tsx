@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUp } from 'lucide-react';
 import { useLang } from '../../i18n/LanguageContext';
+import { scrollToTop } from '../../lib/scroll';
 
 const PAPER_EASE = [0.22, 1, 0.36, 1] as const;
 const RING_R = 19;
@@ -35,8 +36,7 @@ export default function BackToTop() {
   }, []);
 
   const handleClick = () => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+    scrollToTop(false);
   };
 
   return (

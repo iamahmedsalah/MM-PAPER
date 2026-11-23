@@ -39,7 +39,7 @@
   --color-border: 25 48 81;
   --thumb-grad-a: rgba(233, 227, 213, 0.92);
   --thumb-grad-b: rgba(217, 208, 190, 0.96);
-  --hero-vignette: radial-gradient(ellipse at center, rgba(247, 244, 236, 0.22) 25%, rgba(247, 244, 236, 0.84) 100%);
+  --hero-vignette: radial-gradient(ellipse at center, rgba(247, 244, 236, 0) 48%, rgba(247, 244, 236, 0.48) 100%);
   --grain-opacity: 0.022;
 }
 

@@ -17,6 +17,13 @@ import Location from './Location';
 import ContactForm from './ContactForm';
 import Footer from './Footer';
 import { useLang } from '../i18n/LanguageContext';
+import {
+  consumePendingLangSwitchSection,
+  SCROLL_SECTION_EVENT,
+  SCROLL_TOP_EVENT,
+  scrollToSection,
+  type ScrollEventDetail,
+} from '../lib/scroll';
 
 export default function LandingPage() {
   const { t } = useLang();
@@ -25,29 +32,87 @@ export default function LandingPage() {
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const coarse = window.matchMedia('(pointer: coarse)').matches;
-    if (reduced || coarse) return;
-
-    const lenis = new Lenis({
-      duration: 1.05,
-      anchors: true,
-      easing: (p: number) => Math.min(1, 1.001 - Math.pow(2, -10 * p)),
-    });
+    let lenis: Lenis | null = null;
     let raf = 0;
-    const loop = (time: number) => {
-      lenis.raf(time);
+
+    if (!reduced && !coarse) {
+      lenis = new Lenis({
+        duration: 1.05,
+        anchors: false,
+        easing: (p: number) => Math.min(1, 1.001 - Math.pow(2, -10 * p)),
+      });
+      const loop = (time: number) => {
+        lenis?.raf(time);
+        raf = requestAnimationFrame(loop);
+      };
       raf = requestAnimationFrame(loop);
+    }
+
+    const onScrollTop = (event: Event) => {
+      const detail = (event as CustomEvent<ScrollEventDetail>).detail;
+      lenis?.scrollTo(0, { immediate: Boolean(detail?.instant) });
     };
-    raf = requestAnimationFrame(loop);
+
+    const onScrollSection = (event: Event) => {
+      const detail = (event as CustomEvent<ScrollEventDetail>).detail;
+      if (!detail?.id || !lenis) return;
+      const target = document.getElementById(detail.id);
+      if (target) {
+        lenis.scrollTo(target, { immediate: Boolean(detail.instant) });
+      }
+    };
+
+    window.addEventListener(SCROLL_TOP_EVENT, onScrollTop);
+    window.addEventListener(SCROLL_SECTION_EVENT, onScrollSection);
+
+    const pendingSection = consumePendingLangSwitchSection();
+    let restoreRaf = 0;
+    let restoreSettleTimer = 0;
+    let hashTimer = 0;
+
+    if (pendingSection) {
+      const restoreSection = () => {
+        if (pendingSection === 'home') {
+          lenis?.scrollTo(0, { immediate: true });
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+          return;
+        }
+        const target = document.getElementById(pendingSection);
+        if (target) {
+          lenis?.scrollTo(target, { immediate: true });
+          target.scrollIntoView({ behavior: 'instant' });
+        }
+      };
+      restoreRaf = window.requestAnimationFrame(restoreSection);
+      restoreSettleTimer = window.setTimeout(restoreSection, 80);
+    } else if (window.location.hash) {
+      // Handle direct external deep links (e.g. /ar#paper-types) once initial paint settles.
+      const targetId = window.location.hash.slice(1);
+      const alreadyShown = window.sessionStorage.getItem('mm-preloader-shown') === '1';
+      hashTimer = window.setTimeout(
+        () => {
+          const el = document.getElementById(targetId);
+          if (el) el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
+        },
+        reduced || alreadyShown ? 120 : 1050
+      );
+    }
+
     return () => {
-      cancelAnimationFrame(raf);
-      lenis.destroy();
+      window.cancelAnimationFrame(restoreRaf);
+      window.clearTimeout(restoreSettleTimer);
+      window.clearTimeout(hashTimer);
+      window.removeEventListener(SCROLL_TOP_EVENT, onScrollTop);
+      window.removeEventListener(SCROLL_SECTION_EVENT, onScrollSection);
+      if (raf) cancelAnimationFrame(raf);
+      lenis?.destroy();
     };
   }, []);
 
   const handleRequestQuote = useCallback((paperId: string) => {
     setQuotePaperId(paperId);
     window.setTimeout(() => {
-      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+      scrollToSection('contact');
     }, 100);
   }, []);
 

@@ -26,7 +26,7 @@ export function buildJsonLd(locale: Lang) {
         name: dict.brand,
         alternateName: locale === 'en' ? dictionaries.ar.brand : dictionaries.en.brand,
         url: localeUrl,
-        logo: `${SITE_URL}/mm-logo-dark.svg`,
+        logo: `${SITE_URL}/android-chrome-512.png`,
         description: dict.seo.description,
         foundingDate: '2006',
         areaServed: {

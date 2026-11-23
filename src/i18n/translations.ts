@@ -22,10 +22,13 @@ const en = {
     ] as readonly string[],
   },
   theme: {
+    groupLabel: 'Theme mode',
+    systemLabel: 'System',
+    lightLabel: 'Light',
+    darkLabel: 'Dark',
+    toSystem: 'Switch to system theme',
     toLight: 'Switch to light theme',
     toDark: 'Switch to dark theme',
-    lightLabel: 'Light theme',
-    darkLabel: 'Dark theme',
   },
   langSwitch: {
     label: 'Language / اللغة',
@@ -211,10 +214,13 @@ const ar: Translation = {
     ],
   },
   theme: {
+    groupLabel: 'مظهر الموقع',
+    systemLabel: 'النظام',
+    lightLabel: 'نهاري',
+    darkLabel: 'داكن',
+    toSystem: 'التبديل إلى مظهر النظام',
     toLight: 'التبديل إلى الوضع النهاري',
     toDark: 'التبديل إلى الوضع الداكن',
-    lightLabel: 'الوضع النهاري',
-    darkLabel: 'الوضع الداكن',
   },
   langSwitch: {
     label: 'Language / اللغة',

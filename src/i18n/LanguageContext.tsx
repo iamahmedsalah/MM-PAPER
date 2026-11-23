@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { useRouter } from 'next/navigation';
 import type { Lang, Localized } from './types';
 import { dictionaries, type Translation } from './translations';
+import { saveCurrentSectionForLangSwitch } from '../lib/scroll';
 
 interface LangContextValue {
   lang: Lang;
@@ -61,7 +62,6 @@ export function LanguageProvider({
   const switchLang = useCallback(
     (next: Lang) => {
       if (next === lang || isTransitioning) return;
-      const hash = typeof window !== 'undefined' ? window.location.hash : '';
       const reduced =
         typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -71,9 +71,11 @@ export function LanguageProvider({
         // storage disabled
       }
 
+      saveCurrentSectionForLangSwitch();
+
       if (reduced) {
         setLangState(next);
-        router.push(`/${next}${hash}`);
+        router.push(`/${next}`, { scroll: false });
         return;
       }
 
@@ -83,7 +85,7 @@ export function LanguageProvider({
 
       const swapId = window.setTimeout(() => {
         setLangState(next);
-        router.push(`/${next}${hash}`);
+        router.push(`/${next}`, { scroll: false });
       }, 200);
 
       const doneId = window.setTimeout(() => {

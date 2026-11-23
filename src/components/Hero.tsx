@@ -8,6 +8,7 @@ import { LineReveal, Reveal } from './ui/Reveal';
 import { stats } from '../data/site';
 import Counter from './Counter';
 import { useLang } from '../i18n/LanguageContext';
+import { scrollToSection } from '../lib/scroll';
 
 const Hero3D = dynamic(() => import('./three/Hero3D'), { ssr: false });
 
@@ -78,9 +79,9 @@ export default function Hero() {
               lang === 'ar' ? 'leading-[125%]' : 'leading-[112%]'
             }`}
           >
-            <LineReveal lines={[t.hero.titleA]} />
+            <LineReveal immediate lines={[t.hero.titleA]} />
             <span className="relative inline-block">
-              <LineReveal lines={[t.hero.titleB]} />
+              <LineReveal immediate lines={[t.hero.titleB]} />
               <motion.span
                 aria-hidden
                 className="absolute -bottom-1 start-0 h-[3px] w-full origin-left rounded-full bg-gold rtl:origin-right"
@@ -99,11 +100,18 @@ export default function Hero() {
             <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap sm:gap-4">
               <GoldButton
                 className="w-full sm:w-auto"
-                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => scrollToSection('contact')}
               >
                 {t.hero.ctaQuote}
               </GoldButton>
-              <GhostLink href="#paper-types" className="w-full sm:w-auto">
+              <GhostLink
+                href="#paper-types"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection('paper-types');
+                }}
+                className="w-full sm:w-auto"
+              >
                 {t.hero.ctaExplore}
               </GhostLink>
             </div>

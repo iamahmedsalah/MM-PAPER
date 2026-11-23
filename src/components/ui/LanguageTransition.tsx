@@ -33,7 +33,7 @@ export default function LanguageTransition() {
             className="pointer-events-none fixed inset-0 z-[95] flex h-[100dvh] flex-col items-center justify-center border-x border-gold/40 bg-surface shadow-2xl"
           >
             <div className="flex flex-col items-center gap-4 px-6 text-center">
-              <BrandLogo className="h-12 w-auto" decorative width={96} height={48} />
+              <BrandLogo className="h-10 w-auto sm:h-12" decorative width={120} height={48} />
               <div className="h-[2px] w-24 rounded-full bg-gold" />
               <p className="font-heading text-lg font-bold tracking-wide text-ink">
                 {goingArabic ? t.langSwitch.targetAr : t.langSwitch.targetEn}
