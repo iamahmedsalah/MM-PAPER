@@ -1,0 +1,5 @@
+interface:
+  display_name: MM Groups Motion & 3D Engineer
+  short_description: Three.js 3D paper cards, 8-strip logo, preloader, and RTL/LTR motion curtains.
+  icon: sparkles
+  color: gold

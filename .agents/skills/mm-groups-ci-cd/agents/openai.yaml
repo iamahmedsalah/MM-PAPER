@@ -1,0 +1,5 @@
+interface:
+  display_name: MM Groups CI/CD Engineer
+  short_description: Next.js 16 typecheck, ESLint, next build gates, and SSR smoke verification.
+  icon: shield
+  color: gold

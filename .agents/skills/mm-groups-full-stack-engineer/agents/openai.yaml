@@ -1,0 +1,5 @@
+interface:
+  display_name: MM Groups Full-Stack Engineer
+  short_description: Next.js 16 App Router, React 19, TypeScript, Three.js, /en & /ar SSR, and Supabase for MM Groups.
+  icon: code
+  color: gold

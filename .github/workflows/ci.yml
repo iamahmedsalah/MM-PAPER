@@ -1,0 +1,65 @@
+name: CI Validation
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-smoke:
+    name: Typecheck, Lint, Test, Build & Smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies cleanly
+        run: npm ci
+
+      - name: Secret & environment hygiene check
+        run: |
+          if git ls-files --error-unmatch .env >/dev/null 2>&1; then
+            echo "::error::Tracked .env file detected in repository."
+            exit 1
+          fi
+          if grep -rnE "service_role|SUPABASE_SERVICE_ROLE_KEY" src/ >/dev/null 2>&1; then
+            echo "::error::Server-only Supabase key reference found in src/."
+            exit 1
+          fi
+
+      - name: Typecheck (next typegen && tsc --noEmit)
+        run: npm run typecheck
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Unit & SEO/Data tests
+        run: npm test
+
+      - name: Production build (next build)
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://mmpaperindustry.com' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || '' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || '' }}
+        run: npm run build
+
+      - name: SSR & SEO HTTP smoke test
+        run: npm run test:smoke
+
+      - name: Audit production dependencies (critical threshold)
+        run: npm audit --omit=dev --audit-level=critical

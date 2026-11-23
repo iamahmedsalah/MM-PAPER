@@ -1,0 +1,5 @@
+interface:
+  display_name: MM Groups UI/UX Designer
+  short_description: Dark/Light #193051 #C9A86A #0B1020 design system and bilingual RTL/LTR UX.
+  icon: palette
+  color: gold
