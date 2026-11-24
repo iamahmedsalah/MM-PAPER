@@ -14,10 +14,10 @@ import PaperTypes from './PaperTypes';
 import About from './About';
 import Managers from './Managers';
 import Location from './Location';
+import Faq from './Faq';
 import ContactForm from './ContactForm';
 import Footer from './Footer';
 import { useLang } from '../i18n/LanguageContext';
-import { paperTypes } from '../data/papers';
 import {
   consumePendingLangSwitchSection,
   SCROLL_SECTION_EVENT,
@@ -28,7 +28,7 @@ import {
 
 export default function LandingPage() {
   const { t } = useLang();
-  const [quotePaperId, setQuotePaperId] = useState<string>(paperTypes[0].id);
+  const [quotePaperId, setQuotePaperId] = useState<string>('');
 
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -138,6 +138,7 @@ export default function LandingPage() {
         <About />
         <Managers />
         <Location />
+        <Faq />
         <ContactForm preselectedPaperId={quotePaperId} />
       </main>
 
