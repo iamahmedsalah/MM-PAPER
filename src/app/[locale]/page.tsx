@@ -1,6 +1,9 @@
 import { notFound } from 'next/navigation';
 import LandingPage from '../../components/LandingPage';
+import { JsonLd } from '../../components/seo/JsonLd';
 import { buildJsonLd, isLocale } from '../../lib/seo';
+
+export const runtime = 'nodejs';
 
 export default async function LocaleHomePage({
   params,
@@ -14,10 +17,7 @@ export default async function LocaleHomePage({
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
       <LandingPage />
     </>
   );
