@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { PaperType } from '../data/papers';
 import { useLang } from '../i18n/LanguageContext';
-import PaperStack3D from './three/PaperStack3D';
 import { GoldButton } from './ui/Buttons';
+
+const PaperStack3D = dynamic(() => import('./three/PaperStack3D'), { ssr: false });
 
 export default function PaperModal({
   paper,

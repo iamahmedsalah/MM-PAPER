@@ -5,7 +5,7 @@ Read `.agents/skills/mm-groups-full-stack-engineer/SKILL.md` and the specialist 
 ## Project Identity
 
 - **Brand**: MM Paper Industry (`MM Paper Industry` / `إم إم لصناعة الورق`), Cairo, Egypt (established 2006).
-- **Core Product**: Bilingual English/Arabic (`EN` / `AR`, `/en` & `/ar`, `LTR` / `RTL`) dark & light marketing and quote-request platform for industrial paper manufacturing and bulk supply across 6 grades: Kraft, White Offset, Coated, Newsprint, Cardboard, and Tissue.
+- **Core Product**: Bilingual English/Arabic (`EN` / `AR`, `/en` & `/ar`, `LTR` / `RTL`) dark & light marketing and quote-request platform for industrial paper manufacturing and bulk supply across 10 grades: Sticker Paper, Coloured Parchment, Bristol Board, Duplex Board (Grey Back & White Back), Butter Paper, Printing Paper, Copy Paper, Coated Paper (Couche), and Carbon Paper.
 - **Stack**: Next.js 16 (`16.4.6`) App Router, React 19, TypeScript (strict), Tailwind CSS 3.4, Three.js, Framer Motion, Lenis, Lucide React icons, Supabase (`quote_requests` table).
 
 ## Brand & Theme Rules (Hard Invariants)

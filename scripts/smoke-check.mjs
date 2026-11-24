@@ -106,6 +106,10 @@ async function runSmokeChecks() {
     '/brand/mm-logo-dark.svg',
     '/brand/mm-logo-light.svg',
     '/media/mm-logo-paper-motion.webm',
+    '/team/mohamed-morad.webp',
+    '/team/khaled-morad.webp',
+    '/team/ahmed-morad.webp',
+    '/team/mohamed-mohamed-morad.webp',
   ];
   for (const asset of assets) {
     const res = await fetch(`${BASE}${asset}`);

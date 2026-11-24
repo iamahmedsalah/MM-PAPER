@@ -2,10 +2,12 @@
 
 import { Clock, Mail, Phone, MessageCircle, ArrowRight } from 'lucide-react';
 import SectionHeader from './SectionHeader';
+import AmbientPaperBackdrop from './ui/AmbientPaperBackdrop';
 import { GoldLink } from './ui/Buttons';
 import { Reveal } from './ui/Reveal';
 import { COMPANY_CONTACT } from '../data/contact';
 import { useLang } from '../i18n/LanguageContext';
+import { scrollToSection } from '../lib/scroll';
 import { useTheme } from '../theme/ThemeContext';
 
 export default function Location() {
@@ -13,8 +15,9 @@ export default function Location() {
   const { theme } = useTheme();
 
   return (
-    <section id="location" className="relative bg-canvasAlt py-20 md:py-28">
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
+    <section id="location" className="relative overflow-hidden bg-canvasAlt py-20 md:py-28">
+      <AmbientPaperBackdrop variant="location" />
+      <div className="relative z-10 mx-auto max-w-7xl px-5 md:px-8">
         <SectionHeader eyebrow={t.location.eyebrow} title={t.location.title} intro={t.location.intro} />
         <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
           <Reveal>
@@ -61,7 +64,7 @@ export default function Location() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex min-h-[44px] items-center transition-colors hover:text-accent"
-                      dir="ltr"
+                      dir="rtl"
                     >
                       {t.contact.whatsapp} — {COMPANY_CONTACT.phoneDisplay}
                     </a>
@@ -78,7 +81,14 @@ export default function Location() {
                   </li>
                 </ul>
               </div>
-              <GoldLink href="#contact" className="w-full">
+              <GoldLink
+                href="#contact"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection('contact');
+                }}
+                className="w-full"
+              >
                 <span>{t.location.directions}</span>
                 <ArrowRight size={16} className="rtl:rotate-180" aria-hidden />
               </GoldLink>

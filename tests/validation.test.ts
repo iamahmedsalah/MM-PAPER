@@ -24,9 +24,9 @@ const validInput: QuoteFormInput = {
   company: 'Cairo Print Co.',
   email: 'Buyer@Example.COM',
   phone: '011 3233 2148',
-  paperTypeId: 'kraft',
+  paperTypeId: 'sticker',
   quantity: '10 tons / month',
-  message: 'Need 120 GSM kraft reels cut to 1000 mm width.',
+  message: 'Need 80 GSM sticker rolls cut to 1000 mm width.',
 };
 
 test('accepts a complete valid quote request with Egyptian phone', () => {
@@ -75,7 +75,7 @@ test('normalizes quote payload with trimmed fields, lowercase email, and canonic
     ...validInput,
     name: '  Ahmed Salah  ',
     company: '   ',
-    paperTypeId: 'cardboard',
+    paperTypeId: 'duplex-grey',
     quantity: ' 15 tons ',
   });
 
@@ -84,8 +84,8 @@ test('normalizes quote payload with trimmed fields, lowercase email, and canonic
     company: null,
     email: 'buyer@example.com',
     phone: '011 3233 2148',
-    paper_type: 'Cardboard',
+    paper_type: 'Duplex Board — Grey Back',
     quantity: '15 tons',
-    message: 'Need 120 GSM kraft reels cut to 1000 mm width.',
+    message: 'Need 80 GSM sticker rolls cut to 1000 mm width.',
   });
 });

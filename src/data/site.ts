@@ -10,7 +10,7 @@ export const stats: Stat[] = [
   { value: 20, suffix: '+', label: { en: 'Years since 2006', ar: 'عاماً من العراقة منذ 2006' } },
   { value: 12000, suffix: '', label: { en: 'Tons supplied per month', ar: 'طن توريد شهرياً' } },
   { value: 450, suffix: '+', label: { en: 'Clients served', ar: 'عميل يثق بنا' } },
-  { value: 6, suffix: '', label: { en: 'Paper grades', ar: 'أصناف ورق' } },
+  { value: 10, suffix: '', label: { en: 'Paper grades', ar: 'أصناف ورق' } },
 ];
 
 export interface UseCase {

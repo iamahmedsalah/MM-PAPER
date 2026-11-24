@@ -1,18 +1,22 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { FileText, Layers } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SectionHeader from './SectionHeader';
 import { paperTypes, paperCategories, type PaperType } from '../data/papers';
 import PaperModal from './PaperModal';
+import AmbientPaperBackdrop from './ui/AmbientPaperBackdrop';
 import { Reveal } from './ui/Reveal';
-import PaperStack3D from './three/PaperStack3D';
 import { useLang } from '../i18n/LanguageContext';
+
+const PaperStack3D = dynamic(() => import('./three/PaperStack3D'), { ssr: false });
 
 function PaperCard({ paper, index, onSpecs }: { paper: PaperType; index: number; onSpecs: () => void }) {
   const { t, L } = useLang();
   const cardRef = useRef<HTMLElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
   const [fanned, setFanned] = useState(false);
 
   const onMove = (e: React.MouseEvent) => {
@@ -23,20 +27,25 @@ function PaperCard({ paper, index, onSpecs }: { paper: PaperType; index: number;
     const px = (e.clientX - rect.left) / rect.width;
     const py = (e.clientY - rect.top) / rect.height;
     el.style.transform = `perspective(900px) rotateX(${(0.5 - py) * 6}deg) rotateY(${(px - 0.5) * 8}deg)`;
+    if (glowRef.current) {
+      glowRef.current.style.background = `radial-gradient(circle at ${px * 100}% ${py * 100}%, rgba(201,168,106,0.16), transparent 58%)`;
+    }
   };
   const onLeave = () => {
     if (cardRef.current) cardRef.current.style.transform = '';
+    if (glowRef.current) glowRef.current.style.background = 'transparent';
   };
 
   return (
-    <Reveal delay={index * 0.06} className="h-full">
+    <Reveal delay={index * 0.05} className="h-full">
       <article
         ref={cardRef}
         data-card-host
         onMouseMove={onMove}
         onMouseLeave={onLeave}
-        className="flex h-full flex-col overflow-hidden rounded-sm border border-line/20 bg-surface transition-[border-color,box-shadow,transform] duration-300 will-change-transform hover:border-gold hover:shadow-[0_12px_40px_rgba(201,168,106,0.14)]"
+        className="relative flex h-full flex-col overflow-hidden rounded-sm border border-line/20 bg-surface transition-[border-color,box-shadow,transform] duration-300 will-change-transform hover:border-gold hover:shadow-[0_12px_40px_rgba(201,168,106,0.14)]"
       >
+        <div ref={glowRef} className="pointer-events-none absolute inset-0 z-[1]" aria-hidden />
         <div
           className="relative h-44 overflow-hidden border-b border-line/15 sm:h-48"
           style={{
@@ -62,7 +71,7 @@ function PaperCard({ paper, index, onSpecs }: { paper: PaperType; index: number;
           </button>
         </div>
 
-        <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <div className="relative z-[2] flex flex-1 flex-col p-5 sm:p-6">
           <div className="flex items-baseline justify-between gap-3">
             <h3 className="font-heading text-xl font-semibold text-ink">{L(paper.name)}</h3>
             <span className="shrink-0 text-xs font-semibold tracking-wide text-accent" dir="ltr">
@@ -95,8 +104,9 @@ export default function PaperTypes({ onRequestQuote }: { onRequestQuote: (paperI
   const visible = paperTypes.filter((p) => filter === 'All' || p.category === filter);
 
   return (
-    <section id="paper-types" className="relative bg-canvasAlt py-20 md:py-28">
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
+    <section id="paper-types" className="relative overflow-hidden bg-canvasAlt py-20 md:py-28">
+      <AmbientPaperBackdrop variant="catalog" />
+      <div className="relative z-10 mx-auto max-w-7xl px-5 md:px-8">
         <SectionHeader eyebrow={t.papers.eyebrow} title={t.papers.title} intro={t.papers.intro} />
 
         <Reveal>

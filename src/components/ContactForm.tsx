@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle2, AlertCircle, Mail, Phone, MessageCircle, Loader2, Info } from 'lucide-react';
 import SectionHeader from './SectionHeader';
+import AmbientPaperBackdrop from './ui/AmbientPaperBackdrop';
 import { GoldButton } from './ui/Buttons';
 import { Reveal } from './ui/Reveal';
 import { SocialIcon } from './ui/SocialIcons';
@@ -154,8 +155,9 @@ export default function ContactForm({ preselectedPaperId }: { preselectedPaperId
   );
 
   return (
-    <section id="contact" className="relative bg-canvas py-20 md:py-28">
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
+    <section id="contact" className="relative overflow-hidden bg-canvas py-20 md:py-28">
+      <AmbientPaperBackdrop variant="contact" />
+      <div className="relative z-10 mx-auto max-w-7xl px-5 md:px-8">
         <SectionHeader eyebrow={t.contact.eyebrow} title={t.contact.title} intro={t.contact.intro} />
 
         <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">

@@ -17,6 +17,7 @@ import Location from './Location';
 import ContactForm from './ContactForm';
 import Footer from './Footer';
 import { useLang } from '../i18n/LanguageContext';
+import { paperTypes } from '../data/papers';
 import {
   consumePendingLangSwitchSection,
   SCROLL_SECTION_EVENT,
@@ -27,7 +28,7 @@ import {
 
 export default function LandingPage() {
   const { t } = useLang();
-  const [quotePaperId, setQuotePaperId] = useState<string>('kraft');
+  const [quotePaperId, setQuotePaperId] = useState<string>(paperTypes[0].id);
 
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -86,15 +87,14 @@ export default function LandingPage() {
       restoreRaf = window.requestAnimationFrame(restoreSection);
       restoreSettleTimer = window.setTimeout(restoreSection, 80);
     } else if (window.location.hash) {
-      // Handle direct external deep links (e.g. /ar#paper-types) once initial paint settles.
+      // Handle direct external deep links (e.g. /ar#paper-types) once initial Preloader settles.
       const targetId = window.location.hash.slice(1);
-      const alreadyShown = window.sessionStorage.getItem('mm-preloader-shown') === '1';
       hashTimer = window.setTimeout(
         () => {
           const el = document.getElementById(targetId);
           if (el) el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
         },
-        reduced || alreadyShown ? 120 : 1050
+        reduced ? 120 : 950
       );
     }
 

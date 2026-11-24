@@ -14,6 +14,15 @@ const lineVariants = {
   }),
 };
 
+const immediateVariants = {
+  hidden: { y: 16, opacity: 1 },
+  visible: (i: number) => ({
+    y: 0,
+    opacity: 1,
+    transition: { duration: 0.55, delay: i * 0.08, ease: PAPER_EASE },
+  }),
+};
+
 export function Reveal({
   children,
   delay = 0,
@@ -56,7 +65,7 @@ export function LineReveal({
     >
       {lines.map((line, i) => (
         <span key={i} className="block overflow-hidden pb-1">
-          <motion.span className="block" custom={i} variants={lineVariants}>
+          <motion.span className="block" custom={i} variants={immediate ? immediateVariants : lineVariants}>
             {line}
           </motion.span>
         </span>

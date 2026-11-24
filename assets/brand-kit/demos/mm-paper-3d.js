@@ -60,13 +60,84 @@ function newsMap() {
   });
 }
 
+/* ---------- 4 new papers (from the product list): sticker, coloured parchment, butter, carbon ---------- */
+const rr = (x, a, b, w, h, r) => { x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); };
+function stickerMap() {
+  return canvasTex(256, (x, s) => {
+    x.fillStyle = '#e4e6e2'; x.fillRect(0, 0, s, s);
+    const cols = 2, rows = 4, m = 12, gw = (s - m * 2) / cols, gh = (s - m * 2) / rows;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const a = m + c * gw + 4, b = m + r * gh + 4, w = gw - 8, h = gh - 8, k = (r * cols + c) % 4;
+      rr(x, a, b, w, h, 7); x.fillStyle = '#f3f3ef'; x.fill(); x.strokeStyle = 'rgba(110,125,150,.6)'; x.lineWidth = 1.2; x.stroke();
+      if (k === 0) { for (let i = 0; i < 34; i++) { x.fillStyle = '#1a1f2e'; const bw = 1 + (rnd() > .6 ? 2 : 0); x.fillRect(a + 10 + i * 2.8, b + 8, bw, h - 22); } x.fillRect(a + 10, b + h - 11, w - 20, 2); }
+      else if (k === 1) { x.fillStyle = '#C9A86A'; x.beginPath(); x.arc(a + 20, b + h / 2, 11, 0, 6.28); x.fill(); x.fillStyle = '#193051'; x.fillRect(a + 38, b + h / 2 - 9, w - 52, 5); x.fillRect(a + 38, b + h / 2 + 2, w - 70, 4); }
+      else if (k === 2) { x.fillStyle = '#193051'; x.fillRect(a + 10, b + 9, w - 20, 7); x.fillStyle = 'rgba(25,48,81,.45)'; for (let i = 0; i < 3; i++) x.fillRect(a + 10, b + 22 + i * 7, w - 20 - i * 14, 3); }
+      else { x.fillStyle = '#e8467c'; rr(x, a + 8, b + 8, w - 16, h - 16, 5); x.fill(); x.fillStyle = '#fff'; x.fillRect(a + 16, b + h / 2 - 3, w - 32, 6); }
+    }
+  });
+}
+function formMap() {
+  return canvasTex(256, (x, s) => {
+    x.fillStyle = '#e9e6d8'; x.fillRect(0, 0, s, s);
+    x.fillStyle = '#193051'; x.fillRect(14, 14, s - 28, 22); x.fillStyle = '#C9A86A'; x.fillRect(20, 21, 60, 8);
+    x.strokeStyle = 'rgba(25,48,81,.35)'; x.lineWidth = 1;
+    for (let i = 0; i < 12; i++) { x.beginPath(); x.moveTo(14, 56 + i * 15); x.lineTo(s - 14, 56 + i * 15); x.stroke(); }
+    x.beginPath(); x.moveTo(150, 46); x.lineTo(150, 236); x.stroke();
+    x.strokeStyle = '#1d4fd8'; x.lineWidth = 1.6; x.lineCap = 'round';
+    for (let r = 0; r < 9; r++) { x.beginPath(); let px = 20 + rnd() * 6, py = 66 + r * 15; x.moveTo(px, py); const len = 3 + (rnd() * 7 | 0); for (let i = 0; i < len; i++) { px += 6 + rnd() * 8; x.quadraticCurveTo(px - 4, py - 6 - rnd() * 4, px, py + (rnd() - .5) * 4); } x.stroke(); }
+  });
+}
+function butterMap() {
+  return canvasTex(256, (x, s) => {
+    x.fillStyle = '#d2b377'; x.fillRect(0, 0, s, s);
+    for (let i = 0; i < 70; i++) { x.strokeStyle = `rgba(190,160,100,${.06 + rnd() * .1})`; x.lineWidth = 1.2; const y = rnd() * s; x.beginPath(); x.moveTo(0, y); x.bezierCurveTo(s * .3, y + 8, s * .6, y - 8, s, y + 3); x.stroke(); }
+    for (let i = 0; i < 9; i++) { const g = x.createRadialGradient(0, 0, 0, 0, 0, 14 + rnd() * 18); g.addColorStop(0, 'rgba(120,80,30,.45)'); g.addColorStop(1, 'rgba(176,132,60,0)'); x.save(); x.translate(rnd() * s, rnd() * s); x.fillStyle = g; x.fillRect(-40, -40, 80, 80); x.restore(); }
+  });
+}
+SPECS.butter = { n: 6, th: .075, map: butterMap, tissue: true, opacity: .86, tint: 0xb8955a, rough: .28, clear: .7 };
+
+const MULTI = {
+  sticker: { n: 9, th: .04, fan: .012, lift: .12, peel: true },
+  parchment: { n: 8, th: .045, fan: .1, lift: .3 },
+  carbon: { n: 7, th: .05, fan: .03, lift: .2, stagger: .24 },
+};
+const PASTEL = ['#e8c43c', '#6fb0e0', '#ea7aa2', '#86c96f'];     // yellow, light-blue, pink, light-green
+function multiSheet(type, i, n) {
+  if (type === 'parchment') return { color: PASTEL[i % 4], rough: .85 };
+  if (type === 'sticker') return { color: '#9cbfdc', rough: .35 };
+  const seq = ['#86c96f', 'C', '#e8c43c', 'C', '#ea7aa2', 'C', '#ece8da'];                 // carbon: copies + carbon sheets
+  const c = seq[i % seq.length]; return c === 'C' ? { color: '#0b1124', rough: .5, metal: 0, sheen: .05 } : { color: c, rough: .8 };
+}
+function buildMulti(type) {
+  const g = new THREE.Group(), sp = MULTI[type], pivots = [];
+  const U = { pivots, total: sp.n * sp.th, th: sp.th, tissue: false, multi: true, fan: sp.fan, lift: sp.lift, stagger: sp.stagger || 0 };
+  const bump = bumpTex(3000, 8);
+  for (let i = 0; i < sp.n; i++) {
+    const pv = new THREE.Group(); pv.position.set(-W / 2, -H / 2, i * sp.th); const last = i === sp.n - 1, d = multiSheet(type, i, sp.n);
+    if (!(last && type === 'sticker')) {
+      const mat = new THREE.MeshPhysicalMaterial({ color: d.color, roughness: d.rough, metalness: d.metal || 0, sheen: d.sheen || .3, sheenColor: new THREE.Color(0xffffff), clearcoat: type === 'sticker' ? .6 : 0, bumpMap: type === 'parchment' ? bump : null, bumpScale: .3 });
+      const box = new THREE.Mesh(new THREE.BoxGeometry(W, H, sp.th * .88), mat); box.position.set(W / 2, H / 2, 0); pv.add(box);
+    }
+    if (last) {
+      const map = type === 'sticker' ? stickerMap() : type === 'carbon' ? formMap() : canvasTex(256, grain(PASTEL[i % 4], ['#00000010', '#ffffff30'], 3500, 9), 1.5);
+      const tm = new THREE.Mesh(sheetGeo(W, H, { curl: type === 'parchment' ? .07 : .05 }), new THREE.MeshPhysicalMaterial({ map, roughness: type === 'sticker' ? .25 : .7, clearcoat: type === 'sticker' ? 1 : 0, clearcoatRoughness: .1, side: THREE.DoubleSide, sheen: .3, sheenColor: new THREE.Color(0xffffff), bumpMap: type === 'parchment' ? bump : null, bumpScale: .3 }));
+      tm.position.set(W / 2, H / 2, type === 'sticker' ? -sp.th * .3 : sp.th * .46); pv.add(tm);
+      if (sp.peel) { U.peelGeo = v => { tm.geometry.dispose(); tm.geometry = sheetGeo(W, H, { peel: v, curl: .05 }); }; U.lastPeel = 0; }
+    }
+    g.add(pv); pivots.push(pv);
+  }
+  g.userData = U; return g;
+}
+
 function buildPaper(type) {
+  if (MULTI[type]) return buildMulti(type);
   const g = new THREE.Group(); const sp = SPECS[type]; const pivots = [];
   if (type === 'cardboard') return buildBoard(g);
   const map = sp.map === 'coated' ? coatedMap() : sp.map === 'news' ? newsMap() : sp.map();
   const bump = sp.bump ? bumpTex() : null;
   const mats = [];
-  const top = new THREE.MeshPhysicalMaterial({ map, roughness: sp.rough ?? .8, bumpMap: bump, bumpScale: sp.bump || 0, clearcoat: sp.clear || 0, clearcoatRoughness: .08, side: THREE.DoubleSide, sheen: sp.tissue ? 1 : .3, sheenColor: new THREE.Color(0xffffff), transparent: !!sp.tissue, opacity: sp.tissue ? .88 : 1 });
+  const top = new THREE.MeshPhysicalMaterial({ map, roughness: sp.rough ?? .8, bumpMap: bump, bumpScale: sp.bump || 0, clearcoat: sp.clear || 0, clearcoatRoughness: .08, side: THREE.DoubleSide, sheen: sp.tissue ? 1 : .3, sheenColor: new THREE.Color(0xffffff), transparent: !!sp.tissue, opacity: sp.tissue ? (sp.opacity ?? .88) : 1 });
+  if (sp.tint) top.color.set(sp.tint);
   const plain = top.clone(); if (type === 'coated' || type === 'newsprint') { plain.map = type === 'coated' ? canvasTex(64, (x, s) => { x.fillStyle = '#f2efe8'; x.fillRect(0, 0, s, s); }) : canvasTex(64, (x, s) => { x.fillStyle = '#d4cfc1'; x.fillRect(0, 0, s, s); }); }
   const total = sp.n * sp.th;
   if (!sp.tissue) { const core = new THREE.Mesh(new THREE.BoxGeometry(W - .02, H - .02, total), new THREE.MeshStandardMaterial({ color: sp.core, roughness: .9 })); core.position.z = total / 2 - sp.th * .5; g.add(core); }
@@ -127,12 +198,16 @@ export function mount(el, type) {
     root.rotation.set(-1.0 + ptr.y * .12 - hover * .12, -.12 + ptr.x * .25, -.55 + Math.sin(t * .7) * .12 + hover * .25 + (1 - intro) * 1.2);
     root.position.y = -.05 + Math.sin(t * 1.2) * .06 + (1 - intro) * 1.2; root.scale.setScalar(.74 + .26 * intro + hover * .05);
     if (isBoard) { const pl = hover * .5; if (Math.abs(pl - U.lastPeel) > .01) { U.peelGeo(pl); U.lastPeel = pl; } U.tp.rotation.z = hover * .12; }
-    else U.pivots.forEach((pv, i) => {
-      const n = U.pivots.length, k = i / (n - 1), d = clamp((it - .15 - k * .5) / .5);
-      const drop = reduce ? 0 : (1 - eo(d)) * 1.4;
-      pv.position.z = i * U.th + drop + hover * k * k * (U.tissue ? .5 : .55);
-      pv.rotation.z = hover * (i - n / 2) * .045 * (1 + k);
-    });
+    else {
+      if (U.peelGeo) { const pl = hover * 1.1; if (Math.abs(pl - U.lastPeel) > .01) { U.peelGeo(pl); U.lastPeel = pl; } }
+      U.pivots.forEach((pv, i) => {
+        const n = U.pivots.length, k = i / (n - 1), d = clamp((it - .15 - k * .5) / .5);
+        const drop = reduce ? 0 : (1 - eo(d)) * 1.4;
+        pv.position.z = i * U.th + drop + hover * k * k * (U.lift ?? (U.tissue ? .5 : .55));
+        pv.rotation.z = hover * (i - n / 2) * (U.fan ?? .045) * (1 + k);
+        if (U.stagger) { pv.position.x = -W / 2 + hover * (i - n / 2) * U.stagger; pv.position.y = -H / 2 + hover * (i - n / 2) * U.stagger * .55; }
+      });
+    }
     r.render(sc, cam);
   });
 }

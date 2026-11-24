@@ -103,6 +103,10 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) notFound();
 
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
+  const fontsHref =
+    locale === 'ar'
+      ? 'https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap'
+      : 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@400;600;700;800&display=swap';
 
   return (
     <html lang={locale} dir={dir} data-scroll-behavior="smooth" suppressHydrationWarning>
@@ -110,10 +114,7 @@ export default async function LocaleLayout({
         <ThemeInit />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Sora:wght@400;600;700;800&display=swap"
-          rel="stylesheet"
-        />
+        <link href={fontsHref} rel="stylesheet" />
       </head>
       <body>
         <ThemeProvider>

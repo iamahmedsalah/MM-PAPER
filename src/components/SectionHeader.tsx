@@ -1,6 +1,6 @@
 'use client';
 
-import { GoldRule, Reveal } from './ui/Reveal';
+import { GoldRule, LineReveal, Reveal } from './ui/Reveal';
 
 export default function SectionHeader({
   eyebrow,
@@ -16,9 +16,9 @@ export default function SectionHeader({
       <Reveal>
         <p className="tracking-brand mb-3 text-xs font-semibold text-accent">{eyebrow}</p>
       </Reveal>
-      <Reveal delay={0.08}>
-        <h2 className="font-heading text-3xl font-bold leading-[120%] text-ink md:text-5xl">{title}</h2>
-      </Reveal>
+      <h2 className="font-heading text-3xl font-bold leading-[120%] text-ink md:text-5xl">
+        <LineReveal lines={[title]} />
+      </h2>
       {intro && (
         <Reveal delay={0.16}>
           <p className="mt-4 leading-[160%] text-inkMuted">{intro}</p>

@@ -6,17 +6,21 @@ const en = {
   seo: {
     title: 'MM Paper Industry — Leading Egyptian Paper Importer & Supplier Since 2006',
     description:
-      'MM Paper Industry is a leading Egyptian paper company established in 2006, importing, converting, and supplying kraft, white offset, coated, newsprint, cardboard, and tissue from major global mills.',
+      'MM Paper Industry is a leading Egyptian paper company established in 2006, importing, converting, and supplying sticker paper, coloured parchment, bristol, grey-back and white-back duplex, butter paper, printing, copy A4/A3, coated couche, and carbon paper.',
     keywords: [
       'MM Paper Industry',
       'paper supplier Egypt',
       'paper importer Egypt',
-      'kraft paper Egypt',
-      'white offset paper',
-      'coated paper',
-      'newsprint',
-      'cardboard duplex',
-      'tissue parent reels',
+      'sticker paper Egypt',
+      'coloured parchment paper',
+      'bristol board',
+      'duplex board grey back',
+      'duplex board white back',
+      'butter greaseproof paper',
+      'printing paper offset',
+      'copy paper A4 A3',
+      'coated couche paper',
+      'carbon paper',
       'paper converting and slitting',
       'bulk paper supply',
     ] as readonly string[],
@@ -61,7 +65,7 @@ const en = {
     eyebrow: 'MM Paper Industry · Est. 2006 · Egypt',
     titleA: 'Quality Paper.',
     titleB: 'Reliable Supply.',
-    sub: 'A leading Egyptian paper company since 2006 — primary importer and supplier partnering with major global paper mills across six grades, cut, prepared, and delivered on schedule.',
+    sub: 'A leading Egyptian paper company since 2006 — primary importer and supplier partnering with major global paper mills across ten specialized grades, cut, prepared, and delivered on schedule.',
     ctaQuote: 'Request a Quote',
     ctaExplore: 'Explore Paper Types',
   },
@@ -72,9 +76,16 @@ const en = {
     grades: 'Paper grades',
   },
   services: {
-    eyebrow: 'What we do',
-    title: 'Every step from mill to pallet.',
-    intro: 'One trusted partner for importing, precision converting, and nationwide delivery — so you never coordinate three vendors to move a single order.',
+    eyebrow: 'Our Services',
+    title: 'Integrated paper importing, trading & converting.',
+    intro:
+      'We provide integrated solutions in paper importing, trading, and converting, committed to meeting our clients’ needs through diverse products, dependable quality, and flexible service tailored to every sector.',
+    goalTitle: 'Our Goal',
+    goalText:
+      'Our goal is to be a trusted partner for our clients through product quality, strict adherence to specifications, and paper solutions tailored to their business needs.',
+    ctaPrompt:
+      'Looking for a reliable paper supplier or custom converting and preparation services? Contact us to discuss your needs and receive a suitable quote.',
+    ctaButton: 'Contact Us for a Quote',
   },
   showcase: {
     eyebrow: 'Craft in motion',
@@ -94,7 +105,7 @@ const en = {
   },
   papers: {
     eyebrow: 'Paper types',
-    title: 'Six grades. Every job covered.',
+    title: 'Ten grades. Every job covered.',
     intro: 'Interactive 3D samples ready from the reel, each with documented GSM ranges and certified technical specifications.',
     all: 'All',
     getSpecs: 'Get specs',
@@ -213,19 +224,22 @@ const ar: Translation = {
   seo: {
     title: 'إم إم لصناعة الورق — شركة مصرية رائدة في استيراد وتجهيز وتجارة الورق منذ 2006',
     description:
-      'إم إم لصناعة الورق: عراقة ممتدة منذ عام 2006. شركة مصرية رائدة متخصصة في استيراد وتجهيز وتجارة الورق بجميع أنواعه، ومستورد ومورد رئيسي لكبرى شركات ومصانع الورق العالمية.',
+      'إم إم لصناعة الورق: عراقة ممتدة منذ عام 2006. شركة مصرية رائدة متخصصة في استيراد وتجهيز وتجارة الورق بجميع أنواعه: الاستيكر، البرشمان الملوّن، البريستول، الدوبليكس، الزبدة، الطبع، التصوير، الكوشيه، والمُكربن.',
     keywords: [
       'إم إم لصناعة الورق',
       'MM Paper Industry',
       'استيراد وتجارة الورق في مصر',
       'شركة ورق مصرية',
-      'تجهيز وتقطيع الورق',
-      'ورق كرافت',
-      'ورق أوفسيت أبيض',
-      'ورق مطلي كوشيه',
-      'ورق جرائد',
-      'ورق مقوى دوبلكس',
-      'ورق نسيجي',
+      'ورق استيكر',
+      'ورق البرشمان الملوّن',
+      'ورق البريستول',
+      'ورق الدوبليكس ظهر رمادي',
+      'ورق الدوبليكس ظهر أبيض',
+      'ورق الزبدة',
+      'ورق الطبع',
+      'ورق التصوير A4 A3',
+      'ورق الكوشيه',
+      'الورق المكربن',
       'مورد ورق بالجملة مصر',
     ],
   },
@@ -280,9 +294,16 @@ const ar: Translation = {
     grades: 'أصناف ورق',
   },
   services: {
-    eyebrow: 'ماذا نفعل',
-    title: 'كل خطوة من المصنع العالمي إلى منصتك.',
-    intro: 'شريك مصري واحد للاستيراد والتجهيز والتقطيع الدقيق والتوصيل — فلن تحتاج أبداً إلى تنسيق ثلاثة موردين لتنفيذ طلب واحد.',
+    eyebrow: 'خدماتنا',
+    title: 'حلول متكاملة في استيراد وتجارة وتحويل الورق.',
+    intro:
+      'نقدم حلولًا متكاملة في استيراد وتجارة وتحويل الورق، ونحرص على تلبية احتياجات عملائنا من خلال منتجات متنوعة وجودة موثوقة وخدمة مرنة تناسب مختلف القطاعات.',
+    goalTitle: 'هدفنا',
+    goalText:
+      'هدفنا هو أن نكون شريكًا موثوقًا لعملائنا، من خلال جودة المنتجات، والالتزام بالمواصفات، وتوفير حلول ورقية تلائم احتياجات أعمالهم.',
+    ctaPrompt:
+      'هل تبحث عن مورد ورق موثوق أو خدمات تحويل وتجهيز حسب الطلب؟ تواصل معنا لمناقشة احتياجاتك والحصول على عرض مناسب.',
+    ctaButton: 'تواصل معنا للحصول على عرض',
   },
   showcase: {
     eyebrow: 'حرفية في الحركة',
@@ -302,7 +323,7 @@ const ar: Translation = {
   },
   papers: {
     eyebrow: 'أنواع الورق',
-    title: 'ستة أصناف تغطي كل الاستخدامات.',
+    title: 'عشرة أصناف تغطي كل الاستخدامات.',
     intro: 'عينات ثلاثية الأبعاد تفاعلية جاهزة من البكرات، لكل منها نطاقات جرامات موثقة ومواصفات فنية معتمدة.',
     all: 'الكل',
     getSpecs: 'المواصفات',

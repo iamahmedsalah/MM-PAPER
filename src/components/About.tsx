@@ -83,7 +83,7 @@ export default function About() {
         inView = Boolean(entry?.isIntersecting);
         syncPlayback();
       },
-      { rootMargin: '120px 0px', threshold: 0.12 }
+      { rootMargin: '280px 0px', threshold: 0.05 }
     );
     io.observe(el);
 
@@ -183,10 +183,9 @@ export default function About() {
             <video
               ref={videoRef}
               src={VIDEO_SRC}
-              autoPlay
               muted
               playsInline
-              preload="auto"
+              preload="none"
               onLoadedData={handleLoadedData}
               onTimeUpdate={handleTimeUpdate}
               onEnded={handleVideoEnded}

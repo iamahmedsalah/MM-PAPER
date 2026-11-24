@@ -8,22 +8,38 @@ interface PaperSpec {
   n: number;
   th: number;
   map?: () => THREE.Texture;
-  mapKind?: 'coated' | 'news';
+  mapKind?: 'coated' | 'news' | 'copy';
   core?: number;
   rough?: number;
   bump?: number;
   clear?: number;
   curl?: number;
   tissue?: boolean;
+  opacity?: number;
+  tint?: number;
+}
+
+interface MultiSpec {
+  n: number;
+  th: number;
+  fan: number;
+  lift: number;
+  peel?: boolean;
+  stagger?: number;
 }
 
 interface PaperUserData {
   pivots: THREE.Group[];
   th: number;
   tissue: boolean;
+  fan?: number;
+  lift?: number;
+  stagger?: number;
   board?: boolean;
   tp?: THREE.Group;
-  tm?: THREE.Mesh;
+  peelMesh?: THREE.Mesh;
+  peelMax?: number;
+  baseCurl?: number;
   lastPeel?: number;
 }
 
@@ -160,19 +176,176 @@ function sheetGeo(w: number, h: number, o: { curl?: number; peel?: number; wave?
   return g;
 }
 
-/** Mutates top-liner vertex Z positions in-place so cardboard corner peel allocates zero memory per frame. */
-function updatePeelGeometry(geo: THREE.BufferGeometry, peel: number) {
+/** Mutates vertex Z positions in-place so hover corner peels allocate zero geometry per frame. */
+function updatePeelGeometry(geo: THREE.BufferGeometry, peel: number, baseCurl = 0) {
   const p = geo.attributes.position as THREE.BufferAttribute;
   for (let i = 0; i < p.count; i++) {
     const x = p.getX(i);
     const y = p.getY(i);
     const u = x / W + 0.5;
     const v = y / H + 0.5;
-    const z = peel > 0.0001 ? peel * Math.pow(Math.max(0, u + v - 1.05), 2) * 3 : 0;
+    let z = baseCurl ? baseCurl * Math.pow(u, 2.2) : 0;
+    if (peel > 0.0001) {
+      z += peel * Math.pow(Math.max(0, u + v - 1.05), 2) * 3;
+    }
     p.setZ(i, z);
   }
   p.needsUpdate = true;
   geo.computeVertexNormals();
+}
+
+function roundRect(x: CanvasRenderingContext2D, a: number, b: number, w: number, h: number, r: number) {
+  x.beginPath();
+  x.moveTo(a + r, b);
+  x.arcTo(a + w, b, a + w, b + h, r);
+  x.arcTo(a + w, b + h, a, b + h, r);
+  x.arcTo(a, b + h, a, b, r);
+  x.arcTo(a, b, a + w, b, r);
+  x.closePath();
+}
+
+function stickerMap() {
+  return canvasTex(256, (x, s) => {
+    const rnd = createRng(103);
+    x.fillStyle = '#e4e6e2';
+    x.fillRect(0, 0, s, s);
+    const cols = 2;
+    const rows = 4;
+    const m = 12;
+    const gw = (s - m * 2) / cols;
+    const gh = (s - m * 2) / rows;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const a = m + c * gw + 4;
+        const b = m + r * gh + 4;
+        const w = gw - 8;
+        const h = gh - 8;
+        const k = (r * cols + c) % 4;
+        roundRect(x, a, b, w, h, 7);
+        x.fillStyle = '#f3f3ef';
+        x.fill();
+        x.strokeStyle = 'rgba(110,125,150,.6)';
+        x.lineWidth = 1.2;
+        x.stroke();
+        if (k === 0) {
+          for (let i = 0; i < 34; i++) {
+            x.fillStyle = '#1a1f2e';
+            const bw = 1 + (rnd() > 0.6 ? 2 : 0);
+            x.fillRect(a + 10 + i * 2.8, b + 8, bw, h - 22);
+          }
+          x.fillRect(a + 10, b + h - 11, w - 20, 2);
+        } else if (k === 1) {
+          x.fillStyle = '#C9A86A';
+          x.beginPath();
+          x.arc(a + 20, b + h / 2, 11, 0, 6.28);
+          x.fill();
+          x.fillStyle = '#193051';
+          x.fillRect(a + 38, b + h / 2 - 9, w - 52, 5);
+          x.fillRect(a + 38, b + h / 2 + 2, w - 70, 4);
+        } else if (k === 2) {
+          x.fillStyle = '#193051';
+          x.fillRect(a + 10, b + 9, w - 20, 7);
+          x.fillStyle = 'rgba(25,48,81,.45)';
+          for (let i = 0; i < 3; i++) x.fillRect(a + 10, b + 22 + i * 7, w - 20 - i * 14, 3);
+        } else {
+          x.fillStyle = '#e8467c';
+          roundRect(x, a + 8, b + 8, w - 16, h - 16, 5);
+          x.fill();
+          x.fillStyle = '#ffffff';
+          x.fillRect(a + 16, b + h / 2 - 3, w - 32, 6);
+        }
+      }
+    }
+  });
+}
+
+function formMap() {
+  return canvasTex(256, (x, s) => {
+    const rnd = createRng(109);
+    x.fillStyle = '#e9e6d8';
+    x.fillRect(0, 0, s, s);
+    x.fillStyle = '#193051';
+    x.fillRect(14, 14, s - 28, 22);
+    x.fillStyle = '#C9A86A';
+    x.fillRect(20, 21, 60, 8);
+    x.strokeStyle = 'rgba(25,48,81,.35)';
+    x.lineWidth = 1;
+    for (let i = 0; i < 12; i++) {
+      x.beginPath();
+      x.moveTo(14, 56 + i * 15);
+      x.lineTo(s - 14, 56 + i * 15);
+      x.stroke();
+    }
+    x.beginPath();
+    x.moveTo(150, 46);
+    x.lineTo(150, 236);
+    x.stroke();
+    x.strokeStyle = '#1d4fd8';
+    x.lineWidth = 1.6;
+    x.lineCap = 'round';
+    for (let r = 0; r < 9; r++) {
+      x.beginPath();
+      let px = 20 + rnd() * 6;
+      const py = 66 + r * 15;
+      x.moveTo(px, py);
+      const len = 3 + ((rnd() * 7) | 0);
+      for (let i = 0; i < len; i++) {
+        px += 6 + rnd() * 8;
+        x.quadraticCurveTo(px - 4, py - 6 - rnd() * 4, px, py + (rnd() - 0.5) * 4);
+      }
+      x.stroke();
+    }
+  });
+}
+
+function butterMap() {
+  return canvasTex(256, (x, s) => {
+    const rnd = createRng(113);
+    x.fillStyle = '#d2b377';
+    x.fillRect(0, 0, s, s);
+    for (let i = 0; i < 70; i++) {
+      x.strokeStyle = `rgba(190,160,100,${0.06 + rnd() * 0.1})`;
+      x.lineWidth = 1.2;
+      const y = rnd() * s;
+      x.beginPath();
+      x.moveTo(0, y);
+      x.bezierCurveTo(s * 0.3, y + 8, s * 0.6, y - 8, s, y + 3);
+      x.stroke();
+    }
+    for (let i = 0; i < 9; i++) {
+      const g = x.createRadialGradient(0, 0, 0, 0, 0, 14 + rnd() * 18);
+      g.addColorStop(0, 'rgba(120,80,30,.45)');
+      g.addColorStop(1, 'rgba(176,132,60,0)');
+      x.save();
+      x.translate(rnd() * s, rnd() * s);
+      x.fillStyle = g;
+      x.fillRect(-40, -40, 80, 80);
+      x.restore();
+    }
+  });
+}
+
+function copyReamMap() {
+  return canvasTex(256, (x, s) => {
+    const rnd = createRng(127);
+    x.fillStyle = '#fbfbf9';
+    x.fillRect(0, 0, s, s);
+    for (let i = 0; i < 1800; i++) {
+      x.fillStyle = 'rgba(25,48,81,.025)';
+      x.fillRect(rnd() * s, rnd() * s, 2, 1);
+    }
+    x.strokeStyle = 'rgba(25,48,81,.12)';
+    x.lineWidth = 1.5;
+    x.strokeRect(18, 18, s - 36, s - 36);
+    x.fillStyle = '#193051';
+    x.fillRect(28, 30, 56, 18);
+    x.fillStyle = '#C9A86A';
+    x.fillRect(28, 52, 92, 3);
+    x.fillStyle = 'rgba(25,48,81,.22)';
+    for (let i = 0; i < 6; i++) {
+      x.fillRect(28, 70 + i * 14, s - 72 - (i % 3) * 26, 4);
+    }
+  });
 }
 
 function coatedMap() {
@@ -222,6 +395,169 @@ function newsMap() {
   });
 }
 
+const MULTI: Record<string, MultiSpec> = {
+  sticker: { n: 9, th: 0.04, fan: 0.012, lift: 0.12, peel: true },
+  parchment: { n: 8, th: 0.045, fan: 0.1, lift: 0.3 },
+  carbon: { n: 7, th: 0.05, fan: 0.03, lift: 0.2, stagger: 0.24 },
+};
+
+const PASTEL = ['#e8c43c', '#6fb0e0', '#ea7aa2', '#86c96f'] as const;
+
+function multiSheetStyle(type: string, i: number): { color: string; rough: number; sheen: number } {
+  if (type === 'parchment') return { color: PASTEL[i % 4], rough: 0.85, sheen: 0.3 };
+  if (type === 'sticker') return { color: '#9cbfdc', rough: 0.35, sheen: 0.3 };
+  const seq = ['#86c96f', 'C', '#e8c43c', 'C', '#ea7aa2', 'C', '#ece8da'] as const;
+  const c = seq[i % seq.length];
+  return c === 'C'
+    ? { color: '#0b1124', rough: 0.5, sheen: 0.05 }
+    : { color: c, rough: 0.8, sheen: 0.3 };
+}
+
+function buildMulti(type: string): { group: THREE.Group; ud: PaperUserData } {
+  const g = new THREE.Group();
+  const sp = MULTI[type];
+  const pivots: THREE.Group[] = [];
+  const bump = bumpTex(3000, 8);
+  let peelMesh: THREE.Mesh | undefined;
+
+  for (let i = 0; i < sp.n; i++) {
+    const pv = new THREE.Group();
+    pv.position.set(-W / 2, -H / 2, i * sp.th);
+    const last = i === sp.n - 1;
+    const d = multiSheetStyle(type, i);
+
+    if (!(last && type === 'sticker')) {
+      const mat = new THREE.MeshPhysicalMaterial({
+        color: d.color,
+        roughness: d.rough,
+        metalness: 0,
+        sheen: d.sheen,
+        sheenColor: new THREE.Color(0xffffff),
+        clearcoat: type === 'sticker' ? 0.6 : 0,
+        bumpMap: type === 'parchment' ? bump : null,
+        bumpScale: 0.3,
+      });
+      const box = new THREE.Mesh(new THREE.BoxGeometry(W, H, sp.th * 0.88), mat);
+      box.position.set(W / 2, H / 2, 0);
+      pv.add(box);
+    }
+
+    if (last) {
+      const map =
+        type === 'sticker'
+          ? stickerMap()
+          : type === 'carbon'
+            ? formMap()
+            : canvasTex(256, grainDraw(PASTEL[i % 4], ['#00000010', '#ffffff30'], 3500, 9), 1.5);
+      const baseCurl = type === 'parchment' ? 0.07 : 0.05;
+      const tm = new THREE.Mesh(
+        sheetGeo(W, H, { curl: baseCurl }),
+        new THREE.MeshPhysicalMaterial({
+          map,
+          roughness: type === 'sticker' ? 0.25 : 0.7,
+          clearcoat: type === 'sticker' ? 1 : 0,
+          clearcoatRoughness: 0.1,
+          side: THREE.DoubleSide,
+          sheen: 0.3,
+          sheenColor: new THREE.Color(0xffffff),
+          bumpMap: type === 'parchment' ? bump : null,
+          bumpScale: 0.3,
+        })
+      );
+      tm.position.set(W / 2, H / 2, type === 'sticker' ? -sp.th * 0.3 : sp.th * 0.46);
+      pv.add(tm);
+      if (sp.peel) {
+        peelMesh = tm;
+      }
+    }
+
+    g.add(pv);
+    pivots.push(pv);
+  }
+
+  return {
+    group: g,
+    ud: {
+      pivots,
+      th: sp.th,
+      tissue: false,
+      fan: sp.fan,
+      lift: sp.lift,
+      stagger: sp.stagger ?? 0,
+      peelMesh,
+      peelMax: sp.peel ? 1.1 : 0,
+      baseCurl: sp.peel ? 0.05 : 0,
+      lastPeel: 0,
+    },
+  };
+}
+
+function buildDuplex(backKind: 'grey' | 'white'): { group: THREE.Group; ud: PaperUserData } {
+  const g = new THREE.Group();
+  const pivots: THREE.Group[] = [];
+  const count = 6;
+  const th = 0.065;
+  const bump = bumpTex(3500, 8);
+  const topFace = canvasTex(
+    256,
+    grainDraw(backKind === 'white' ? '#ffffff' : '#f4f2ec', ['#eae7df', '#ffffff'], 2600, 7),
+    1.5
+  );
+  const backFace = canvasTex(
+    256,
+    grainDraw(
+      backKind === 'white' ? '#f6f7f9' : '#7b7e83',
+      backKind === 'white' ? ['#e6e8ec', '#ffffff'] : ['#66696e', '#92969c'],
+      3200,
+      8
+    ),
+    1.5
+  );
+
+  for (let i = 0; i < count; i++) {
+    const pv = new THREE.Group();
+    pv.position.set(-W / 2, -H / 2, i * th);
+    const isTop = i === count - 1;
+    const isBack = i < 2;
+
+    const slabMat = new THREE.MeshPhysicalMaterial({
+      color: isBack
+        ? backKind === 'white'
+          ? 0xedeff3
+          : 0x7b7e83
+        : isTop
+          ? 0xfdfcf9
+          : backKind === 'white'
+            ? 0xe8eaef
+            : 0x9c9fa5,
+      map: isTop ? topFace : isBack ? backFace : null,
+      roughness: isTop ? (backKind === 'white' ? 0.28 : 0.42) : 0.85,
+      clearcoat: isTop ? (backKind === 'white' ? 0.65 : 0.3) : 0,
+      clearcoatRoughness: 0.14,
+      bumpMap: bump,
+      bumpScale: isTop ? 0.16 : 0.35,
+    });
+
+    const sheet = new THREE.Mesh(new THREE.BoxGeometry(W, H, th * 0.86), slabMat);
+    sheet.position.set(W / 2, H / 2, 0);
+    pv.add(sheet);
+    g.add(pv);
+    pivots.push(pv);
+  }
+
+  return {
+    group: g,
+    ud: {
+      pivots,
+      th,
+      tissue: false,
+      fan: 0.06,
+      lift: 0.32,
+      stagger: 0.1,
+    },
+  };
+}
+
 const SPECS: Record<string, PaperSpec> = {
   kraft: {
     n: 10,
@@ -241,6 +577,24 @@ const SPECS: Record<string, PaperSpec> = {
     bump: 0.3,
     curl: 0.06,
   },
+  copy: {
+    n: 14,
+    th: 0.036,
+    mapKind: 'copy',
+    core: 0xebe9e3,
+    rough: 0.72,
+    bump: 0.22,
+    curl: 0.04,
+  },
+  bristol: {
+    n: 7,
+    th: 0.068,
+    map: () => canvasTex(256, grainDraw('#f3eee1', ['#e6dfc9', '#fbf8f0'], 2800, 7), 1.5),
+    core: 0xdad2be,
+    rough: 0.72,
+    bump: 0.28,
+    curl: 0.03,
+  },
   coated: {
     n: 8,
     th: 0.04,
@@ -258,6 +612,16 @@ const SPECS: Record<string, PaperSpec> = {
     rough: 0.9,
     bump: 0.35,
     curl: 0.05,
+  },
+  butter: {
+    n: 6,
+    th: 0.075,
+    map: butterMap,
+    tissue: true,
+    opacity: 0.86,
+    tint: 0xb8955a,
+    rough: 0.28,
+    clear: 0.7,
   },
   tissue: {
     n: 5,
@@ -323,18 +687,31 @@ function buildBoard(): { group: THREE.Group; ud: PaperUserData } {
       tissue: false,
       board: true,
       tp,
-      tm,
+      peelMesh: tm,
+      peelMax: 0.5,
+      baseCurl: 0,
       lastPeel: 0,
     },
   };
 }
 
 function buildPaper(type: string): { group: THREE.Group; ud: PaperUserData } {
+  if (MULTI[type]) return buildMulti(type);
+  if (type === 'duplex-grey') return buildDuplex('grey');
+  if (type === 'duplex-white') return buildDuplex('white');
   if (type === 'cardboard') return buildBoard();
+
   const g = new THREE.Group();
   const sp = SPECS[type] ?? SPECS.offset;
   const pivots: THREE.Group[] = [];
-  const map = sp.mapKind === 'coated' ? coatedMap() : sp.mapKind === 'news' ? newsMap() : sp.map!();
+  const map =
+    sp.mapKind === 'coated'
+      ? coatedMap()
+      : sp.mapKind === 'news'
+        ? newsMap()
+        : sp.mapKind === 'copy'
+          ? copyReamMap()
+          : sp.map!();
   const bump = sp.bump ? bumpTex() : null;
 
   const top = new THREE.MeshPhysicalMaterial({
@@ -348,8 +725,9 @@ function buildPaper(type: string): { group: THREE.Group; ud: PaperUserData } {
     sheen: sp.tissue ? 1 : 0.3,
     sheenColor: new THREE.Color(0xffffff),
     transparent: !!sp.tissue,
-    opacity: sp.tissue ? 0.88 : 1,
+    opacity: sp.tissue ? (sp.opacity ?? 0.88) : 1,
   });
+  if (sp.tint) top.color.setHex(sp.tint);
 
   const plain = top.clone();
   if (sp.mapKind === 'coated') {
@@ -360,6 +738,11 @@ function buildPaper(type: string): { group: THREE.Group; ud: PaperUserData } {
   } else if (sp.mapKind === 'news') {
     plain.map = canvasTex(64, (x, s) => {
       x.fillStyle = '#d4cfc1';
+      x.fillRect(0, 0, s, s);
+    });
+  } else if (sp.mapKind === 'copy') {
+    plain.map = canvasTex(64, (x, s) => {
+      x.fillStyle = '#f8f7f3';
       x.fillRect(0, 0, s, s);
     });
   }
@@ -543,22 +926,32 @@ class PaperStageEngine {
     slot.root.position.y = -0.05 + (reduced ? 0 : Math.sin(t * 1.2) * 0.05) + (1 - intro) * 1.15;
     slot.root.scale.setScalar(0.75 + 0.25 * intro + hover * 0.05);
 
-    if (slot.ud.board && slot.ud.tm) {
-      const pl = hover * 0.5;
+    if (slot.ud.peelMesh && (slot.ud.peelMax ?? 0) > 0) {
+      const pl = hover * (slot.ud.peelMax ?? 0.5);
       if (Math.abs(pl - (slot.ud.lastPeel ?? 0)) > 0.01) {
-        updatePeelGeometry(slot.ud.tm.geometry, pl);
+        updatePeelGeometry(slot.ud.peelMesh.geometry, pl, slot.ud.baseCurl ?? 0);
         slot.ud.lastPeel = pl;
       }
-      if (slot.ud.tp) slot.ud.tp.rotation.z = hover * 0.12;
-    } else {
+      if (slot.ud.board && slot.ud.tp) slot.ud.tp.rotation.z = hover * 0.12;
+    }
+
+    if (!slot.ud.board) {
       const pivots = slot.ud.pivots;
       const n = pivots.length;
+      const fanStep = slot.ud.fan ?? 0.045;
+      const liftStep = slot.ud.lift ?? (slot.ud.tissue ? 0.5 : 0.55);
+      const stagger = slot.ud.stagger ?? 0;
+
       pivots.forEach((pv, i) => {
         const k = n > 1 ? i / (n - 1) : 0;
         const d = clamp((it - 0.15 - k * 0.5) / 0.5);
         const drop = reduced ? 0 : (1 - easeOut(d)) * 1.4;
-        pv.position.z = i * slot.ud.th + drop + hover * k * k * (slot.ud.tissue ? 0.5 : 0.55);
-        pv.rotation.z = hover * (i - n / 2) * 0.045 * (1 + k);
+        pv.position.z = i * slot.ud.th + drop + hover * k * k * liftStep;
+        pv.rotation.z = hover * (i - n / 2) * fanStep * (1 + k);
+        if (stagger) {
+          pv.position.x = -W / 2 + hover * (i - n / 2) * stagger;
+          pv.position.y = -H / 2 + hover * (i - n / 2) * stagger * 0.55;
+        }
       });
     }
 

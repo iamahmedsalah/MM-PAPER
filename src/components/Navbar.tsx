@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion';
 import BrandLogo from './ui/BrandLogo';
 import { GoldLink } from './ui/Buttons';
 import LanguageToggle from './ui/LanguageToggle';
@@ -16,6 +16,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 28, restDelta: 0.001 });
 
   const links = [
     { href: '#home', label: t.nav.home },
@@ -162,6 +164,14 @@ export default function Navbar() {
             </button>
           </div>
         </nav>
+
+        <motion.div
+          aria-hidden
+          style={{ scaleX }}
+          className={`pointer-events-none absolute inset-x-0 bottom-0 h-[2px] origin-left bg-gradient-to-r from-gold/50 via-gold to-gold/80 transition-opacity duration-300 rtl:origin-right ${
+            scrolled && !open ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
       </header>
 
       <AnimatePresence>

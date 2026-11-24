@@ -15,12 +15,12 @@ const PAPER_EASE = [0.22, 1, 0.36, 1] as const;
 const SWITCH_KEY = 'mm-lang-switching';
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
-/** Branded curtain that plays on initial load (900ms) and lifts upward cleanly after language switches (680ms). */
+/** Branded curtain that plays on initial load (480ms) and lifts upward cleanly after language switches (420ms). */
 export default function Preloader() {
   const { t } = useLang();
   const { theme } = useTheme();
   const [visible, setVisible] = useState(true);
-  const [barDuration, setBarDuration] = useState(0.85);
+  const [barDuration, setBarDuration] = useState(0.44);
 
   useIsomorphicLayoutEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -37,8 +37,8 @@ export default function Preloader() {
       // sessionStorage unavailable
     }
 
-    const durationMs = isLangSwitch ? 680 : 900;
-    setBarDuration(isLangSwitch ? 0.62 : 0.85);
+    const durationMs = isLangSwitch ? 420 : 480;
+    setBarDuration(isLangSwitch ? 0.38 : 0.44);
 
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -63,7 +63,7 @@ export default function Preloader() {
           aria-label={t.preloader.loading}
           initial={{ y: '0%' }}
           exit={{ y: '-100%' }}
-          transition={{ duration: 0.52, ease: PAPER_EASE }}
+          transition={{ duration: 0.38, ease: PAPER_EASE }}
           className="mm-preloader fixed inset-0 z-[100] flex h-[100dvh] flex-col items-center justify-center bg-canvas px-6"
         >
           <div className="flex flex-col items-center gap-6 text-center">

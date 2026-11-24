@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { COMPANY_CONTACT } from '../src/data/contact.ts';
+import { managers } from '../src/data/managers.ts';
 import { paperTypes } from '../src/data/papers.ts';
 import { services } from '../src/data/services.ts';
 import { stats } from '../src/data/site.ts';
@@ -16,9 +17,15 @@ test('company contact uses verified phone 011 3233 2148 and sales@mmpaperindustr
   assert.equal(COMPANY_CONTACT.salesEmailHref, 'mailto:sales@mmpaperindustry.com');
 });
 
-test('catalog contains all 6 bilingual paper grades and 6 bilingual services', () => {
-  assert.equal(paperTypes.length, 6);
-  assert.equal(services.length, 6);
+test('catalog contains all 10 bilingual paper grades and 5 bilingual services', () => {
+  assert.equal(paperTypes.length, 10);
+  assert.equal(services.length, 5);
+
+  for (const service of services) {
+    assert.ok(service.id);
+    assert.ok(service.title.en && service.title.ar);
+    assert.ok(service.description.en && service.description.ar);
+  }
 
   for (const grade of paperTypes) {
     assert.ok(grade.id);
@@ -27,6 +34,19 @@ test('catalog contains all 6 bilingual paper grades and 6 bilingual services', (
     assert.ok(grade.gsmRange.includes('GSM'));
     assert.ok(grade.specs.length >= 3);
   }
+});
+
+test('leadership roster contains verified Morad executives with portraits and positions', () => {
+  assert.equal(managers.length, 4);
+  assert.deepEqual(
+    managers.map((m) => ({ name: m.name, positionCode: m.positionCode, photo: m.photo })),
+    [
+      { name: 'Mr. Mohamed Morad', positionCode: 'Chairman', photo: '/team/mohamed-morad.webp' },
+      { name: 'Mr. Khaled Morad', positionCode: 'CEO | CFO', photo: '/team/khaled-morad.webp' },
+      { name: 'Mr. Ahmed Morad', positionCode: 'CSO', photo: '/team/ahmed-morad.webp' },
+      { name: 'Mr. Mohamed Mohamed Morad', positionCode: 'COO', photo: '/team/mohamed-mohamed-morad.webp' },
+    ]
+  );
 });
 
 test('social channels contain clean verified URLs without tracking query strings', () => {
@@ -49,6 +69,8 @@ test('EN and AR dictionaries use MM Paper Industry branding and verified Egypt 2
   assert.ok(dictionaries.ar.hero.sub.includes('شركة مصرية رائدة'));
   assert.ok(dictionaries.ar.hero.sub.includes('مستورد ومورد رئيسي'));
   assert.ok(dictionaries.ar.about.titleA.includes('2006'));
+  assert.ok(dictionaries.ar.services.intro.includes('استيراد وتجارة وتحويل الورق'));
+  assert.ok(dictionaries.ar.services.ctaPrompt.includes('هل تبحث عن مورد ورق موثوق'));
   assert.equal(stats[0].value, 20);
 
   const serialized = JSON.stringify(dictionaries);
@@ -80,6 +102,6 @@ test('JSON-LD schema outputs Organization, WebSite, and 6-item OfferCatalog with
 
     const catalog = graph[2] as { '@type': string; itemListElement: unknown[] };
     assert.equal(catalog['@type'], 'OfferCatalog');
-    assert.equal(catalog.itemListElement.length, 6);
+    assert.equal(catalog.itemListElement.length, 10);
   }
 });
