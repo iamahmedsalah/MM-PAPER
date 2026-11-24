@@ -27,9 +27,18 @@ Add these secrets under **GitHub Repository → Settings → Secrets and variabl
 ### Optional Repository Variables / Secrets for Environment Configuration
 
 Configure these in **Vercel Project Settings → Environment Variables** (and optionally as GitHub Actions `vars` / `secrets` for CI):
-- `NEXT_PUBLIC_SITE_URL` (e.g. `https://mmpaperindustry.com`)
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_SITE_URL` (`https://mm-eg.co`)
+- **Quotation Mailer (Hostinger SMTP — Node.js Server Action)**:
+  - `SMTP_HOST=smtp.hostinger.com`
+  - `SMTP_PORT=465` *(SSL, or `587` STARTTLS)*
+  - `SMTP_USER=info@mm-eg.co`
+  - `SMTP_PASS=<mailbox password>` *(add directly in Vercel Secrets, never commit to git)*
+  - `MAIL_FROM="MM Paper Industry <info@mm-eg.co>"` *(or set `USE_SMTP_USER_AS_FROM = true` in `src/lib/mail.ts` if Hostinger rejects a different sender address)*
+  - `QUOTE_TO=info@mm-eg.co`
+  - `WHATSAPP_NUMBER=201132332148` *(digits only, no `+`)*
+- *(Optional / Legacy Supabase)* `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+> **Future WhatsApp Business Cloud API Hook**: Official outbound template messages can be plugged into `src/app/actions/submitQuote.ts` (and `src/lib/whatsapp.ts`) immediately after `sendQuoteEmail(...)` succeeds, using `WHATSAPP_PHONE_NUMBER_ID` and `WHATSAPP_ACCESS_TOKEN`.
 
 ---
 
