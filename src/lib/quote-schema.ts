@@ -1,6 +1,16 @@
 import { z } from 'zod';
 import { GOVERNORATE_IDS, getGovernorateLabel } from '../data/governorates.ts';
 import { paperTypes } from '../data/papers.ts';
+import {
+  escapeHtml,
+  mmBrand,
+  renderEmailDetailGrid,
+  renderMmEmailLayout,
+  stripHeaderNewlines,
+  type EmailDetailItem,
+} from './email-template.ts';
+
+export { escapeHtml, stripHeaderNewlines };
 
 export const QUOTE_FORMATS = ['reel', 'sheet', 'both'] as const;
 export type QuoteFormat = (typeof QUOTE_FORMATS)[number];
@@ -141,21 +151,6 @@ export function createQuoteSchema(copy: QuoteErrorCopy = DEFAULT_AR_ERRORS) {
 
 export const quoteSubmissionSchema = createQuoteSchema();
 
-/** Strip CR/LF control characters to prevent SMTP header injection. */
-export function stripHeaderNewlines(value: string): string {
-  return value.replace(/[\r\n]+/g, ' ').trim();
-}
-
-/** Escape HTML entities safely before interpolating any user field into email markup. */
-export function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
 export function checkSpamSignals({
   website,
   startedAt,
@@ -224,7 +219,13 @@ export function parseQuoteInput(
   };
 }
 
-/** Build RTL HTML and plain-text email bodies with customer call & WhatsApp action links. */
+const notesToHtml = (value: string) =>
+  value
+    .split(/\r?\n+/)
+    .map((line) => `<p style="margin:0 0 8px;">${escapeHtml(line)}</p>`)
+    .join('');
+
+/** Build RTL HTML (2-column card grid + inline SVG icons + CID logo) and plain-text email bodies. */
 export function buildQuoteEmailContent(data: ValidatedQuoteData): {
   subject: string;
   html: string;
@@ -234,57 +235,100 @@ export function buildQuoteEmailContent(data: ValidatedQuoteData): {
   const safeSubjectPaper = stripHeaderNewlines(data.paperNameAr);
   const subject = `طلب عرض سعر جديد — ${safeSubjectName} — ${safeSubjectPaper}`;
 
-  const rows: Array<[string, string]> = [
+  const telHref = `tel:+${data.phoneIntl}`;
+  const waHref = `https://wa.me/${data.phoneIntl}`;
+
+  const items: EmailDetailItem[] = [
+    {
+      icon: 'user',
+      label: 'الاسم',
+      valueHtml: escapeHtml(data.name),
+    },
+    {
+      icon: 'building',
+      label: 'اسم الشركة',
+      valueHtml: escapeHtml(data.company || '—'),
+    },
+    {
+      icon: 'phone',
+      label: 'رقم الهاتف',
+      valueHtml: `<a href="${escapeHtml(telHref)}" dir="ltr" style="color:${mmBrand.navy};text-decoration:underline;">${escapeHtml(data.phoneDisplay)}</a>`,
+    },
+    {
+      icon: 'layers',
+      label: 'نوع المنتج',
+      valueHtml: `${escapeHtml(data.paperNameAr)} <span dir="ltr" style="font-size:12px;color:${mmBrand.muted};font-weight:500;">(${escapeHtml(data.paperNameEn)})</span>`,
+    },
+    {
+      icon: 'package',
+      label: 'بكر / شيت',
+      valueHtml: escapeHtml(data.formatLabelAr),
+    },
+    {
+      icon: 'hash',
+      label: 'الكمية',
+      valueHtml: escapeHtml(data.quantity || '—'),
+    },
+    {
+      icon: 'scale',
+      label: 'الجرام',
+      valueHtml: escapeHtml(data.gsm || '—'),
+    },
+    {
+      icon: 'ruler',
+      label: 'المقاس',
+      valueHtml: escapeHtml(data.size || '—'),
+    },
+    {
+      icon: 'mapPin',
+      label: 'المحافظة',
+      valueHtml: escapeHtml(data.governorateAr || '—'),
+      fullWidth: !data.notes,
+    },
+    ...(data.notes
+      ? [
+          {
+            icon: 'message' as const,
+            label: 'ملاحظات',
+            valueHtml: notesToHtml(data.notes),
+            fullWidth: true,
+          },
+        ]
+      : []),
+  ];
+
+  const html = renderMmEmailLayout({
+    heading: 'طلب عرض سعر جديد',
+    preheader: `طلب جديد من ${data.name} — ${data.paperNameAr}${data.quantity ? ` (${data.quantity})` : ''}`,
+    bodyHtml: renderEmailDetailGrid(items, 'rtl'),
+    primaryCta: {
+      label: 'مراسلة العميل عبر واتساب',
+      url: waHref,
+    },
+    secondaryCta: {
+      label: `اتصال سريع (${data.phoneDisplay})`,
+      url: telHref,
+    },
+    footerNote: 'تم إرسال هذا الطلب من نموذج «اطلب عرض سعر» على موقع mm-eg.co.',
+  });
+
+  const textRows: Array<[string, string]> = [
     ['الاسم', data.name],
     ['اسم الشركة', data.company || '—'],
     ['رقم الهاتف', data.phoneDisplay],
     ['نوع المنتج', `${data.paperNameAr} (${data.paperNameEn})`],
-    ['الجرام', data.gsm || '—'],
-    ['المقاس', data.size || '—'],
     ['بكر / شيت', data.formatLabelAr],
     ['الكمية', data.quantity || '—'],
+    ['الجرام', data.gsm || '—'],
+    ['المقاس', data.size || '—'],
     ['المحافظة', data.governorateAr || '—'],
     ['ملاحظات', data.notes || '—'],
   ];
 
-  const telHref = `tel:+${data.phoneIntl}`;
-  const waHref = `https://wa.me/${data.phoneIntl}`;
-
-  const tableRowsHtml = rows
-    .map(
-      ([label, val]) =>
-        `<tr>
-          <th style="text-align:right;padding:10px 14px;background:#F4EFE3;color:#193051;border:1px solid #E2D9C5;width:180px;font-weight:700;">${escapeHtml(label)}</th>
-          <td style="text-align:right;padding:10px 14px;background:#FFFFFF;color:#0B1020;border:1px solid #E2D9C5;white-space:pre-line;">${escapeHtml(val)}</td>
-        </tr>`
-    )
-    .join('\n');
-
-  const html = `<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<body style="margin:0;padding:24px;background:#F7F4EC;font-family:Cairo,Tahoma,Arial,sans-serif;color:#0B1020;direction:rtl;">
-  <div style="max-width:640px;margin:0 auto;background:#FFFFFF;border:1px solid #C9A86A;border-radius:4px;overflow:hidden;">
-    <div style="background:#193051;color:#F4EFE3;padding:20px 24px;border-bottom:3px solid #C9A86A;">
-      <h1 style="margin:0;font-size:20px;line-height:1.4;">طلب عرض سعر جديد — إم إم لصناعة الورق</h1>
-      <p style="margin:6px 0 0;font-size:13px;color:#E0C795;">MM Paper Industry · mm-eg.co</p>
-    </div>
-    <div style="padding:20px 24px;">
-      <table role="presentation" style="width:100%;border-collapse:collapse;font-size:14px;line-height:1.6;">
-        ${tableRowsHtml}
-      </table>
-      <div style="margin-top:22px;padding-top:16px;border-top:1px solid #E2D9C5;">
-        <a href="${escapeHtml(telHref)}" style="display:inline-block;margin-left:10px;margin-bottom:8px;padding:10px 18px;background:#193051;color:#F4EFE3;text-decoration:none;border-radius:4px;font-weight:700;font-size:14px;">اتصال سريع بالعميل (<span dir="ltr">${escapeHtml(data.phoneDisplay)}</span>)</a>
-        <a href="${escapeHtml(waHref)}" style="display:inline-block;margin-bottom:8px;padding:10px 18px;background:#C9A86A;color:#0B1020;text-decoration:none;border-radius:4px;font-weight:700;font-size:14px;">مراسلة العميل عبر واتساب</a>
-      </div>
-    </div>
-  </div>
-</body>
-</html>`;
-
   const text = [
     'طلب عرض سعر جديد — إم إم لصناعة الورق (MM Paper Industry)',
     '------------------------------------------------------------',
-    ...rows.map(([label, val]) => `${label}: ${val}`),
+    ...textRows.map(([label, val]) => `${label}: ${val}`),
     '',
     `اتصال سريع بالعميل: ${telHref}`,
     `واتساب العميل: ${waHref}`,

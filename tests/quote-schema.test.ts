@@ -129,6 +129,12 @@ test('escapes HTML, strips CR/LF from headers, and builds RTL email + WhatsApp U
   assert.equal(/[\r\n]/.test(email.subject), false);
   assert.ok(email.subject.startsWith('طلب عرض سعر جديد — '));
   assert.ok(email.html.includes('dir="rtl"'));
+  assert.ok(email.html.includes('cid:mm-logo'));
+  assert.ok(email.html.includes('mm-grid-cell'));
+  assert.ok(email.html.includes('#193051'));
+  assert.ok(email.html.includes('#C9A86A'));
+  assert.ok(email.html.includes('برج العرب الجديدة'));
+  assert.ok(email.html.includes('info@mm-eg.co'));
   assert.equal(email.html.includes('<script>'), false);
   assert.equal(email.html.includes('<img src=x'), false);
   assert.ok(email.html.includes('&lt;script&gt;alert(1)&lt;/script&gt;'));

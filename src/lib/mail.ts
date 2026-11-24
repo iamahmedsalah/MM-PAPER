@@ -1,4 +1,6 @@
 import 'server-only';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import nodemailer, { type Transporter } from 'nodemailer';
 
 /**
@@ -93,6 +95,10 @@ export async function sendQuoteEmail(params: {
 }): Promise<void> {
   const config = readSmtpConfig();
   const transporter = getTransporter(config);
+  const logoPath = join(process.cwd(), 'public', 'android-chrome-192.png');
+  const attachments = existsSync(logoPath)
+    ? [{ filename: 'mm-logo.png', path: logoPath, cid: 'mm-logo' }]
+    : undefined;
 
   await transporter.sendMail({
     from: config.from,
@@ -100,5 +106,6 @@ export async function sendQuoteEmail(params: {
     subject: params.subject,
     html: params.html,
     text: params.text,
+    attachments,
   });
 }
