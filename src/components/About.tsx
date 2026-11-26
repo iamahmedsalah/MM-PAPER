@@ -4,14 +4,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   BookOpen,
-  HardHat,
   Maximize2,
   Package,
   Pause,
-  PenTool,
   Play,
   Printer,
-  Sparkles,
+  Utensils,
   X,
 } from 'lucide-react';
 import { useCases } from '../data/site';
@@ -27,9 +25,7 @@ const iconMap: Record<string, typeof Printer> = {
   Printer,
   Package,
   BookOpen,
-  PenTool,
-  Sparkles,
-  HardHat,
+  Utensils,
 };
 
 export default function About() {

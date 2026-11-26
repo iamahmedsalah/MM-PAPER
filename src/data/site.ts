@@ -23,7 +23,5 @@ export const useCases: UseCase[] = [
   { id: 'printing', title: { en: 'Printing', ar: 'الطباعة' }, icon: 'Printer' },
   { id: 'packaging', title: { en: 'Packaging', ar: 'التعبئة' }, icon: 'Package' },
   { id: 'publishing', title: { en: 'Publishing', ar: 'النشر' }, icon: 'BookOpen' },
-  { id: 'stationery', title: { en: 'Stationery', ar: 'القرطاسية' }, icon: 'PenTool' },
-  { id: 'hygiene', title: { en: 'Food & Hygiene', ar: 'الأغذية والنظافة' }, icon: 'Sparkles' },
-  { id: 'construction', title: { en: 'Construction', ar: 'البناء' }, icon: 'HardHat' },
+  { id: 'food', title: { en: 'Food', ar: 'الأغذية' }, icon: 'Utensils' },
 ];
