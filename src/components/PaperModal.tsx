@@ -231,9 +231,6 @@ export default function PaperModal({
                   />
                   <div>
                     <h3 className="font-heading text-lg font-bold text-ink sm:text-xl">{L(paper.name)}</h3>
-                    <p className="text-xs font-semibold text-accent sm:text-sm" dir="ltr">
-                      {paper.gsmRange}
-                    </p>
                   </div>
                 </div>
                 <span className="rounded-full border border-gold/35 bg-gold/10 px-3 py-0.5 text-xs font-semibold text-accent">

@@ -83,7 +83,9 @@ async function runSmokeChecks() {
   assert.match(enHtml, /<meta name="color-scheme"/);
   assert.match(enHtml, /FAQPage/);
   assert.match(enHtml, /BreadcrumbList/);
-  assert.match(enHtml, /<table/);
+  const enPaperLinks = [...enHtml.matchAll(/href="(\/en\/papers\/[^"/]+)"/g)];
+  assert.equal(enPaperLinks.length, 10);
+  assert.equal(new Set(enPaperLinks.map((match) => match[1])).size, 10);
   assert.match(enHtml, /Frequently asked questions/);
   assert.equal(enHtml.includes('sales@mmpaper.com'), false, 'Legacy placeholder email leaked into /en');
   assert.equal(enHtml.includes('sales@mmpaperindustry.com'), false, 'Old domain email leaked into /en');
@@ -103,7 +105,9 @@ async function runSmokeChecks() {
   assert.match(arHtml, /<meta name="color-scheme"/);
   assert.match(arHtml, /FAQPage/);
   assert.match(arHtml, /BreadcrumbList/);
-  assert.match(arHtml, /<table/);
+  const arPaperLinks = [...arHtml.matchAll(/href="(\/ar\/papers\/[^"/]+)"/g)];
+  assert.equal(arPaperLinks.length, 10);
+  assert.equal(new Set(arPaperLinks.map((match) => match[1])).size, 10);
   assert.match(arHtml, /الأسئلة الشائعة/);
   assert.match(arHtml, /إم إم لصناعة الورق/);
   assert.match(arHtml, /شركة مصرية رائدة/);

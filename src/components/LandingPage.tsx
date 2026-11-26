@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Lenis from 'lenis';
 import Preloader from './ui/Preloader';
 import LanguageTransition from './ui/LanguageTransition';
@@ -21,6 +21,7 @@ import {
   consumePendingLangSwitchSection,
   SCROLL_SECTION_EVENT,
   SCROLL_TOP_EVENT,
+  scrollToSection,
   type ScrollEventDetail,
 } from '../lib/scroll';
 
@@ -114,6 +115,11 @@ export default function LandingPage() {
     };
   }, []);
 
+  const handleRequestQuote = useCallback((paperId: string) => {
+    setQuotePaperId(paperId);
+    window.requestAnimationFrame(() => scrollToSection('contact'));
+  }, []);
+
   return (
     <div className="grain-overlay min-h-screen bg-canvas font-body text-ink">
       <Preloader />
@@ -131,7 +137,7 @@ export default function LandingPage() {
       <main>
         <Hero />
         <Services />
-        <PaperTypes />
+        <PaperTypes onRequestQuote={handleRequestQuote} />
         <About />
         <Managers />
         <Location />
