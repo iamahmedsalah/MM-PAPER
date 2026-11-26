@@ -154,6 +154,7 @@ async function runSmokeChecks() {
     '/android-chrome-512.png',
     '/brand/mm-logo-dark.svg',
     '/brand/mm-logo-light.svg',
+    '/brand/mm-bimi.svg',
     '/media/mm-logo-paper-motion.webm',
     '/team/mohamed-morad.webp',
     '/team/khaled-morad.webp',

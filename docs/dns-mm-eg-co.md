@@ -52,3 +52,16 @@ When the API token is unset, the app uses SMTP with `SMTP_USER`, `SMTP_PASS`, an
 3. Verify that `https://mm-paper.vercel.app/ar?ref=old-link` returns `308` with `Location: https://mm-eg.co/ar?ref=old-link`, and that the destination serves the Arabic page.
 4. In **Google Search Console**, verify the `Domain` property for `mm-eg.co` by adding the `TXT` record (`google-site-verification=...`) on `@`, then submit `https://mm-eg.co/sitemap.xml`.
 5. In **Bing Webmaster Tools**, import from Search Console or verify `mm-eg.co`, then verify `https://mm-eg.co/llms.txt` and `https://mm-eg.co/robots.txt` return HTTP `200`.
+
+## 4. BIMI sender logo in Gmail
+
+1. Submit [`mm-bimi.svg`](../public/brand/mm-bimi.svg) for a Verified Mark Certificate (VMC) or Common Mark Certificate (CMC). The site serves the SVG at `https://mm-eg.co/brand/mm-bimi.svg` after deployment. [BIMI certificate issuers](https://bimigroup.org/vmc-issuers/)
+2. Verify that a manual Hostinger Webmail message and a site quote confirmation both show `DMARC: PASS` in Gmail's **Show original**. Review any other legitimate sending services before enforcing the domain policy. Update the existing Hostinger `_dmarc` TXT record through a staged rollout. The BIMI target is `p=quarantine` or `p=reject` with `pct=100`. [Google's recommended DMARC rollout](https://knowledge.workspace.google.com/admin/security/recommended-dmarc-rollout)
+3. When the certificate authority supplies the certificate, publish the public PEM chain with the embedded logo at `https://mm-eg.co/brand/mm-bimi.pem`. Confirm the public URL returns HTTP `200` over HTTPS.
+4. In **Hostinger → DNS / Nameservers**, add the following TXT record once the PEM is available and DMARC enforcement is active. The PEM contains the certified logo. [Google's BIMI setup guide](https://knowledge.workspace.google.com/admin/security/set-up-bimi)
+
+   | Type | Name | Value |
+   | --- | --- | --- |
+   | `TXT` | `default._bimi` | `v=BIMI1;l=;a=https://mm-eg.co/brand/mm-bimi.pem` |
+
+5. Verify the TXT record at `default._bimi.mm-eg.co`, then send a new message to Gmail to check the sender logo.
