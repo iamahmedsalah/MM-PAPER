@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import nodemailer from 'nodemailer';
+import { COMPANY_CONTACT, COMPANY_LOCATION } from '../src/data/contact.ts';
 import {
   buildQuoteEmailContent,
   checkSpamSignals,
@@ -141,6 +142,11 @@ test('escapes HTML, strips CR/LF from headers, and builds RTL email + WhatsApp U
   assert.ok(email.html.includes('tel:+201234567890'));
   assert.ok(email.html.includes('https://wa.me/201234567890'));
   assert.ok(email.text.includes('tel:+201234567890'));
+  assert.ok(email.html.includes(`href="${escapeHtml(COMPANY_LOCATION.googleMapsUrl)}"`));
+  assert.ok(email.html.includes(`href="${COMPANY_CONTACT.whatsappHref}"`));
+  assert.ok(email.text.includes(COMPANY_LOCATION.address.ar));
+  assert.ok(email.text.includes(COMPANY_LOCATION.googleMapsUrl));
+  assert.ok(email.text.includes(COMPANY_CONTACT.whatsappHref));
 
   assert.equal(sanitizeWhatsAppNumber('+20 11 3233 2148'), '201132332148');
   const waUrl = buildWhatsAppQuoteUrl(parsed.data, '+20 11 3233 2148');

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { get } from 'node:http';
 import { createServer } from 'node:net';
 import { resolve } from 'node:path';
 
@@ -22,6 +23,15 @@ function findFreePort() {
 const PORT = process.env.SMOKE_PORT ? Number(process.env.SMOKE_PORT) : await findFreePort();
 const BASE = `http://${HOST}:${PORT}`;
 
+function fetchForHost(path, host) {
+  return new Promise((resolve, reject) => {
+    get(`${BASE}${path}`, { headers: { host } }, (response) => {
+      response.resume();
+      resolve(response);
+    }).on('error', reject);
+  });
+}
+
 async function waitForServer(timeoutMs = 20000) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
@@ -41,6 +51,17 @@ async function runSmokeChecks() {
   assert.ok([307, 308].includes(root.status), `Expected redirect at /, got ${root.status}`);
   assert.ok(root.headers.get('location')?.endsWith('/en'), 'Root / should redirect to /en');
 
+  if (process.env.REDIRECT_VERCEL_APP === '1') {
+    for (const path of ['/', '/en', '/ar/papers/sticker-paper?ref=old-link']) {
+      const res = await fetchForHost(path, 'mm-paper.vercel.app');
+      assert.equal(res.statusCode, 308, `Expected permanent domain redirect for ${path}`);
+      assert.equal(new URL(res.headers.location).href, `https://mm-eg.co${path}`);
+    }
+
+    const canonical = await fetchForHost('/ar', 'mm-eg.co');
+    assert.equal(canonical.statusCode, 200, 'The canonical host should serve the page directly');
+  }
+
   const enRes = await fetch(`${BASE}/en`);
   assert.equal(enRes.status, 200);
   const enHtml = await enRes.text();
@@ -49,16 +70,23 @@ async function runSmokeChecks() {
   assert.match(enHtml, /data-scroll-behavior="smooth"/);
   assert.match(enHtml, /MM Paper Industry/);
   assert.match(enHtml, /011 3233 2148/);
-  assert.match(enHtml, /sales@mmpaperindustry\.com/);
+  assert.match(enHtml, /info@mm-eg\.co/);
   assert.match(enHtml, /application\/ld\+json/);
   assert.match(enHtml, /href[Ll]ang="ar"/);
   assert.match(enHtml, /favicon\.svg/);
   assert.match(enHtml, /favicon-light\.svg/);
   assert.match(enHtml, /favicon-dark\.svg/);
+  assert.match(enHtml, /android-chrome-192\.png/);
+  assert.match(enHtml, /android-chrome-512\.png/);
   assert.match(enHtml, /apple-touch-icon\.png/);
   assert.match(enHtml, /<meta name="theme-color"/);
   assert.match(enHtml, /<meta name="color-scheme"/);
+  assert.match(enHtml, /FAQPage/);
+  assert.match(enHtml, /BreadcrumbList/);
+  assert.match(enHtml, /<table/);
+  assert.match(enHtml, /Frequently asked questions/);
   assert.equal(enHtml.includes('sales@mmpaper.com'), false, 'Legacy placeholder email leaked into /en');
+  assert.equal(enHtml.includes('sales@mmpaperindustry.com'), false, 'Old domain email leaked into /en');
 
   const arRes = await fetch(`${BASE}/ar`);
   assert.equal(arRes.status, 200);
@@ -68,25 +96,46 @@ async function runSmokeChecks() {
   assert.match(arHtml, /favicon\.svg/);
   assert.match(arHtml, /favicon-light\.svg/);
   assert.match(arHtml, /favicon-dark\.svg/);
+  assert.match(arHtml, /android-chrome-192\.png/);
+  assert.match(arHtml, /android-chrome-512\.png/);
   assert.match(arHtml, /apple-touch-icon\.png/);
   assert.match(arHtml, /<meta name="theme-color"/);
   assert.match(arHtml, /<meta name="color-scheme"/);
+  assert.match(arHtml, /FAQPage/);
+  assert.match(arHtml, /BreadcrumbList/);
+  assert.match(arHtml, /<table/);
+  assert.match(arHtml, /الأسئلة الشائعة/);
   assert.match(arHtml, /إم إم لصناعة الورق/);
   assert.match(arHtml, /شركة مصرية رائدة/);
   assert.match(arHtml, /مستورد ومورد رئيسي/);
   assert.match(arHtml, /011 3233 2148/);
-  assert.match(arHtml, /sales@mmpaperindustry\.com/);
+  assert.match(arHtml, /info@mm-eg\.co/);
 
   const robotsRes = await fetch(`${BASE}/robots.txt`);
   assert.equal(robotsRes.status, 200);
   const robotsTxt = await robotsRes.text();
+  assert.match(robotsTxt, /Allow: \//);
+  assert.match(robotsTxt, /GPTBot/);
+  assert.match(robotsTxt, /OAI-SearchBot/);
+  assert.match(robotsTxt, /PerplexityBot/);
+  assert.match(robotsTxt, /ClaudeBot/);
   assert.match(robotsTxt, /Sitemap:/i);
+
+  const llmsRes = await fetch(`${BASE}/llms.txt`);
+  assert.equal(llmsRes.status, 200);
+  const llmsTxt = await llmsRes.text();
+  assert.match(llmsTxt, /MM Paper Industry/);
+  assert.match(llmsTxt, /011 3233 2148/);
+  assert.match(llmsTxt, /info@mm-eg\.co/);
+  assert.match(llmsTxt, /https:\/\/mm-eg\.co/);
 
   const sitemapRes = await fetch(`${BASE}/sitemap.xml`);
   assert.equal(sitemapRes.status, 200);
   const sitemapXml = await sitemapRes.text();
   assert.match(sitemapXml, /\/en</);
   assert.match(sitemapXml, /\/ar</);
+  assert.match(sitemapXml, /<lastmod>/);
+  assert.match(sitemapXml, /<image:image>/);
 
   const manifestRes = await fetch(`${BASE}/manifest.webmanifest`);
   assert.equal(manifestRes.status, 200);
@@ -110,6 +159,16 @@ async function runSmokeChecks() {
     '/team/khaled-morad.webp',
     '/team/ahmed-morad.webp',
     '/team/mohamed-mohamed-morad.webp',
+    '/papers/sticker.webp',
+    '/papers/parchment.webp',
+    '/papers/bristol.webp',
+    '/papers/duplex-grey.webp',
+    '/papers/duplex-white.webp',
+    '/papers/butter.webp',
+    '/papers/offset.webp',
+    '/papers/copy.webp',
+    '/papers/coated.webp',
+    '/papers/carbon.webp',
   ];
   for (const asset of assets) {
     const res = await fetch(`${BASE}${asset}`);

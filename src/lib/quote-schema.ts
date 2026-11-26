@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { COMPANY_CONTACT, COMPANY_LOCATION } from '../data/contact.ts';
 import { GOVERNORATE_IDS, getGovernorateLabel } from '../data/governorates.ts';
 import { paperTypes } from '../data/papers.ts';
 import {
@@ -332,6 +333,11 @@ export function buildQuoteEmailContent(data: ValidatedQuoteData): {
     '',
     `اتصال سريع بالعميل: ${telHref}`,
     `واتساب العميل: ${waHref}`,
+    '',
+    `عنوان الشركة: ${COMPANY_LOCATION.address.ar}`,
+    `الموقع على الخريطة: ${COMPANY_LOCATION.googleMapsUrl}`,
+    `واتساب الشركة: ${COMPANY_CONTACT.whatsappHref}`,
+    `بريد الشركة: ${COMPANY_CONTACT.salesEmail}`,
   ].join('\n');
 
   return { subject, html, text };

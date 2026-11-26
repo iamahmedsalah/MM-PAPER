@@ -2,10 +2,14 @@ import type { Localized } from '../i18n/types';
 
 export interface PaperType {
   id: string;
+  slug: string;
   name: Localized;
   gsmRange: string;
   description: Localized;
   bestUse: Localized;
+  surfaceFinish: Localized;
+  printMethod: Localized;
+  image: string;
   specs: Localized[];
   swatch: { base: string; edge: string };
   category: 'Packaging' | 'Print' | 'Specialty';
@@ -21,8 +25,18 @@ export const paperCategories: Array<'All' | 'Packaging' | 'Print' | 'Specialty'>
 export const paperTypes: PaperType[] = [
   {
     id: 'sticker',
+    slug: 'sticker-paper',
     name: { en: 'Sticker Paper', ar: 'ورق استيكر' },
     gsmRange: '70 – 120 GSM',
+    image: '/papers/sticker.webp',
+    surfaceFinish: {
+      en: 'High-Gloss / Matte Top-Coat + Release Liner',
+      ar: 'سطح لامع أو مطفي مع طبقة لاصقة وسليكون حماية',
+    },
+    printMethod: {
+      en: 'Offset, Flexo, Barcode & Digital Kiss-Cut',
+      ar: 'أوفسيت، فليكسو، طباعة باركود وقصّ ديجيتال',
+    },
     description: {
       en: 'Printable stock with an adhesive backing and a protective release liner peeled off before application, available in multiple grades and finishes.',
       ar: 'ورق أو خامة قابلة للطباعة، لها طبقة لاصقة من الخلف وورقة حماية تُزال قبل الاستخدام، يتوفر بأنواع وأسطح مختلفة.',
@@ -42,8 +56,18 @@ export const paperTypes: PaperType[] = [
   },
   {
     id: 'parchment',
+    slug: 'coloured-parchment',
     name: { en: 'Coloured Parchment', ar: 'ورق البرشمان الملوّن' },
     gsmRange: '80 – 120 GSM',
+    image: '/papers/parchment.webp',
+    surfaceFinish: {
+      en: 'Dyed-Through Pastel Matte Fibre (4 Shades)',
+      ar: 'ملمس ألياف مطفي مصبوغ بالكامل (4 ألوان باستيل)',
+    },
+    printMethod: {
+      en: 'Offset, Laser, Inkjet & Foil Stamping',
+      ar: 'أوفسيت، ليزر، إنك جيت وبصمة ذهبية',
+    },
     description: {
       en: 'Decorative specialty paper with a distinctive finish and pastel palette — yellow, light blue, pink, and light green.',
       ar: 'ورق زخرفي يتوفر بألوان وملمس أو مظهر مميز؛ الأصفر، اللبني، البينك، والأخضر الفاتح.',
@@ -63,8 +87,18 @@ export const paperTypes: PaperType[] = [
   },
   {
     id: 'bristol',
+    slug: 'bristol-board',
     name: { en: 'Bristol Board', ar: 'ورق البريستول' },
     gsmRange: '180 – 350 GSM',
+    image: '/papers/bristol.webp',
+    surfaceFinish: {
+      en: 'Double-Calendered Smooth Rigid Cardstock',
+      ar: 'بطاقات مقوّاة مصقولة الوجهين بسماكة عالية',
+    },
+    printMethod: {
+      en: 'Sheet-Fed Offset, Die-Cutting, Scoring & Embossing',
+      ar: 'أوفسيت أفرخ، تكسير، ريجة وبروز',
+    },
     description: {
       en: 'Semi-rigid heavyweight board that is thicker and firmer than standard printing paper, built for crisp scoring and durable presentation.',
       ar: 'ورق مقوّى نسبياً، أسمك وأكثر تماسكاً من ورق الطباعة العادي، يمنح صلابة وثباتاً عالياً للتطبيقات المتنوعة.',
@@ -84,8 +118,18 @@ export const paperTypes: PaperType[] = [
   },
   {
     id: 'duplex-grey',
+    slug: 'duplex-board-grey-back',
     name: { en: 'Duplex Board — Grey Back', ar: 'ورق الدوبليكس ـ ظهر رمادي' },
     gsmRange: '230 – 450 GSM',
+    image: '/papers/duplex-grey.webp',
+    surfaceFinish: {
+      en: 'Coated White Print Face / Matte Grey Recycled Back',
+      ar: 'وجه أبيض مطلي للطباعة / ظهر رمادي متين متعدد الطبقات',
+    },
+    printMethod: {
+      en: 'High-Speed Packaging Offset, Varnish & Box Gluing',
+      ar: 'طباعة أوفسيت للعبوات، ورنيش، تكسير ولصق علب',
+    },
     description: {
       en: 'Multi-layer packaging carton board featuring a printable white top face and a rigid recycled grey back for dependable box strength.',
       ar: 'كرتون تغليف متعدد الطبقات، بوجه أمامي مناسب للطباعة وظهر رمادي متين.',
@@ -105,8 +149,18 @@ export const paperTypes: PaperType[] = [
   },
   {
     id: 'duplex-white',
+    slug: 'duplex-board-white-back',
     name: { en: 'Duplex Board — White Back', ar: 'ورق الدوبليكس ـ ظهر أبيض' },
     gsmRange: '230 – 450 GSM',
+    image: '/papers/duplex-white.webp',
+    surfaceFinish: {
+      en: 'Gloss/Silk Coated White Face / Clean Virgin White Back',
+      ar: 'وجه أبيض مطلي فائق النعومة / ظهر أبيض نقي من الجانبين',
+    },
+    printMethod: {
+      en: 'CMYK Pharma & Food Offset, UV Coating & Foil',
+      ar: 'طباعة عبوات الأدوية والأغذية، سلوفان وUV وبصمة',
+    },
     description: {
       en: 'Premium multi-layer rigid board with a smooth white coated face for sharp colour printing and a clean white back for uniform interior presentation.',
       ar: 'نوع من الكرتون المقوى متعدد الطبقات، يتميز بوجه أمامي أبيض ناعم ومُعالج لطباعة الألوان بدقة عالية، وظهر أبيض نظيف يمنح العبوة مظهراً موحداً ومتماسكاً من الداخل.',
@@ -126,8 +180,18 @@ export const paperTypes: PaperType[] = [
   },
   {
     id: 'butter',
+    slug: 'butter-paper',
     name: { en: 'Butter Paper', ar: 'ورق الزبدة' },
     gsmRange: '35 – 60 GSM',
+    image: '/papers/butter.webp',
+    surfaceFinish: {
+      en: 'Semi-Translucent Greaseproof Non-Stick Finish',
+      ar: 'سطح نصف شفاف مانع للالتصاق ومقاوم للزيوت والدهون',
+    },
+    printMethod: {
+      en: 'Food-Safe Flexo Ink, Custom Slitting & Sheet Interleaving',
+      ar: 'فليكسو بأحبار غذائية آمنة، وتقطيع بكرات وأفرخ',
+    },
     description: {
       en: 'Grease-resistant translucent paper formulated to reduce sticking of baked goods and protect food products according to required treatment specs.',
       ar: 'ورق مخصص لمقاومة الدهون والحد من التصاق المخبوزات، وفق نوع المعالجة والمواصفة.',
@@ -147,8 +211,18 @@ export const paperTypes: PaperType[] = [
   },
   {
     id: 'offset',
+    slug: 'printing-paper',
     name: { en: 'Printing Paper', ar: 'ورق الطبع' },
     gsmRange: '60 – 160 GSM',
+    image: '/papers/offset.webp',
+    surfaceFinish: {
+      en: 'High-Whiteness Uncoated Woodfree Matte',
+      ar: 'سطح غير مطلي عالي البياض والعتامة خالٍ من الخشب',
+    },
+    printMethod: {
+      en: 'Web & Sheet-Fed Commercial Offset, Bookbinding',
+      ar: 'ماكينات الأوفسيت التجارية، طباعة الكتب والملازم',
+    },
     description: {
       en: 'Uncoated commercial printing paper supplied across tailored smoothness levels and thicknesses to match offset presses and print methods.',
       ar: 'يُستخدم في أعمال الطباعة، وتختلف أنواعه ونعومته وسماكته بحسب الماكينة وطريقة الطباعة المطلوبة.',
@@ -168,8 +242,18 @@ export const paperTypes: PaperType[] = [
   },
   {
     id: 'copy',
+    slug: 'copy-paper',
     name: { en: 'Copy Paper', ar: 'ورق التصوير' },
     gsmRange: '70 – 100 GSM',
+    image: '/papers/copy.webp',
+    surfaceFinish: {
+      en: 'Ultra-Bright Smooth Anti-Jam Calendered Sheet',
+      ar: 'سطح ناعم فائق البياض مقصوص بالليزر لمنع الانحشار',
+    },
+    printMethod: {
+      en: 'High-Speed Laser, Photocopiers & Duplex Inkjet (A4/A3)',
+      ar: 'ماكينات التصوير السريعة وطابعات الليزر والإنك جيت A4/A3',
+    },
     description: {
       en: 'High-brightness office paper supplied in A4 and A3 formats across multiple weights for jam-free high-speed copying and daily printing.',
       ar: 'ورق مكتبي يتوفر بمقاسات A4 و A3 بأوزان مختلفة لتصوير المستندات والطباعة اليومية بكفاءة عالية.',
@@ -189,8 +273,18 @@ export const paperTypes: PaperType[] = [
   },
   {
     id: 'coated',
+    slug: 'coated-paper-couche',
     name: { en: 'Coated Paper (Couche)', ar: 'ورق الكوشيه' },
     gsmRange: '90 – 300 GSM',
+    image: '/papers/coated.webp',
+    surfaceFinish: {
+      en: 'Double Art-Coated Gloss / Silk-Matte Specular Finish',
+      ar: 'طلاء فني مزدوج (لامع Gloss أو مطفي حريري Matte)',
+    },
+    printMethod: {
+      en: 'High-Resolution CMYK Offset, UV Spot & Lamination',
+      ar: 'طباعة أوفسيت ألوان عالية الدقة، سلوفان وUV موضعي',
+    },
     description: {
       en: 'Smooth art-coated paper available in gloss or matte finishes, engineered to reproduce vivid colours, sharp halftones, and fine visual detail.',
       ar: 'ورق ذو سطح مطلي وناعم، يتوفر لامعاً أو مطفياً، ويُظهر الألوان والتفاصيل بوضوح فائق.',
@@ -210,8 +304,18 @@ export const paperTypes: PaperType[] = [
   },
   {
     id: 'carbon',
+    slug: 'carbon-paper',
     name: { en: 'Carbon Paper', ar: 'الورق المُكربن' },
     gsmRange: '20 – 40 GSM',
+    image: '/papers/carbon.webp',
+    surfaceFinish: {
+      en: 'Pressure-Sensitive Cobalt/Black Ink Transfer Coating',
+      ar: 'طلاء كربوني حساس للضغط لنقل الكتابة الفورية (أزرق/أسود)',
+    },
+    printMethod: {
+      en: 'Multi-Part Invoice Sets, Receipt Books & Forms',
+      ar: 'دفاتر الفواتير والإيصالات والنماذج التجارية متعددة النسخ',
+    },
     description: {
       en: 'Pressure-sensitive transfer paper treated to duplicate handwriting or impressions cleanly across multiple manual copies.',
       ar: 'ورق مُعالج لنقل الكتابة أو أثرها إلى نسخة أخرى عند الضغط عليه، ويُستخدم لإنتاج نسخ متعددة يدوياً.',
@@ -230,3 +334,11 @@ export const paperTypes: PaperType[] = [
     category: 'Specialty',
   },
 ];
+
+export function getPaperBySlug(slug: string): PaperType | undefined {
+  return paperTypes.find((p) => p.slug === slug);
+}
+
+export function getPaperById(id: string): PaperType | undefined {
+  return paperTypes.find((p) => p.id === id);
+}

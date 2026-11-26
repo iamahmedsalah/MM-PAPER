@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import type { Lang, Localized } from './types';
 import { dictionaries, type Translation } from './translations';
 import { saveCurrentSectionForLangSwitch } from '../lib/scroll';
@@ -27,6 +27,7 @@ export function LanguageProvider({
   initialLang?: Lang;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [lang, setLangState] = useState<Lang>(initialLang);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionTarget, setTransitionTarget] = useState<Lang | null>(null);
@@ -47,9 +48,11 @@ export function LanguageProvider({
     const dict = dictionaries[lang];
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.title = dict.seo.title;
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute('content', dict.seo.description);
+    if (typeof window !== 'undefined' && /^\/(en|ar)\/?$/.test(window.location.pathname)) {
+      document.title = dict.seo.title;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', dict.seo.description);
+    }
     try {
       window.localStorage.setItem(STORAGE_KEY, lang);
     } catch {
@@ -65,6 +68,11 @@ export function LanguageProvider({
       const reduced =
         typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+      const targetPath =
+        pathname && /^\/(en|ar)(\/|$)/.test(pathname)
+          ? pathname.replace(/^\/(en|ar)(?=\/|$)/, `/${next}`)
+          : `/${next}`;
+
       try {
         window.localStorage.setItem(STORAGE_KEY, next);
         if (!reduced) {
@@ -74,11 +82,13 @@ export function LanguageProvider({
         // storage disabled
       }
 
-      saveCurrentSectionForLangSwitch();
+      if (/^\/(en|ar)\/?$/.test(pathname || '')) {
+        saveCurrentSectionForLangSwitch();
+      }
 
       if (reduced) {
         setLangState(next);
-        router.push(`/${next}`, { scroll: false });
+        router.push(targetPath, { scroll: false });
         return;
       }
 
@@ -88,7 +98,7 @@ export function LanguageProvider({
 
       const swapId = window.setTimeout(() => {
         setLangState(next);
-        router.push(`/${next}`, { scroll: false });
+        router.push(targetPath, { scroll: false });
       }, 200);
 
       const doneId = window.setTimeout(() => {
@@ -98,7 +108,7 @@ export function LanguageProvider({
 
       timersRef.current.push(swapId, doneId);
     },
-    [lang, isTransitioning, clearTimers, router]
+    [lang, isTransitioning, clearTimers, router, pathname]
   );
 
   const value = useMemo<LangContextValue>(

@@ -79,7 +79,7 @@ export async function submitQuote(
   try {
     await sendQuoteEmail(emailPayload);
   } catch (err) {
-    console.error('[submitQuote] Hostinger SMTP delivery failed:', err);
+    console.error('[submitQuote] Quote delivery failed:', err instanceof Error ? err.message : 'Unknown error');
     return {
       ok: false,
       status: 'error',

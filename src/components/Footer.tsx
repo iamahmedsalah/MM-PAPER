@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import BrandLogo from './ui/BrandLogo';
 import { SocialIcon } from './ui/SocialIcons';
 import { socialChannels } from '../data/socials';
@@ -7,7 +8,8 @@ import { useLang } from '../i18n/LanguageContext';
 import { scrollToSection } from '../lib/scroll';
 
 export default function Footer() {
-  const { t, L } = useLang();
+  const { lang, t, L } = useLang();
+  const router = useRouter();
 
   const quickLinks = [
     { label: t.nav.home, href: '#home' },
@@ -21,6 +23,15 @@ export default function Footer() {
 
   const handleLinkClick = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     event.preventDefault();
+    const id = href.replace(/^#/, '');
+    if (id === 'home' && !document.getElementById('home')) {
+      router.push(`/${lang}`);
+      return;
+    }
+    if (id !== 'home' && !document.getElementById(id)) {
+      router.push(`/${lang}#${id}`);
+      return;
+    }
     scrollToSection(href);
   };
 

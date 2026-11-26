@@ -35,6 +35,7 @@ export async function generateMetadata({
 
   return {
     metadataBase: new URL(SITE_URL),
+    applicationName: dict.brand,
     title: dict.seo.title,
     description: dict.seo.description,
     keywords: [...dict.seo.keywords],
@@ -42,6 +43,20 @@ export async function generateMetadata({
     creator: dict.brand,
     publisher: dict.brand,
     category: 'Paper Industry & Bulk Supply',
+    formatDetection: {
+      telephone: true,
+      email: true,
+      address: true,
+    },
+    verification:
+      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || process.env.NEXT_PUBLIC_BING_VERIFICATION
+        ? {
+            google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+            other: process.env.NEXT_PUBLIC_BING_VERIFICATION
+              ? { 'msvalidate.01': process.env.NEXT_PUBLIC_BING_VERIFICATION }
+              : undefined,
+          }
+        : undefined,
     robots: {
       index: true,
       follow: true,
@@ -58,6 +73,9 @@ export async function generateMetadata({
         { url: '/favicon-light.svg', media: '(prefers-color-scheme: light)', type: 'image/svg+xml' },
         { url: '/favicon-dark.svg', media: '(prefers-color-scheme: dark)', type: 'image/svg+xml' },
         { url: '/favicon.svg', type: 'image/svg+xml' },
+        { url: '/android-chrome-192.png', sizes: '192x192', type: 'image/png' },
+        { url: '/android-chrome-512.png', sizes: '512x512', type: 'image/png' },
+        { url: '/favicon.ico', sizes: 'any' },
       ],
       shortcut: ['/favicon.ico'],
       apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
@@ -81,7 +99,14 @@ export async function generateMetadata({
       siteName: dict.brand,
       title: dict.seo.title,
       description: dict.seo.description,
-      images: ['/android-chrome-512.png'],
+      images: [
+        {
+          url: '/android-chrome-512.png',
+          width: 512,
+          height: 512,
+          alt: dict.brand,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',

@@ -2,7 +2,9 @@
 
 import { useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { FileText, Layers } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowUpRight, Camera, FileText, Layers } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SectionHeader from './SectionHeader';
 import { paperTypes, paperCategories, type PaperType } from '../data/papers';
@@ -14,10 +16,11 @@ import { useLang } from '../i18n/LanguageContext';
 const PaperStack3D = dynamic(() => import('./three/PaperStack3D'), { ssr: false });
 
 function PaperCard({ paper, index, onSpecs }: { paper: PaperType; index: number; onSpecs: () => void }) {
-  const { t, L } = useLang();
+  const { lang, t, L } = useLang();
   const cardRef = useRef<HTMLElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const [fanned, setFanned] = useState(false);
+  const [showPhoto, setShowPhoto] = useState(false);
 
   const onMove = (e: React.MouseEvent) => {
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
@@ -52,23 +55,60 @@ function PaperCard({ paper, index, onSpecs }: { paper: PaperType; index: number;
             background: 'linear-gradient(160deg, var(--thumb-grad-a), var(--thumb-grad-b))',
           }}
         >
-          <PaperStack3D type={paper.id} active={fanned} className="h-full w-full" />
+          {showPhoto ? (
+            <button
+              type="button"
+              onClick={onSpecs}
+              className="group/photo relative block h-full w-full text-start"
+              aria-label={t.a11y.specsBtn(L(paper.name))}
+            >
+              <Image
+                src={paper.image}
+                alt={`${L(paper.name)} — ${L(paper.surfaceFinish)}`}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover transition-transform duration-500 group-hover/photo:scale-105"
+              />
+            </button>
+          ) : (
+            <PaperStack3D type={paper.id} active={fanned} className="h-full w-full" />
+          )}
 
-          <button
-            type="button"
-            onClick={() => setFanned((v) => !v)}
-            aria-pressed={fanned}
-            aria-label={`${L(paper.name)} — ${fanned ? t.papers.fanClose : t.papers.fanOpen}`}
-            title={fanned ? t.papers.fanClose : t.papers.fanOpen}
-            className={`absolute end-2 top-2 z-10 inline-flex h-[44px] min-w-[44px] items-center justify-center gap-1.5 rounded-full border px-3 text-[11px] font-semibold backdrop-blur-sm transition-colors duration-200 ${
-              fanned
-                ? 'border-gold bg-gold text-midnight'
-                : 'border-line/30 bg-canvas/75 text-ink hover:border-gold hover:text-accent'
-            }`}
-          >
-            <Layers size={14} aria-hidden />
-            <span>3D</span>
-          </button>
+          <div className="absolute end-2 top-2 z-10 flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setShowPhoto((v) => !v)}
+              aria-pressed={showPhoto}
+              aria-label={`${L(paper.name)} — ${showPhoto ? t.papers.view3D : t.papers.viewPhoto}`}
+              title={showPhoto ? t.papers.view3D : t.papers.viewPhoto}
+              className={`inline-flex h-[44px] min-w-[44px] items-center justify-center gap-1.5 rounded-full border px-3 text-[11px] font-semibold backdrop-blur-sm transition-colors duration-200 ${
+                showPhoto
+                  ? 'border-gold bg-gold text-midnight'
+                  : 'border-line/30 bg-canvas/75 text-ink hover:border-gold hover:text-accent'
+              }`}
+            >
+              <Camera size={13} aria-hidden />
+              <span>{t.papers.viewPhoto}</span>
+            </button>
+
+            {!showPhoto && (
+              <button
+                type="button"
+                onClick={() => setFanned((v) => !v)}
+                aria-pressed={fanned}
+                aria-label={`${L(paper.name)} — ${fanned ? t.papers.fanClose : t.papers.fanOpen}`}
+                title={fanned ? t.papers.fanClose : t.papers.fanOpen}
+                className={`inline-flex h-[44px] min-w-[44px] items-center justify-center gap-1.5 rounded-full border px-3 text-[11px] font-semibold backdrop-blur-sm transition-colors duration-200 ${
+                  fanned
+                    ? 'border-gold bg-gold text-midnight'
+                    : 'border-line/30 bg-canvas/75 text-ink hover:border-gold hover:text-accent'
+                }`}
+              >
+                <Layers size={14} aria-hidden />
+                <span>3D</span>
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="relative z-[2] flex flex-1 flex-col p-5 sm:p-6">
@@ -82,15 +122,24 @@ function PaperCard({ paper, index, onSpecs }: { paper: PaperType; index: number;
           <p className="tracking-brand mt-4 text-[11px] text-inkSubtle">
             {t.categories[paper.category]} — {L(paper.bestUse)}
           </p>
-          <button
-            type="button"
-            onClick={onSpecs}
-            className="mt-4 inline-flex min-h-[44px] items-center gap-2 self-start rounded-sm px-1 text-sm font-semibold text-accent transition-colors hover:text-accentStrong"
-            aria-label={t.a11y.specsBtn(L(paper.name))}
-          >
-            <FileText size={16} aria-hidden />
-            <span>{t.papers.getSpecs}</span>
-          </button>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={onSpecs}
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-sm px-1 text-sm font-semibold text-accent transition-colors hover:text-accentStrong"
+              aria-label={t.a11y.specsBtn(L(paper.name))}
+            >
+              <FileText size={16} aria-hidden />
+              <span>{t.papers.getSpecs}</span>
+            </button>
+            <Link
+              href={`/${lang}/papers/${paper.slug}`}
+              className="inline-flex min-h-[44px] items-center gap-1 rounded-sm px-1.5 text-xs font-medium text-inkSubtle transition-colors hover:text-accent"
+            >
+              <span>{lang === 'ar' ? 'صفحة الصنف' : 'Full Page'}</span>
+              <ArrowUpRight size={14} aria-hidden />
+            </Link>
+          </div>
         </div>
       </article>
     </Reveal>
@@ -98,7 +147,7 @@ function PaperCard({ paper, index, onSpecs }: { paper: PaperType; index: number;
 }
 
 export default function PaperTypes({ onRequestQuote }: { onRequestQuote: (paperId: string) => void }) {
-  const { t } = useLang();
+  const { lang, t, L } = useLang();
   const [filter, setFilter] = useState<(typeof paperCategories)[number]>('All');
   const [selected, setSelected] = useState<PaperType | null>(null);
   const visible = paperTypes.filter((p) => filter === 'All' || p.category === filter);
@@ -158,6 +207,54 @@ export default function PaperTypes({ onRequestQuote }: { onRequestQuote: (paperI
             <PaperCard key={p.id} paper={p} index={i} onSpecs={() => setSelected(p)} />
           ))}
         </div>
+
+        <Reveal delay={0.12}>
+          <div className="mt-12 overflow-hidden rounded-sm border border-line/20 bg-surface md:mt-16">
+            <div className="border-b border-line/15 px-5 py-4 sm:px-6">
+              <h3 className="font-heading text-base font-semibold text-ink sm:text-lg">{t.papers.tableTitle}</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[600px] border-collapse text-start text-sm">
+                <caption className="sr-only">{t.papers.tableSummary}</caption>
+                <thead>
+                  <tr className="border-b border-line/15 bg-canvasAlt/60 text-xs font-semibold text-accent">
+                    <th scope="col" className="px-5 py-3.5 text-start sm:px-6">
+                      {t.papers.colGrade}
+                    </th>
+                    <th scope="col" className="px-4 py-3.5 text-start">
+                      {t.papers.colCategory}
+                    </th>
+                    <th scope="col" className="px-4 py-3.5 text-start">
+                      {t.papers.colGsm}
+                    </th>
+                    <th scope="col" className="px-5 py-3.5 text-start sm:px-6">
+                      {t.papers.colBestUse}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line/10">
+                  {paperTypes.map((p) => (
+                    <tr key={p.id} className="transition-colors hover:bg-canvas/40">
+                      <td className="px-5 py-3.5 font-medium text-ink sm:px-6">
+                        <Link
+                          href={`/${lang}/papers/${p.slug}`}
+                          className="transition-colors hover:text-accent hover:underline"
+                        >
+                          {L(p.name)}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3.5 text-inkSubtle">{t.categories[p.category]}</td>
+                      <td className="px-4 py-3.5 font-medium text-accent" dir="ltr">
+                        {p.gsmRange}
+                      </td>
+                      <td className="px-5 py-3.5 text-inkMuted sm:px-6">{L(p.bestUse)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </Reveal>
       </div>
 
       <PaperModal

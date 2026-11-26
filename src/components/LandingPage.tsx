@@ -31,6 +31,13 @@ export default function LandingPage() {
   const [quotePaperId, setQuotePaperId] = useState<string>('');
 
   useEffect(() => {
+    const paramPaper = new URLSearchParams(window.location.search).get('paper');
+    if (paramPaper) {
+      setQuotePaperId(paramPaper);
+    }
+  }, []);
+
+  useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const coarse = window.matchMedia('(pointer: coarse)').matches;
     let lenis: Lenis | null = null;

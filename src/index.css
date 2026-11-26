@@ -123,6 +123,12 @@ html[lang='ar'] {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .mm-map-embed {
+    transition: filter 0.35s ease;
+  }
+  [data-theme='dark'] .mm-map-embed {
+    filter: invert(92%) hue-rotate(185deg) brightness(94%) contrast(92%) saturate(82%);
+  }
 }
 
 @keyframes marquee {

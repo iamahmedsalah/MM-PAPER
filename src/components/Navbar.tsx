@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion';
 import BrandLogo from './ui/BrandLogo';
 import { GoldLink } from './ui/Buttons';
@@ -13,6 +14,7 @@ const PAPER_EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function Navbar() {
   const { t, lang } = useLang();
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -32,6 +34,15 @@ export default function Navbar() {
   const handleNavClick = (event: React.MouseEvent<HTMLAnchorElement>, href: string, closeDrawer = false) => {
     event.preventDefault();
     if (closeDrawer) setOpen(false);
+    const id = href.replace(/^#/, '');
+    if (id === 'home' && !document.getElementById('home')) {
+      router.push(`/${lang}`);
+      return;
+    }
+    if (id !== 'home' && !document.getElementById(id)) {
+      router.push(`/${lang}#${id}`);
+      return;
+    }
     scrollToSection(href);
   };
 

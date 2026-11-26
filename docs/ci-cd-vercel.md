@@ -28,12 +28,9 @@ Add these secrets under **GitHub Repository → Settings → Secrets and variabl
 
 Configure these in **Vercel Project Settings → Environment Variables** (and optionally as GitHub Actions `vars` / `secrets` for CI):
 - `NEXT_PUBLIC_SITE_URL` (`https://mm-eg.co`)
-- **Quotation Mailer (Hostinger SMTP — Node.js Server Action)**:
-  - `SMTP_HOST=smtp.hostinger.com`
-  - `SMTP_PORT=465` *(SSL, or `587` STARTTLS)*
-  - `SMTP_USER=info@mm-eg.co`
-  - `SMTP_PASS=<mailbox password>` *(add directly in Vercel Secrets, never commit to git)*
-  - `MAIL_FROM="MM Paper Industry <info@mm-eg.co>"` *(or set `USE_SMTP_USER_AS_FROM = true` in `src/lib/mail.ts` if Hostinger rejects a different sender address)*
+- **Quotation Mailer (Node.js Server Action)**
+  - `HOSTINGER_MAIL_API_TOKEN` with sending access to `info@mm-eg.co`. Add it directly as a sensitive Vercel variable.
+  - For SMTP when the API token is unset, use `SMTP_USER=info@mm-eg.co` and a sensitive `SMTP_PASS`. `SMTP_HOST`, `SMTP_PORT`, and `MAIL_FROM` default to the Hostinger host, port `465`, and the authenticated sender respectively.
   - `QUOTE_TO=info@mm-eg.co`
   - `WHATSAPP_NUMBER=201132332148` *(digits only, no `+`)*
 - *(Optional / Legacy Supabase)* `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`

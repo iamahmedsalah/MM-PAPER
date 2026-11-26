@@ -6,26 +6,23 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: [
-          '/en',
-          '/ar',
-          '/favicon.ico',
-          '/favicon.svg',
-          '/favicon-light.svg',
-          '/favicon-dark.svg',
-          '/apple-touch-icon.png',
-          '/android-chrome-192.png',
-          '/android-chrome-512.png',
-          '/brand/mm-logo-dark.svg',
-          '/brand/mm-logo-light.svg',
-          '/media/mm-logo-paper-motion.webm',
-          '/team/mohamed-morad.webp',
-          '/team/khaled-morad.webp',
-          '/team/ahmed-morad.webp',
-          '/team/mohamed-mohamed-morad.webp',
+        allow: '/',
+        disallow: ['/api/'],
+      },
+      {
+        userAgent: [
+          'GPTBot',
+          'OAI-SearchBot',
+          'ChatGPT-User',
+          'PerplexityBot',
+          'ClaudeBot',
+          'Claude-SearchBot',
+          'Google-Extended',
         ],
+        allow: '/',
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

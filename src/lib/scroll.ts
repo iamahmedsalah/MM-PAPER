@@ -8,6 +8,7 @@ export const SECTION_IDS = [
   'about',
   'managers',
   'location',
+  'faq',
   'contact',
 ] as const;
 

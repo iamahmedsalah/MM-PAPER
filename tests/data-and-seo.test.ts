@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { COMPANY_CONTACT } from '../src/data/contact.ts';
+import { COMPANY_CONTACT, COMPANY_LOCATION } from '../src/data/contact.ts';
+import { faqItems } from '../src/data/faq.ts';
 import { managers } from '../src/data/managers.ts';
 import { paperTypes } from '../src/data/papers.ts';
 import { services } from '../src/data/services.ts';
@@ -9,12 +10,14 @@ import { socialChannels } from '../src/data/socials.ts';
 import { dictionaries } from '../src/i18n/translations.ts';
 import { buildJsonLd } from '../src/lib/seo.ts';
 
-test('company contact uses verified phone 011 3233 2148 and sales@mmpaperindustry.com', () => {
+test('company contact uses verified phone 011 3233 2148 and info@mm-eg.co', () => {
   assert.equal(COMPANY_CONTACT.phoneDisplay, '011 3233 2148');
   assert.equal(COMPANY_CONTACT.phoneHref, 'tel:+201132332148');
   assert.equal(COMPANY_CONTACT.whatsappHref, 'https://wa.me/201132332148');
-  assert.equal(COMPANY_CONTACT.salesEmail, 'sales@mmpaperindustry.com');
-  assert.equal(COMPANY_CONTACT.salesEmailHref, 'mailto:sales@mmpaperindustry.com');
+  assert.equal(COMPANY_CONTACT.salesEmail, 'info@mm-eg.co');
+  assert.equal(COMPANY_CONTACT.salesEmailHref, 'mailto:info@mm-eg.co');
+  assert.ok(COMPANY_LOCATION.address.ar.includes('برج العرب الجديدة'));
+  assert.ok(COMPANY_LOCATION.address.ar.includes('قطعة 10 - بلوك 2'));
 });
 
 test('catalog contains all 10 bilingual paper grades and 5 bilingual services', () => {
@@ -31,6 +34,9 @@ test('catalog contains all 10 bilingual paper grades and 5 bilingual services', 
     assert.ok(grade.id);
     assert.ok(grade.name.en && grade.name.ar);
     assert.ok(grade.description.en && grade.description.ar);
+    assert.ok(grade.surfaceFinish.en && grade.surfaceFinish.ar);
+    assert.ok(grade.printMethod.en && grade.printMethod.ar);
+    assert.ok(grade.image.startsWith('/papers/') && grade.image.endsWith('.webp'));
     assert.ok(grade.gsmRange.includes('GSM'));
     assert.ok(grade.specs.length >= 3);
   }
@@ -77,31 +83,66 @@ test('EN and AR dictionaries use MM Paper Industry branding and verified Egypt 2
   assert.equal(serialized.includes('MM Groups'), false);
   assert.equal(serialized.includes('Tehran'), false);
   assert.equal(serialized.includes('sales@mmpaper.com'), false);
+  assert.equal(serialized.includes('sales@mmpaperindustry.com'), false);
 });
 
-test('JSON-LD schema outputs Organization, WebSite, and 6-item OfferCatalog with verified contact and socials', () => {
+test('FAQ dataset contains 6 bilingual Q&As matching schema expectations', () => {
+  assert.equal(faqItems.length, 6);
+  for (const item of faqItems) {
+    assert.ok(item.id);
+    assert.ok(item.question.en && item.question.ar);
+    assert.ok(item.answer.en && item.answer.ar);
+  }
+});
+
+test('JSON-LD schema outputs Organization, WebSite, OfferCatalog, WebPage, BreadcrumbList, Services, and FAQPage', () => {
   for (const locale of ['en', 'ar'] as const) {
     const schema = buildJsonLd(locale);
     assert.equal(schema['@context'], 'https://schema.org');
     const graph = schema['@graph'];
-    assert.equal(graph.length, 3);
+    assert.equal(graph.length, 7);
 
     const org = graph[0] as {
       '@type': string;
-      logo: string;
+      logo: { '@type': string; url: string };
       foundingDate: string;
       sameAs: string[];
+      address: { '@type': string; addressCountry: string };
+      employee: Array<{ '@type': string; name: string }>;
       contactPoint: { telephone: string; email: string };
     };
     assert.equal(org['@type'], 'Organization');
-    assert.ok(org.logo.endsWith('/android-chrome-512.png'));
+    assert.equal(org.logo['@type'], 'ImageObject');
+    assert.ok(org.logo.url.endsWith('/android-chrome-512.png'));
     assert.equal(org.foundingDate, '2006');
     assert.equal(org.sameAs.length, 4);
+    assert.equal(org.address['@type'], 'PostalAddress');
+    assert.equal(org.address.addressCountry, 'EG');
+    assert.equal(org.employee.length, 4);
     assert.equal(org.contactPoint.telephone, '+20-11-3233-2148');
-    assert.equal(org.contactPoint.email, 'sales@mmpaperindustry.com');
+    assert.equal(org.contactPoint.email, 'info@mm-eg.co');
+    if (!process.env.NEXT_PUBLIC_SITE_URL) {
+      assert.ok(org.logo.url.startsWith('https://mm-eg.co/'));
+    }
 
     const catalog = graph[2] as { '@type': string; itemListElement: unknown[] };
     assert.equal(catalog['@type'], 'OfferCatalog');
     assert.equal(catalog.itemListElement.length, 10);
+
+    const webPage = graph[3] as { '@type': string; dateModified: string };
+    assert.equal(webPage['@type'], 'WebPage');
+    assert.ok(webPage.dateModified);
+
+    const breadcrumb = graph[4] as { '@type': string; itemListElement: unknown[] };
+    assert.equal(breadcrumb['@type'], 'BreadcrumbList');
+    assert.equal(breadcrumb.itemListElement.length, 2);
+
+    const serviceList = graph[5] as { '@type': string; itemListElement: unknown[] };
+    assert.equal(serviceList['@type'], 'ItemList');
+    assert.equal(serviceList.itemListElement.length, 5);
+
+    const faqPage = graph[6] as { '@type': string; mainEntity: unknown[] };
+    assert.equal(faqPage['@type'], 'FAQPage');
+    assert.equal(faqPage.mainEntity.length, 6);
   }
 });

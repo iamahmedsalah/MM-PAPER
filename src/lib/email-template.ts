@@ -195,6 +195,10 @@ export function renderMmEmailLayout(input: MmEmailLayoutInput): string {
       &nbsp;·&nbsp;
       <span dir="ltr" style="color:${mmBrand.cream};">${escapeHtml(COMPANY_CONTACT.phoneDisplay)}</span>
       <p style="margin:10px 0 0;color:${mmBrand.cream};">${renderEmailIcon('mapPin', mmBrand.gold, 14)} <span style="vertical-align:middle;">${escapeHtml(COMPANY_LOCATION.address.ar)}</span></p>
+      <p style="margin:8px 0 0;">
+        <a href="${escapeHtml(COMPANY_LOCATION.googleMapsUrl)}" style="display:inline-block;padding:6px 10px;color:${mmBrand.cream};text-decoration:underline;">فتح الموقع على Google Maps</a>
+        <a href="${escapeHtml(COMPANY_CONTACT.whatsappHref)}" style="display:inline-block;padding:6px 10px;color:${mmBrand.cream};text-decoration:underline;">واتساب الشركة</a>
+      </p>
       <div style="margin-top:10px;color:#94A0B8;font-size:12px;">© ${new Date().getFullYear()} إم إم لصناعة الورق · جميع الحقوق محفوظة.</div>
     </td></tr>
   </table>

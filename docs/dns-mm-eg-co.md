@@ -1,21 +1,21 @@
 # DNS & Email Launch Playbook for `mm-eg.co`
 
-Complete, copy-paste-ready DNS, SSL, email alias (`info@mm-eg.co`), and SEO/GEO cutover guide for **MM Paper Industry** (`mm-eg.co`) hosted on **Vercel**.
+DNS, SSL, business mailbox, and search setup for **MM Paper Industry** (`mm-eg.co`) on Vercel.
 
 ---
 
 ## 1. Web Hosting DNS (Vercel)
 
-After purchasing `mm-eg.co`:
+Verify the registrant email using the message sent to the domain owner's existing contact address. Check **Domains** in Hostinger if you need to resend the message or refresh the verification status. [Hostinger domain verification](https://www.hostinger.com/support/1583443-how-to-verify-domain-registrant-s-contact-details-at-hostinger/)
+
 1. In **Vercel → Project Settings → Domains**, add `mm-eg.co` and `www.mm-eg.co`.
 2. Set `mm-eg.co` as the **Primary Domain** and configure `www.mm-eg.co` to **308 Redirect** to `mm-eg.co`.
 3. Add the exact DNS records shown by Vercel at your DNS provider (keep TTL at `300` during cutover, then raise to `3600`):
 
 | Type | Name / Host | Value / Target | TTL | Notes |
 | --- | --- | --- | --- | --- |
-| `A` | `@` | `76.76.21.21` *(or exact IP shown in Vercel Domains)* | `300` | Points apex `mm-eg.co` to Vercel Edge |
-| `CNAME` | `www` | `cname.vercel-dns.com` | `300` | Redirects `www.mm-eg.co` → `mm-eg.co` |
-| `CAA` | `@` | `0 issue "letsencrypt.org"` | `3600` | Allows automatic TLS certificates for Vercel |
+| `A` | `@` | Exact IP shown in Vercel Domains | `300` | Points `mm-eg.co` to Vercel |
+| `CNAME` | `www` | Exact target shown in Vercel Domains | `300` | Points `www.mm-eg.co` to Vercel for the redirect |
 
 > **Important (if using Cloudflare DNS)**: Keep the Cloudflare proxy **OFF (Grey Cloud / DNS Only)** for Vercel `@` and `www` records so Vercel issues SSL directly and does not intercept AI search bots (`GPTBot`, `OAI-SearchBot`, `PerplexityBot`, `ClaudeBot`).
 
@@ -23,17 +23,22 @@ After purchasing `mm-eg.co`:
 
 ## 2. Primary Mailbox (`info@mm-eg.co`) on Hostinger
 
-Using `info@mm-eg.co` directly as your primary mailbox (for both receiving customer inquiries and sending quotation notifications via SMTP — no alias forwarding needed):
+In Hostinger, open **Emails → Mailboxes** for `mm-eg.co` and create the mailbox with username `info`. Under **Domain settings**, use **Connect automatically** if Hostinger manages your DNS. If you manage DNS elsewhere, add the records shown in that panel at the authoritative DNS provider. [Create the Hostinger mailbox](https://www.hostinger.com/support/1583217-how-to-create-and-manage-mailboxes-for-hostinger-email/) · [Connect Hostinger DNS](https://www.hostinger.com/support/8671304-set-up-a-domain-for-hostinger-email-automatically/)
 
 | Type | Name | Value / Target | Priority | TTL |
 | --- | --- | --- | --- | --- |
 | `MX` | `@` | `mx1.hostinger.com` | `5` | `3600` |
 | `MX` | `@` | `mx2.hostinger.com` | `10` | `3600` |
 | `TXT` | `@` | `v=spf1 include:_spf.mail.hostinger.com ~all` | — | `3600` |
-| `CNAME` | `hostingermail._domainkey` *(use exact 3 DKIM CNAMEs from hPanel)* | From Hostinger hPanel → Emails → DNS | — | `3600` |
-| `TXT` | `_dmarc` | `v=DMARC1; p=quarantine; rua=mailto:info@mm-eg.co;` | — | `3600` |
+| `CNAME` | Each of the three DKIM hostnames shown in hPanel | Matching target shown in hPanel | — | Default |
+| `TXT` | `_dmarc` | Value shown in Hostinger Domain settings | — | Default |
 
-> **Vercel SMTP Setup**: Set `SMTP_USER=info@mm-eg.co`, `QUOTE_TO=info@mm-eg.co`, `MAIL_FROM="MM Paper Industry <info@mm-eg.co>"`, and `SMTP_PASS=<mailbox password>` in Vercel Environment Variables (`smtp.hostinger.com`, port `465`).
+In Hostinger, open **Developers → Manage keys** and create a Mail API token scoped to `info@mm-eg.co` with sending permission. Save it as the sensitive Vercel Production variable `HOSTINGER_MAIL_API_TOKEN`. The app looks up the mailbox by address and sends quotes to `QUOTE_TO`, which defaults to `info@mm-eg.co` on this path. Redeploy to apply the variable and the code. [Hostinger Mail API access](https://docs.hostinger.com/emails/agentic-mail#api-access) · [Vercel environment variables](https://vercel.com/docs/environment-variables)
+
+When the API token is unset, the app uses SMTP with `SMTP_USER`, `SMTP_PASS`, and `QUOTE_TO`. The defaults for `SMTP_HOST` and `SMTP_PORT` are `smtp.hostinger.com` and `465`. [Hostinger SMTP settings](https://www.hostinger.com/support/1575756-how-to-get-email-account-configuration-details-for-hostinger-email/)
+
+1. Send a test from a separate email account to `info@mm-eg.co`. Open Hostinger Webmail and confirm that the message appears in Inbox. Reply and confirm it reaches the external account.
+2. Submit a quote on the deployed site with a unique test name. Confirm the matching message appears in the mailbox and includes the quote details, the company address, and the Google Maps and WhatsApp links. Check Spam if it is missing from Inbox.
 
 ---
 
@@ -43,6 +48,7 @@ Using `info@mm-eg.co` directly as your primary mailbox (for both receiving custo
    - `NEXT_PUBLIC_SITE_URL=https://mm-eg.co`
    - `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=<token>` *(optional meta verification)*
    - `NEXT_PUBLIC_BING_VERIFICATION=<token>` *(optional meta verification)*
-2. Redeploy on Vercel after adding `NEXT_PUBLIC_SITE_URL=https://mm-eg.co` so SSR HTML, canonical tags, `sitemap.xml`, `robots.txt`, and `JSON-LD` reflect `https://mm-eg.co`.
-3. In **Google Search Console**, verify the `Domain` property for `mm-eg.co` by adding the `TXT` record (`google-site-verification=...`) on `@`, then submit `https://mm-eg.co/sitemap.xml`.
-4. In **Bing Webmaster Tools**, import from Search Console or verify `mm-eg.co`, then verify `https://mm-eg.co/llms.txt` and `https://mm-eg.co/robots.txt` return HTTP `200`.
+2. Once `https://mm-eg.co/en` is serving the Vercel site, set `REDIRECT_VERCEL_APP=1` in Production. Deploy a new build with this setting and `NEXT_PUBLIC_SITE_URL=https://mm-eg.co` to update the canonical URLs and enable HTTP `308` redirects from `mm-paper.vercel.app`.
+3. Verify that `https://mm-paper.vercel.app/ar?ref=old-link` returns `308` with `Location: https://mm-eg.co/ar?ref=old-link`, and that the destination serves the Arabic page.
+4. In **Google Search Console**, verify the `Domain` property for `mm-eg.co` by adding the `TXT` record (`google-site-verification=...`) on `@`, then submit `https://mm-eg.co/sitemap.xml`.
+5. In **Bing Webmaster Tools**, import from Search Console or verify `mm-eg.co`, then verify `https://mm-eg.co/llms.txt` and `https://mm-eg.co/robots.txt` return HTTP `200`.

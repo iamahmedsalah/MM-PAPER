@@ -1,18 +1,16 @@
 'use client';
 
-import { Clock, Mail, Phone, MessageCircle, ArrowRight } from 'lucide-react';
+import { Clock, Mail, Phone, MessageCircle, ArrowRight, MapPin, ExternalLink } from 'lucide-react';
 import SectionHeader from './SectionHeader';
 import AmbientPaperBackdrop from './ui/AmbientPaperBackdrop';
-import { GoldLink } from './ui/Buttons';
+import { GoldLink, GhostLink } from './ui/Buttons';
 import { Reveal } from './ui/Reveal';
-import { COMPANY_CONTACT } from '../data/contact';
+import { COMPANY_CONTACT, COMPANY_LOCATION } from '../data/contact';
 import { useLang } from '../i18n/LanguageContext';
 import { scrollToSection } from '../lib/scroll';
-import { useTheme } from '../theme/ThemeContext';
 
 export default function Location() {
-  const { t } = useLang();
-  const { theme } = useTheme();
+  const { t, lang } = useLang();
 
   return (
     <section id="location" className="relative overflow-hidden bg-canvasAlt py-20 md:py-28">
@@ -21,15 +19,24 @@ export default function Location() {
         <SectionHeader eyebrow={t.location.eyebrow} title={t.location.title} intro={t.location.intro} />
         <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
           <Reveal>
-            <div className="overflow-hidden rounded-sm border border-line/20 bg-surface">
+            <div className="relative overflow-hidden rounded-sm border border-line/25 bg-canvas shadow-card">
               <iframe
                 title={t.location.mapTitle}
-                src="https://www.openstreetmap.org/export/embed.html?bbox=31.05%2C29.90%2C31.55%2C30.20&layer=mapnik&marker=30.0444%2C31.2357"
-                className={`h-[280px] w-full sm:h-[360px] md:h-[460px] ${
-                  theme === 'dark' ? 'grayscale-[30%] contrast-[1.06] brightness-90' : ''
-                }`}
+                src={COMPANY_LOCATION.getEmbedUrl(lang)}
+                className="mm-map-embed block h-[280px] w-full sm:h-[360px] md:h-[460px]"
                 loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
               />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-line/20"
+              />
+              <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-start justify-start sm:inset-x-4 sm:bottom-4">
+                <div className="pointer-events-auto inline-flex max-w-md items-start gap-2.5 rounded-sm border border-line/35 bg-surface/95 px-3.5 py-2.5 text-xs font-medium leading-[160%] text-ink shadow-lg backdrop-blur-md sm:text-sm">
+                  <MapPin size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden />
+                  <span>{t.location.address}</span>
+                </div>
+              </div>
             </div>
           </Reveal>
 
@@ -37,7 +44,10 @@ export default function Location() {
             <div className="flex h-full flex-col justify-between gap-8 rounded-sm border border-line/20 bg-surface p-6 sm:p-8">
               <div>
                 <h3 className="font-heading text-xl font-semibold text-ink">{t.location.cardTitle}</h3>
-                <address className="mt-4 not-italic leading-[160%] text-inkMuted">{t.location.address}</address>
+                <div className="mt-4 flex items-start gap-3">
+                  <MapPin size={18} className="mt-1 shrink-0 text-accent" aria-hidden />
+                  <address className="not-italic leading-[160%] text-inkMuted">{t.location.address}</address>
+                </div>
                 <ul className="mt-6 space-y-2 text-sm">
                   <li className="flex items-start gap-3 py-2 text-inkMuted">
                     <Clock size={18} className="mt-0.5 shrink-0 text-accent" aria-hidden />
@@ -63,10 +73,11 @@ export default function Location() {
                       href={COMPANY_CONTACT.whatsappHref}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex min-h-[44px] items-center transition-colors hover:text-accent"
-                      dir="rtl"
+                      className="inline-flex min-h-[44px] items-center gap-1.5 transition-colors hover:text-accent"
                     >
-                      {t.contact.whatsapp} — {COMPANY_CONTACT.phoneDisplay}
+                      <span>{t.contact.whatsapp}</span>
+                      <span aria-hidden>—</span>
+                      <bdi dir="ltr">{COMPANY_CONTACT.phoneDisplay}</bdi>
                     </a>
                   </li>
                   <li className="flex items-center gap-3 text-inkMuted">
@@ -81,17 +92,28 @@ export default function Location() {
                   </li>
                 </ul>
               </div>
-              <GoldLink
-                href="#contact"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection('contact');
-                }}
-                className="w-full"
-              >
-                <span>{t.location.directions}</span>
-                <ArrowRight size={16} className="rtl:rotate-180" aria-hidden />
-              </GoldLink>
+              <div className="flex flex-col gap-3">
+                <GoldLink
+                  href={COMPANY_LOCATION.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full"
+                >
+                  <span>{t.location.directions}</span>
+                  <ExternalLink size={16} aria-hidden />
+                </GoldLink>
+                <GhostLink
+                  href="#contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection('contact');
+                  }}
+                  className="w-full"
+                >
+                  <span>{t.location.scheduleVisit}</span>
+                  <ArrowRight size={16} className="rtl:rotate-180" aria-hidden />
+                </GhostLink>
+              </div>
             </div>
           </Reveal>
         </div>

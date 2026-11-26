@@ -1,0 +1,65 @@
+# MM Paper Industry (إم إم لصناعة الورق)
+
+> Leading Egyptian paper importer, converter, and bulk supplier since 2006 — partnering with major global paper mills across ten specialized grades from our facility in New Borg El Arab City, Alexandria, Egypt.
+
+## Canonical Pages
+- English Overview & Specifications: https://mm-eg.co/en
+- Arabic Overview & Specifications (العربية): https://mm-eg.co/ar
+- XML Sitemap: https://mm-eg.co/sitemap.xml
+
+## Services
+- **Paper Importing**: Sourcing diverse international paper grades and specifications tailored to market demand.
+- **Paper Trading & Supply**: Wholesale sales and reliable bulk supply for printing presses, packaging plants, and commercial/industrial buyers.
+- **Paper Converting**: Custom cutting, slitting, sheeting, and preparation to exact dimensions.
+- **Custom Solutions**: Tailored order preparation by paper grade, sheet/reel dimensions, GSM weight, and volume.
+- **Customer Service & Supply**: Coordinated order follow-up and timely nationwide dispatch across Egypt.
+
+## Ten Core Paper Grades (Dedicated Specification Pages)
+1. **Sticker Paper (ورق الاستيكر)** — `70 – 120 GSM` — Product labels, barcode stickers, branding seals, and adhesive packaging.
+   - EN: https://mm-eg.co/en/papers/sticker-paper
+   - AR: https://mm-eg.co/ar/papers/sticker-paper
+2. **Coloured Parchment (ورق البرشمان الملوّن)** — `80 – 120 GSM` — Office stationery, colour-coded invoices, certificates, and folders.
+   - EN: https://mm-eg.co/en/papers/coloured-parchment
+   - AR: https://mm-eg.co/ar/papers/coloured-parchment
+3. **Bristol Board (ورق البريستول)** — `180 – 350 GSM` — Business cards, presentation folders, structural covers, menus, and rigid print applications.
+   - EN: https://mm-eg.co/en/papers/bristol-board
+   - AR: https://mm-eg.co/ar/papers/bristol-board
+4. **Duplex Board — Grey Back (ورق الدوبليكس — ظهر رمادي)** — `230 – 450 GSM` — Outer retail cartons, industrial boxes, footwear boxes, and folding cartons.
+   - EN: https://mm-eg.co/en/papers/duplex-board-grey-back
+   - AR: https://mm-eg.co/ar/papers/duplex-board-grey-back
+5. **Duplex Board — White Back (ورق الدوبليكس — ظهر أبيض)** — `230 – 450 GSM` — Pharmaceutical cartons, cosmetics boxes, food packaging, and refined two-sided boxes.
+   - EN: https://mm-eg.co/en/papers/duplex-board-white-back
+   - AR: https://mm-eg.co/ar/papers/duplex-board-white-back
+6. **Butter Paper (ورق الزبدة)** — `35 – 60 GSM` — Baking-tray lining, pastry and sandwich wraps, food interleaving, and grease-resistant packaging.
+   - EN: https://mm-eg.co/en/papers/butter-paper
+   - AR: https://mm-eg.co/ar/papers/butter-paper
+7. **Printing Paper (ورق الطبع)** — `60 – 160 GSM` — Books, notebooks, brochures, forms, and commercial offset printing.
+   - EN: https://mm-eg.co/en/papers/printing-paper
+   - AR: https://mm-eg.co/ar/papers/printing-paper
+8. **Copy Paper — A4 & A3 (ورق التصوير)** — `70 – 100 GSM` — High-speed laser and inkjet office printing, copying, and institutional correspondence.
+   - EN: https://mm-eg.co/en/papers/copy-paper
+   - AR: https://mm-eg.co/ar/papers/copy-paper
+9. **Coated Paper — Couche (ورق الكوشيه)** — `90 – 300 GSM` — High-impact catalogs, magazines, luxury brochures, posters, and calendar printing.
+   - EN: https://mm-eg.co/en/papers/coated-paper-couche
+   - AR: https://mm-eg.co/ar/papers/coated-paper-couche
+10. **Carbon Paper (الورق المكربن)** — `20 – 40 GSM` — Multi-part invoice books, delivery receipts, and manual commercial forms.
+    - EN: https://mm-eg.co/en/papers/carbon-paper
+    - AR: https://mm-eg.co/ar/papers/carbon-paper
+
+## Executive Leadership
+- **Mr. Mohamed Morad** — Chairman
+- **Mr. Khaled Morad** — Chief Executive & Financial Officer (CEO | CFO)
+- **Mr. Ahmed Morad** — Chief Strategy & Sales Officer (CSO)
+- **Mr. Mohamed Mohamed Morad** — Chief Operating Officer (COO)
+
+## Facility Location & Contact
+- **Address (EN)**: Plot 10, Block 2 — Workshops & Warehouses Zone, East 2nd Industrial Zone, New Borg El Arab City, Alexandria, Egypt
+- **Address (AR)**: قطعة 10 - بلوك 2، منطقة الورش والمخازن - شرق المنطقة الصناعية الثانية - برج العرب الجديدة
+- **Hours**: Saturday – Thursday, 09:00 – 17:00 EET (Closed Friday)
+- **Phone / WhatsApp**: +20 11 3233 2148 (011 3233 2148)
+- **Email**: info@mm-eg.co
+- **Official Socials**:
+  - Facebook: https://www.facebook.com/MM.paper.industry
+  - Instagram: https://www.instagram.com/mmpaperindustry/
+  - TikTok: https://www.tiktok.com/@mmpaperindustry
+  - LinkedIn: https://www.linkedin.com/company/mm-paper-industry/
