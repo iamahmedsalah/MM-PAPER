@@ -15,34 +15,34 @@
 - **Customer Service & Supply**: Coordinated order follow-up and timely nationwide dispatch across Egypt.
 
 ## Ten Core Paper Grades (Dedicated Specification Pages)
-1. **Sticker Paper (ورق الاستيكر)** — `70 – 120 GSM` — Product labels, barcode stickers, branding seals, and adhesive packaging.
+1. **Sticker Paper (ورق الاستيكر)** — Product labels, barcode stickers, branding seals, and adhesive packaging.
    - EN: https://mm-eg.co/en/papers/sticker-paper
    - AR: https://mm-eg.co/ar/papers/sticker-paper
-2. **Coloured Parchment (ورق البرشمان الملوّن)** — `80 – 120 GSM` — Office stationery, colour-coded invoices, certificates, and folders.
+2. **Coloured Parchment (ورق البرشمان الملوّن)** — Office stationery, colour-coded invoices, certificates, and folders.
    - EN: https://mm-eg.co/en/papers/coloured-parchment
    - AR: https://mm-eg.co/ar/papers/coloured-parchment
-3. **Bristol Board (ورق البريستول)** — `180 – 350 GSM` — Business cards, presentation folders, structural covers, menus, and rigid print applications.
+3. **Bristol Board (ورق البريستول)** — Business cards, presentation folders, structural covers, menus, and rigid print applications.
    - EN: https://mm-eg.co/en/papers/bristol-board
    - AR: https://mm-eg.co/ar/papers/bristol-board
-4. **Duplex Board — Grey Back (ورق الدوبليكس — ظهر رمادي)** — `230 – 450 GSM` — Outer retail cartons, industrial boxes, footwear boxes, and folding cartons.
+4. **Duplex Board — Grey Back (ورق الدوبليكس — ظهر رمادي)** — Outer retail cartons, industrial boxes, footwear boxes, and folding cartons.
    - EN: https://mm-eg.co/en/papers/duplex-board-grey-back
    - AR: https://mm-eg.co/ar/papers/duplex-board-grey-back
-5. **Duplex Board — White Back (ورق الدوبليكس — ظهر أبيض)** — `230 – 450 GSM` — Pharmaceutical cartons, cosmetics boxes, food packaging, and refined two-sided boxes.
+5. **Duplex Board — White Back (ورق الدوبليكس — ظهر أبيض)** — Pharmaceutical cartons, cosmetics boxes, food packaging, and refined two-sided boxes.
    - EN: https://mm-eg.co/en/papers/duplex-board-white-back
    - AR: https://mm-eg.co/ar/papers/duplex-board-white-back
-6. **Butter Paper (ورق الزبدة)** — `35 – 60 GSM` — Baking-tray lining, pastry and sandwich wraps, food interleaving, and grease-resistant packaging.
+6. **Butter Paper (ورق الزبدة)** — Baking-tray lining, pastry and sandwich wraps, food interleaving, and grease-resistant packaging.
    - EN: https://mm-eg.co/en/papers/butter-paper
    - AR: https://mm-eg.co/ar/papers/butter-paper
-7. **Printing Paper (ورق الطبع)** — `60 – 160 GSM` — Books, notebooks, brochures, forms, and commercial offset printing.
+7. **Printing Paper (ورق الطبع)** — Books, notebooks, brochures, forms, and commercial offset printing.
    - EN: https://mm-eg.co/en/papers/printing-paper
    - AR: https://mm-eg.co/ar/papers/printing-paper
-8. **Copy Paper — A4 & A3 (ورق التصوير)** — `70 – 100 GSM` — High-speed laser and inkjet office printing, copying, and institutional correspondence.
+8. **Copy Paper — A4 & A3 (ورق التصوير)** — High-speed laser and inkjet office printing, copying, and institutional correspondence.
    - EN: https://mm-eg.co/en/papers/copy-paper
    - AR: https://mm-eg.co/ar/papers/copy-paper
-9. **Coated Paper — Couche (ورق الكوشيه)** — `90 – 300 GSM` — High-impact catalogs, magazines, luxury brochures, posters, and calendar printing.
+9. **Coated Paper — Couche (ورق الكوشيه)** — High-impact catalogs, magazines, luxury brochures, posters, and calendar printing.
    - EN: https://mm-eg.co/en/papers/coated-paper-couche
    - AR: https://mm-eg.co/ar/papers/coated-paper-couche
-10. **Carbon Paper (الورق المكربن)** — `20 – 40 GSM` — Multi-part invoice books, delivery receipts, and manual commercial forms.
+10. **Carbon Paper (الورق المكربن)** — Multi-part invoice books, delivery receipts, and manual commercial forms.
     - EN: https://mm-eg.co/en/papers/carbon-paper
     - AR: https://mm-eg.co/ar/papers/carbon-paper
 

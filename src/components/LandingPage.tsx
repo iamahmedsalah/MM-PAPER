@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Lenis from 'lenis';
 import Preloader from './ui/Preloader';
 import LanguageTransition from './ui/LanguageTransition';
@@ -8,7 +8,6 @@ import BackToTop from './ui/BackToTop';
 import SocialDock from './ui/SocialDock';
 import Navbar from './Navbar';
 import Hero from './Hero';
-import Marquee from './Marquee';
 import Services from './Services';
 import PaperTypes from './PaperTypes';
 import About from './About';
@@ -22,7 +21,6 @@ import {
   consumePendingLangSwitchSection,
   SCROLL_SECTION_EVENT,
   SCROLL_TOP_EVENT,
-  scrollToSection,
   type ScrollEventDetail,
 } from '../lib/scroll';
 
@@ -116,13 +114,6 @@ export default function LandingPage() {
     };
   }, []);
 
-  const handleRequestQuote = useCallback((paperId: string) => {
-    setQuotePaperId(paperId);
-    window.setTimeout(() => {
-      scrollToSection('contact');
-    }, 100);
-  }, []);
-
   return (
     <div className="grain-overlay min-h-screen bg-canvas font-body text-ink">
       <Preloader />
@@ -139,9 +130,8 @@ export default function LandingPage() {
 
       <main>
         <Hero />
-        <Marquee />
         <Services />
-        <PaperTypes onRequestQuote={handleRequestQuote} />
+        <PaperTypes />
         <About />
         <Managers />
         <Location />

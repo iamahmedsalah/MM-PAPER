@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   ArrowLeft,
   ArrowRight,
@@ -29,11 +28,9 @@ import PaperProductStage from './PaperProductStage';
 export default function PaperProductPage({
   paper,
   detail,
-  related,
 }: {
   paper: PaperType;
   detail: PaperDetail;
-  related: PaperType[];
 }) {
   const { lang, t, L } = useLang();
   const [openFaq, setOpenFaq] = useState<number>(0);
@@ -41,8 +38,8 @@ export default function PaperProductPage({
   const isAr = lang === 'ar';
   const quoteHref = `/${lang}?paper=${paper.id}#contact`;
   const whatsappMessage = isAr
-    ? `السلام عليكم، أرغب في عرض سعر لصنف: ${paper.name.ar} (${paper.gsmRange}) من إم إم لصناعة الورق.`
-    : `Hello MM Paper Industry, I would like to request a quotation for ${paper.name.en} (${paper.gsmRange}).`;
+    ? `السلام عليكم، أرغب في عرض سعر لصنف: ${paper.name.ar} من إم إم لصناعة الورق.`
+    : `Hello MM Paper Industry, I would like to request a quotation for ${paper.name.en}.`;
   const whatsappHref = `${COMPANY_CONTACT.whatsappHref}?text=${encodeURIComponent(whatsappMessage)}`;
 
   const specRows = [
@@ -123,12 +120,6 @@ export default function PaperProductPage({
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold text-accent">
                     <Sparkles size={13} aria-hidden />
                     <span>{t.categories[paper.category]}</span>
-                  </span>
-                  <span
-                    className="inline-flex items-center rounded-full border border-line/25 bg-surface px-3 py-1 text-xs font-semibold text-ink"
-                    dir="ltr"
-                  >
-                    {paper.gsmRange}
                   </span>
                 </div>
 
@@ -319,61 +310,10 @@ export default function PaperProductPage({
           </div>
         </section>
 
-        {/* Related Paper Grades */}
-        <section className="relative overflow-hidden bg-canvas py-16 md:py-22">
-          <div className="mx-auto max-w-7xl px-5 md:px-8">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="tracking-brand text-xs font-semibold text-accent">
-                  {isAr ? 'استكشف الكتالوج' : 'Explore More Grades'}
-                </p>
-                <h2 className="mt-2 font-heading text-2xl font-bold text-ink sm:text-3xl">
-                  {isAr ? 'أصناف ورق أخرى قد تهمك' : 'Related Paper Grades'}
-                </h2>
-              </div>
-              <Link
-                href={`/${lang}#paper-types`}
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent transition-colors hover:text-accentStrong"
-              >
-                <span>{isAr ? 'عرض جميع الأصناف العشرة' : 'View all 10 grades'}</span>
-                <ArrowRight size={15} className="rtl:rotate-180" aria-hidden />
-              </Link>
-            </div>
-
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((rel) => (
-                <Link
-                  key={rel.id}
-                  href={`/${lang}/papers/${rel.slug}`}
-                  className="group flex flex-col overflow-hidden rounded-sm border border-line/20 bg-surface transition-all duration-300 hover:border-gold hover:shadow-[0_12px_36px_rgba(201,168,106,0.14)]"
-                >
-                  <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-line/15">
-                    <Image
-                      src={rel.image}
-                      alt={L(rel.name)}
-                      fill
-                      quality={82}
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="flex flex-1 flex-col p-5">
-                    <div className="flex items-baseline justify-between gap-3">
-                      <h3 className="font-heading text-lg font-semibold text-ink transition-colors group-hover:text-accent">
-                        {L(rel.name)}
-                      </h3>
-                      <span className="shrink-0 text-xs font-semibold text-accent" dir="ltr">
-                        {rel.gsmRange}
-                      </span>
-                    </div>
-                    <p className="mt-2 line-clamp-2 text-sm leading-[160%] text-inkMuted">{L(rel.description)}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-
+        <section className="bg-canvas px-5 pb-16 md:px-8 md:pb-24">
+          <div className="mx-auto max-w-7xl">
             {/* Bottom Conversion Band */}
-            <div className="mt-14 rounded-sm border border-gold/35 bg-surface p-6 sm:p-8 md:flex md:items-center md:justify-between md:gap-8">
+            <div className="rounded-sm border border-gold/35 bg-surface p-6 sm:p-8 md:flex md:items-center md:justify-between md:gap-8">
               <div className="max-w-2xl">
                 <h2 className="font-heading text-xl font-bold text-ink sm:text-2xl">
                   {isAr

@@ -59,7 +59,6 @@ export function buildJsonLd(locale: Lang) {
           addressCountry: 'EG',
         },
         hasMap: COMPANY_LOCATION.googleMapsUrl,
-        hasOfferCatalog: { '@id': `${localeUrl}#catalog` },
         openingHoursSpecification: [
           {
             '@type': 'OpeningHoursSpecification',
@@ -108,25 +107,15 @@ export function buildJsonLd(locale: Lang) {
         publisher: { '@id': `${SITE_URL}/#organization` },
       },
       {
-        '@type': 'OfferCatalog',
+        '@type': 'ItemList',
         '@id': `${localeUrl}#catalog`,
         name: `${dict.brand} — ${dict.papers.eyebrow}`,
         url: `${localeUrl}#paper-types`,
-        itemListElement: paperTypes.map((p) => ({
-          '@type': 'Offer',
+        itemListElement: paperTypes.map((p, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: p.name[locale],
           url: `${SITE_URL}/${locale}/papers/${p.slug}`,
-          itemOffered: {
-            '@type': 'Product',
-            name: `${p.name[locale]} (${p.gsmRange})`,
-            url: `${SITE_URL}/${locale}/papers/${p.slug}`,
-            description: p.description[locale],
-            image: `${SITE_URL}${p.image}`,
-            category: dict.categories[p.category],
-            brand: {
-              '@type': 'Brand',
-              name: dict.brand,
-            },
-          },
         })),
       },
       {
@@ -139,6 +128,7 @@ export function buildJsonLd(locale: Lang) {
         dateModified: CONTENT_LAST_MODIFIED,
         isPartOf: { '@id': `${SITE_URL}/#website` },
         about: { '@id': `${SITE_URL}/#organization` },
+        mainEntity: { '@id': `${localeUrl}#catalog` },
         primaryImageOfPage: { '@id': `${SITE_URL}/#logo` },
         breadcrumb: { '@id': `${localeUrl}#breadcrumb` },
       },
@@ -199,73 +189,21 @@ export function buildProductJsonLd(locale: Lang, paper: PaperType) {
   const localeUrl = `${SITE_URL}/${locale}`;
   const productUrl = `${localeUrl}/papers/${paper.slug}`;
   const imageUrl = `${SITE_URL}${paper.image}`;
-  const areaCountry = {
-    '@type': 'Country',
-    name: locale === 'ar' ? 'مصر' : 'Egypt',
-  };
 
   const graph: Record<string, unknown>[] = [
     {
-      '@type': 'Product',
-      '@id': `${productUrl}#product`,
-      name: `${paper.name[locale]} (${paper.gsmRange})`,
+      // Paper grades are sold by quote and do not have published prices.
+      '@type': 'ItemPage',
+      '@id': `${productUrl}#webpage`,
+      name: paper.name[locale],
       alternateName: paper.name[locale === 'en' ? 'ar' : 'en'],
-      sku: `MM-${paper.id.toUpperCase()}`,
       url: productUrl,
-      image: [imageUrl],
+      primaryImageOfPage: { '@type': 'ImageObject', url: imageUrl },
       description: detail.heroSummary[locale],
-      category: dict.categories[paper.category],
-      brand: {
-        '@type': 'Brand',
-        name: dict.brand,
-      },
-      manufacturer: {
-        '@id': `${SITE_URL}/#organization`,
-      },
-      additionalProperty: [
-        {
-          '@type': 'PropertyValue',
-          name: locale === 'ar' ? 'نطاق الوزن (GSM)' : 'GSM Weight Range',
-          value: paper.gsmRange,
-        },
-        {
-          '@type': 'PropertyValue',
-          name: locale === 'ar' ? 'ملمس السطح والتشطيب' : 'Surface Finish',
-          value: paper.surfaceFinish[locale],
-        },
-        {
-          '@type': 'PropertyValue',
-          name: locale === 'ar' ? 'طرق الطباعة المتوافقة' : 'Print Compatibility',
-          value: paper.printMethod[locale],
-        },
-        {
-          '@type': 'PropertyValue',
-          name: locale === 'ar' ? 'المقاسات المتاحة' : 'Available Sizes',
-          value: detail.technical.sizes[locale],
-        },
-        {
-          '@type': 'PropertyValue',
-          name: locale === 'ar' ? 'الشكل والتجهيز' : 'Supplied Formats',
-          value: detail.technical.formats[locale],
-        },
-        {
-          '@type': 'PropertyValue',
-          name: locale === 'ar' ? 'التغليف والتوريد' : 'Packaging',
-          value: detail.technical.packaging[locale],
-        },
-      ],
-      offers: {
-        '@type': 'Offer',
-        url: productUrl,
-        availability: 'https://schema.org/InStock',
-        itemCondition: 'https://schema.org/NewCondition',
-        areaServed: areaCountry,
-        seller: {
-          '@type': 'Organization',
-          '@id': `${SITE_URL}/#organization`,
-          name: dict.brand,
-        },
-      },
+      inLanguage: locale,
+      isPartOf: { '@id': `${SITE_URL}/#website` },
+      publisher: { '@id': `${SITE_URL}/#organization` },
+      breadcrumb: { '@id': `${productUrl}#breadcrumb` },
     },
     {
       '@type': 'BreadcrumbList',

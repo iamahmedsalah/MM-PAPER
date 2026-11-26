@@ -10,12 +10,12 @@ export const faqItems: FaqItem[] = [
   {
     id: 'paper-grades',
     question: {
-      en: 'What types and GSM weights of paper does MM Paper Industry supply?',
-      ar: 'ما أنواع الورق ونطاقات الجرامات التي توفرها إم إم لصناعة الورق؟',
+      en: 'Where can I find the paper grades MM Paper Industry supplies?',
+      ar: 'أين أجد أصناف الورق التي توفرها إم إم لصناعة الورق؟',
     },
     answer: {
-      en: 'MM Paper Industry imports, converts, and supplies ten core paper grades across 38 to 450 GSM: Sticker Paper, Coloured Parchment, Bristol Board, Grey-Back Duplex Board, White-Back Duplex Board, Butter Paper, Printing Paper (Offset), Copy Paper (A4 & A3), Coated Paper (Couche), and Carbon Paper.',
-      ar: 'تستورد إم إم لصناعة الورق وتجهّز وتورّد عشرة أصناف رئيسية تغطي أوزاناً من 38 إلى 450 جرام: ورق الاستيكر، والبرشمان الملوّن، والبريستول، والدوبليكس ظهر رمادي وظهر أبيض، وورق الزبدة، وورق الطبع، وورق التصوير A4 وA3، وورق الكوشيه، والورق المكربن.',
+      en: 'The paper catalogue on this page lists all ten grades. Select a grade to see its specifications and request a quote.',
+      ar: 'يضم كتالوج الورق في هذه الصفحة الأصناف العشرة. اختر الصنف للاطلاع على مواصفاته وطلب عرض سعر.',
     },
   },
   {

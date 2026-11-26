@@ -51,12 +51,12 @@ export const paperDetails: Record<string, PaperDetail> = {
   sticker: {
     id: 'sticker',
     seoTitle: {
-      en: 'Sticker Paper Wholesale Egypt (70–120 GSM) | MM Paper Industry',
-      ar: 'ورق استيكر بالجملة في مصر (70–120 جرام) | إم إم لصناعة الورق',
+      en: 'Sticker Paper Wholesale Egypt | MM Paper Industry',
+      ar: 'ورق استيكر بالجملة في مصر | إم إم لصناعة الورق',
     },
     seoDescription: {
-      en: 'Bulk self-adhesive sticker paper in Egypt (70–120 GSM): gloss, matte & thermal face stocks with permanent or removable adhesive in sheets and slit reels. Supplied by MM Paper Industry.',
-      ar: 'توريد ورق استيكر ذاتي اللصق بالجملة في مصر (70–120 جرام): لامع ومطفي وحراري بلاصق دائم أو قابل للإزالة، أفرخ وبكرات بمقاسات مخصصة من إم إم لصناعة الورق.',
+      en: 'Bulk self-adhesive sticker paper in Egypt: gloss, matte & thermal face stocks with permanent or removable adhesive in sheets and slit reels. Supplied by MM Paper Industry.',
+      ar: 'توريد ورق استيكر ذاتي اللصق بالجملة في مصر: لامع ومطفي وحراري بلاصق دائم أو قابل للإزالة، أفرخ وبكرات بمقاسات مخصصة من إم إم لصناعة الورق.',
     },
     keywords: {
       en: [
@@ -178,12 +178,12 @@ export const paperDetails: Record<string, PaperDetail> = {
   parchment: {
     id: 'parchment',
     seoTitle: {
-      en: 'Coloured Parchment Paper Wholesale Egypt (80–120 GSM) | MM Paper Industry',
-      ar: 'ورق البرشمان الملوّن بالجملة في مصر (80–120 جرام) | إم إم لصناعة الورق',
+      en: 'Coloured Parchment Paper Wholesale Egypt | MM Paper Industry',
+      ar: 'ورق البرشمان الملوّن بالجملة في مصر | إم إم لصناعة الورق',
     },
     seoDescription: {
-      en: 'Wholesale dyed-through coloured parchment paper in Egypt (80–120 GSM) in pastel yellow, light blue, pink & light green for invoices, office stationery & certificates.',
-      ar: 'توريد ورق البرشمان الملوّن بالجملة في مصر (80–120 جرام) بألوان الأصفر واللبني والبينك والأخضر الفاتح للفواتير والمراسلات المكتبية والشهادات من إم إم لصناعة الورق.',
+      en: 'Wholesale dyed-through coloured parchment paper in Egypt in pastel yellow, light blue, pink & light green for invoices, office stationery & certificates.',
+      ar: 'توريد ورق البرشمان الملوّن بالجملة في مصر بألوان الأصفر واللبني والبينك والأخضر الفاتح للفواتير والمراسلات المكتبية والشهادات من إم إم لصناعة الورق.',
     },
     keywords: {
       en: [
@@ -305,12 +305,12 @@ export const paperDetails: Record<string, PaperDetail> = {
   bristol: {
     id: 'bristol',
     seoTitle: {
-      en: 'Bristol Board Wholesale Egypt (180–350 GSM) | MM Paper Industry',
-      ar: 'ورق البريستول بالجملة في مصر (180–350 جرام) | إم إم لصناعة الورق',
+      en: 'Bristol Board Wholesale Egypt | MM Paper Industry',
+      ar: 'ورق البريستول بالجملة في مصر | إم إم لصناعة الورق',
     },
     seoDescription: {
-      en: 'Bulk heavyweight Bristol board in Egypt (180–350 GSM): double-calendered rigid cardstock for business cards, folder covers, menus & die-cut print applications.',
-      ar: 'توريد ورق البريستول المقوّى بالجملة في مصر (180–350 جرام) بوجهين ناعمين مصقولين للبطاقات وأغلفة الملفات والكتيبات والقوائم من إم إم لصناعة الورق.',
+      en: 'Bulk heavyweight Bristol board in Egypt: double-calendered rigid cardstock for business cards, folder covers, menus & die-cut print applications.',
+      ar: 'توريد ورق البريستول المقوّى بالجملة في مصر بوجهين ناعمين مصقولين للبطاقات وأغلفة الملفات والكتيبات والقوائم من إم إم لصناعة الورق.',
     },
     keywords: {
       en: [
@@ -432,12 +432,12 @@ export const paperDetails: Record<string, PaperDetail> = {
   'duplex-grey': {
     id: 'duplex-grey',
     seoTitle: {
-      en: 'Grey Back Duplex Board Wholesale Egypt (230–450 GSM) | MM Paper Industry',
-      ar: 'ورق الدوبليكس ظهر رمادي بالجملة في مصر (230–450 جرام) | إم إم لصناعة الورق',
+      en: 'Grey Back Duplex Board Wholesale Egypt | MM Paper Industry',
+      ar: 'ورق الدوبليكس ظهر رمادي بالجملة في مصر | إم إم لصناعة الورق',
     },
     seoDescription: {
-      en: 'Bulk grey-back duplex packaging carton board in Egypt (230–450 GSM): coated white print face & rigid recycled grey back in sheets and reels for folding boxes.',
-      ar: 'توريد ورق الدوبليكس ظهر رمادي بالجملة في مصر (230–450 جرام) بوجه أبيض مطلي للطباعة وظهر رمادي متين لعلب المنتجات والتغليف الكرتوني، أفرخ وبكرات من إم إم لصناعة الورق.',
+      en: 'Bulk grey-back duplex packaging carton board in Egypt: coated white print face & rigid recycled grey back in sheets and reels for folding boxes.',
+      ar: 'توريد ورق الدوبليكس ظهر رمادي بالجملة في مصر بوجه أبيض مطلي للطباعة وظهر رمادي متين لعلب المنتجات والتغليف الكرتوني، أفرخ وبكرات من إم إم لصناعة الورق.',
     },
     keywords: {
       en: [
@@ -559,12 +559,12 @@ export const paperDetails: Record<string, PaperDetail> = {
   'duplex-white': {
     id: 'duplex-white',
     seoTitle: {
-      en: 'White Back Duplex Board Wholesale Egypt (230–450 GSM) | MM Paper Industry',
-      ar: 'ورق الدوبليكس ظهر أبيض بالجملة في مصر (230–450 جرام) | إم إم لصناعة الورق',
+      en: 'White Back Duplex Board Wholesale Egypt | MM Paper Industry',
+      ar: 'ورق الدوبليكس ظهر أبيض بالجملة في مصر | إم إم لصناعة الورق',
     },
     seoDescription: {
-      en: 'Premium white-back duplex board in Egypt (230–450 GSM) with coated print face and clean virgin-white back for pharmaceutical, food & cosmetic cartons.',
-      ar: 'توريد ورق الدوبليكس ظهر أبيض بالجملة في مصر (230–450 جرام) بوجه أمامي ناعم مطلي وظهر أبيض نقي لعبوات الأدوية والأغذية ومستحضرات التجميل من إم إم لصناعة الورق.',
+      en: 'Premium white-back duplex board in Egypt with coated print face and clean virgin-white back for pharmaceutical, food & cosmetic cartons.',
+      ar: 'توريد ورق الدوبليكس ظهر أبيض بالجملة في مصر بوجه أمامي ناعم مطلي وظهر أبيض نقي لعبوات الأدوية والأغذية ومستحضرات التجميل من إم إم لصناعة الورق.',
     },
     keywords: {
       en: [
@@ -686,12 +686,12 @@ export const paperDetails: Record<string, PaperDetail> = {
   butter: {
     id: 'butter',
     seoTitle: {
-      en: 'Butter & Greaseproof Paper Wholesale Egypt (35–60 GSM) | MM Paper Industry',
-      ar: 'ورق الزبدة بالجملة في مصر (35–60 جرام) | إم إم لصناعة الورق',
+      en: 'Butter & Greaseproof Paper Wholesale Egypt | MM Paper Industry',
+      ar: 'ورق الزبدة بالجملة في مصر | إم إم لصناعة الورق',
     },
     seoDescription: {
-      en: 'Bulk food-grade butter and greaseproof paper in Egypt (35–60 GSM): semi-translucent non-stick sheets and custom slit reels for bakeries, restaurants & food factories.',
-      ar: 'توريد ورق الزبدة المقاوم للدهون بالجملة في مصر (35–60 جرام): أفرخ وبكرات مانعة للالتصاق وآمنة للغذاء للمخابز والمطاعم ومصانع الحلويات من إم إم لصناعة الورق.',
+      en: 'Bulk food-grade butter and greaseproof paper in Egypt: semi-translucent non-stick sheets and custom slit reels for bakeries, restaurants & food factories.',
+      ar: 'توريد ورق الزبدة المقاوم للدهون بالجملة في مصر: أفرخ وبكرات مانعة للالتصاق وآمنة للغذاء للمخابز والمطاعم ومصانع الحلويات من إم إم لصناعة الورق.',
     },
     keywords: {
       en: [
@@ -813,12 +813,12 @@ export const paperDetails: Record<string, PaperDetail> = {
   offset: {
     id: 'offset',
     seoTitle: {
-      en: 'Offset Printing Paper Wholesale Egypt (60–160 GSM) | MM Paper Industry',
-      ar: 'ورق الطبع (الأوفسيت) بالجملة في مصر (60–160 جرام) | إم إم لصناعة الورق',
+      en: 'Offset Printing Paper Wholesale Egypt | MM Paper Industry',
+      ar: 'ورق الطبع (الأوفسيت) بالجملة في مصر | إم إم لصناعة الورق',
     },
     seoDescription: {
-      en: 'High-whiteness uncoated woodfree offset printing paper in Egypt (60–160 GSM): CIE 140–160 brightness, 92%+ opacity in sheets & jumbo reels for books and commercial presses.',
-      ar: 'توريد ورق الطبع (الأوفسيت) غير المطلي بالجملة في مصر (60–160 جرام) ببياض عالٍ وعتامة 92%+ لطباعة الكتب والدفاتر والمطبوعات التجارية، أفرخ وبكرات من إم إم لصناعة الورق.',
+      en: 'High-whiteness uncoated woodfree offset printing paper in Egypt: CIE 140–160 brightness, 92%+ opacity in sheets & jumbo reels for books and commercial presses.',
+      ar: 'توريد ورق الطبع (الأوفسيت) غير المطلي بالجملة في مصر ببياض عالٍ وعتامة 92%+ لطباعة الكتب والدفاتر والمطبوعات التجارية، أفرخ وبكرات من إم إم لصناعة الورق.',
     },
     keywords: {
       en: [
@@ -940,12 +940,12 @@ export const paperDetails: Record<string, PaperDetail> = {
   copy: {
     id: 'copy',
     seoTitle: {
-      en: 'Copy Paper A4 & A3 Wholesale Egypt (70–100 GSM) | MM Paper Industry',
-      ar: 'ورق التصوير A4 و A3 بالجملة في مصر (70–100 جرام) | إم إم لصناعة الورق',
+      en: 'Copy Paper A4 & A3 Wholesale Egypt | MM Paper Industry',
+      ar: 'ورق التصوير A4 و A3 بالجملة في مصر | إم إم لصناعة الورق',
     },
     seoDescription: {
-      en: 'Bulk A4 & A3 office copy paper in Egypt (70, 75, 80, 100 GSM): ultra-bright anti-jam 500-sheet reams and palletized cartons for offices, schools & distributors.',
-      ar: 'توريد ورق التصوير A4 و A3 بالجملة في مصر (70، 75، 80، 100 جرام): رزم 500 ورقة وكراتين جملة فائقة البياض لمنع الانحشار للشركات والمدارس والمكتبات من إم إم لصناعة الورق.',
+      en: 'Bulk A4 & A3 office copy paper in Egypt: ultra-bright anti-jam 500-sheet reams and palletized cartons for offices, schools & distributors.',
+      ar: 'توريد ورق التصوير A4 و A3 بالجملة في مصر: رزم 500 ورقة وكراتين جملة فائقة البياض لمنع الانحشار للشركات والمدارس والمكتبات من إم إم لصناعة الورق.',
     },
     keywords: {
       en: [
@@ -1067,12 +1067,12 @@ export const paperDetails: Record<string, PaperDetail> = {
   coated: {
     id: 'coated',
     seoTitle: {
-      en: 'Coated Paper (Couche) Wholesale Egypt (90–300 GSM) | MM Paper Industry',
-      ar: 'ورق الكوشيه بالجملة في مصر (90–300 جرام) | إم إم لصناعة الورق',
+      en: 'Coated Paper (Couche) Wholesale Egypt | MM Paper Industry',
+      ar: 'ورق الكوشيه بالجملة في مصر | إم إم لصناعة الورق',
     },
     seoDescription: {
-      en: 'Bulk gloss & matte coated art paper (Couche) in Egypt (90–300 GSM): ISO 96+ brightness, double-coated sheets & reels for catalogues, brochures, magazines & luxury covers.',
-      ar: 'توريد ورق الكوشيه اللامع والمطفي بالجملة في مصر (90–300 جرام) بإشراقة عالية وطلاء فني مزدوج للكتالوجات والبروشورات والمجلات والأغلفة الفاخرة من إم إم لصناعة الورق.',
+      en: 'Bulk gloss & matte coated art paper (Couche) in Egypt: ISO 96+ brightness, double-coated sheets & reels for catalogues, brochures, magazines & luxury covers.',
+      ar: 'توريد ورق الكوشيه اللامع والمطفي بالجملة في مصر بإشراقة عالية وطلاء فني مزدوج للكتالوجات والبروشورات والمجلات والأغلفة الفاخرة من إم إم لصناعة الورق.',
     },
     keywords: {
       en: [
@@ -1194,12 +1194,12 @@ export const paperDetails: Record<string, PaperDetail> = {
   carbon: {
     id: 'carbon',
     seoTitle: {
-      en: 'Carbon Paper Wholesale Egypt (20–40 GSM) | MM Paper Industry',
-      ar: 'الورق المُكربن بالجملة في مصر (20–40 جرام) | إم إم لصناعة الورق',
+      en: 'Carbon Paper Wholesale Egypt | MM Paper Industry',
+      ar: 'الورق المُكربن بالجملة في مصر | إم إم لصناعة الورق',
     },
     seoDescription: {
-      en: 'Bulk pressure-sensitive carbon transfer paper in Egypt (20–40 GSM) in blue and black copy impressions for invoice books, receipt pads & multi-part commercial forms.',
-      ar: 'توريد الورق المُكربن بالجملة في مصر (20–40 جرام) بنسخ زرقاء وسوداء واضحة لدفاتر الفواتير والإيصالات والنماذج التجارية متعددة النسخ من إم إم لصناعة الورق.',
+      en: 'Bulk pressure-sensitive carbon transfer paper in Egypt in blue and black copy impressions for invoice books, receipt pads & multi-part commercial forms.',
+      ar: 'توريد الورق المُكربن بالجملة في مصر بنسخ زرقاء وسوداء واضحة لدفاتر الفواتير والإيصالات والنماذج التجارية متعددة النسخ من إم إم لصناعة الورق.',
     },
     keywords: {
       en: [

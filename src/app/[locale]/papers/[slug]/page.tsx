@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { JsonLd } from '../../../../components/seo/JsonLd';
 import PaperProductPage from '../../../../components/PaperProductPage';
 import { getPaperDetail } from '../../../../data/paper-details';
-import { getPaperById, getPaperBySlug, paperTypes, type PaperType } from '../../../../data/papers';
+import { getPaperBySlug, paperTypes } from '../../../../data/papers';
 import { dictionaries } from '../../../../i18n/translations';
 import { buildProductJsonLd, isLocale, LOCALES, SITE_URL } from '../../../../lib/seo';
 
@@ -82,14 +82,10 @@ export default async function ProductDetailRoute({
   if (!paper) notFound();
 
   const detail = getPaperDetail(paper.id);
-  const related = detail.relatedIds
-    .map((id) => getPaperById(id))
-    .filter((item): item is PaperType => Boolean(item));
-
   return (
     <>
       <JsonLd data={buildProductJsonLd(locale, paper)} />
-      <PaperProductPage paper={paper} detail={detail} related={related} />
+      <PaperProductPage paper={paper} detail={detail} />
     </>
   );
 }

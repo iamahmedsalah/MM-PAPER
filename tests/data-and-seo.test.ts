@@ -95,7 +95,7 @@ test('FAQ dataset contains 6 bilingual Q&As matching schema expectations', () =>
   }
 });
 
-test('JSON-LD schema outputs Organization, WebSite, OfferCatalog, WebPage, BreadcrumbList, Services, and FAQPage', () => {
+test('JSON-LD lists quote-only paper pages without retail offers in each locale', () => {
   for (const locale of ['en', 'ar'] as const) {
     const schema = buildJsonLd(locale);
     assert.equal(schema['@context'], 'https://schema.org');
@@ -125,9 +125,18 @@ test('JSON-LD schema outputs Organization, WebSite, OfferCatalog, WebPage, Bread
       assert.ok(org.logo.url.startsWith('https://mm-eg.co/'));
     }
 
-    const catalog = graph[2] as { '@type': string; itemListElement: unknown[] };
-    assert.equal(catalog['@type'], 'OfferCatalog');
+    const catalog = graph[2];
+    assert.equal(catalog['@type'], 'ItemList');
+    assert.ok(catalog.itemListElement);
     assert.equal(catalog.itemListElement.length, 10);
+    for (const [index, entry] of catalog.itemListElement.entries()) {
+      assert.deepEqual(entry, {
+        '@type': 'ListItem',
+        position: index + 1,
+        name: paperTypes[index].name[locale],
+        url: `${new URL(org.logo.url).origin}/${locale}/papers/${paperTypes[index].slug}`,
+      });
+    }
 
     const webPage = graph[3] as { '@type': string; dateModified: string };
     assert.equal(webPage['@type'], 'WebPage');

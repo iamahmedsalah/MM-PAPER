@@ -24,7 +24,7 @@ test('all 10 paper grades have unique URL-safe slugs and full bilingual product 
   }
 });
 
-test('buildProductJsonLd outputs Product, BreadcrumbList, and FAQPage for EN and AR', () => {
+test('quote-only paper pages have page, breadcrumb, and FAQ markup in both locales', () => {
   const coated = getPaperBySlug('coated-paper-couche');
   assert.ok(coated);
 
@@ -33,7 +33,11 @@ test('buildProductJsonLd outputs Product, BreadcrumbList, and FAQPage for EN and
     assert.equal(schema['@context'], 'https://schema.org');
     assert.ok(Array.isArray(schema['@graph']));
     const types = schema['@graph'].map((node) => node['@type']);
-    assert.ok(types.includes('Product'));
+    const page = schema['@graph'].find((node) => node['@type'] === 'ItemPage');
+    assert.ok(page);
+    assert.equal(page.inLanguage, locale);
+    assert.ok(String(page.url).endsWith(`/${locale}/papers/${coated.slug}`));
+    assert.doesNotMatch(JSON.stringify(schema), /"@type":"(?:Product|Offer)"/);
     assert.ok(types.includes('BreadcrumbList'));
     assert.ok(types.includes('FAQPage'));
   }
