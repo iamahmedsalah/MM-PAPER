@@ -1,8 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { getPaperBySlug, paperTypes } from '../src/data/papers.ts';
 import { paperDetails } from '../src/data/paper-details.ts';
 import { buildProductJsonLd } from '../src/lib/seo.ts';
+import robots from '../src/app/robots.ts';
 
 test('all 10 paper grades have unique URL-safe slugs and full bilingual product details', () => {
   assert.equal(paperTypes.length, 10);
@@ -41,4 +44,49 @@ test('quote-only paper pages have page, breadcrumb, and FAQ markup in both local
     assert.ok(types.includes('BreadcrumbList'));
     assert.ok(types.includes('FAQPage'));
   }
+});
+
+test('every <Image> and <img> element across src/ includes a non-empty alt attribute', () => {
+  const srcDir = path.resolve(process.cwd(), 'src');
+  const walk = (dir: string): string[] =>
+    fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) return walk(full);
+      return /\.(ts|tsx)$/.test(entry.name) ? [full] : [];
+    });
+
+  const files = walk(srcDir);
+  let checkedCount = 0;
+
+  for (const file of files) {
+    const source = fs.readFileSync(file, 'utf8');
+    const matches = source.matchAll(/<(?:Image|img)\b([\s\S]*?)\/?>/g);
+    for (const match of matches) {
+      checkedCount += 1;
+      const attrs = match[1];
+      assert.match(
+        attrs,
+        /\balt\s*=\s*(?:"[^"]+"|'[^']+'|\{[^}]+\})/,
+        `Missing or empty alt attribute in ${path.relative(process.cwd(), file)}`
+      );
+    }
+  }
+
+  assert.ok(checkedCount >= 5, `Expected at least 5 image elements in src/, found ${checkedCount}`);
+});
+
+test('robots.ts explicitly allows crawling root for *, Googlebot, and Bingbot with sitemap', () => {
+  const config = robots();
+  const rules = Array.isArray(config.rules) ? config.rules : [config.rules];
+
+  const wildcard = rules.find((r) => r.userAgent === '*');
+  assert.ok(wildcard);
+  assert.equal(wildcard.allow, '/');
+
+  const searchBots = rules.find(
+    (r) => Array.isArray(r.userAgent) && r.userAgent.includes('Bingbot') && r.userAgent.includes('Googlebot')
+  );
+  assert.ok(searchBots);
+  assert.equal(searchBots.allow, '/');
+  assert.equal(config.sitemap, 'https://mm-eg.co/sitemap.xml');
 });

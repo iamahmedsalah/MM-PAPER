@@ -1,11 +1,16 @@
 import type { MetadataRoute } from 'next';
-import { SITE_URL } from '../lib/seo';
+import { SITE_URL } from '../lib/seo.ts';
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: '*',
+        allow: '/',
+        disallow: ['/api/'],
+      },
+      {
+        userAgent: ['Googlebot', 'Bingbot', 'msnbot'],
         allow: '/',
         disallow: ['/api/'],
       },
@@ -23,6 +28,5 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
-    host: SITE_URL,
   };
 }

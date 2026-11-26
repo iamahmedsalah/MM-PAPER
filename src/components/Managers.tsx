@@ -9,7 +9,7 @@ import { Reveal } from './ui/Reveal';
 import { useLang } from '../i18n/LanguageContext';
 
 function ManagerCard({ manager, index }: { manager: (typeof managers)[number]; index: number }) {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const name = lang === 'ar' ? manager.nameAr : manager.name;
   const cardRef = useRef<HTMLElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
@@ -44,7 +44,7 @@ function ManagerCard({ manager, index }: { manager: (typeof managers)[number]; i
         <div className="relative aspect-[4/5] w-full overflow-hidden border-b border-line/15 bg-canvasAlt">
           <Image
             src={`${manager.photo}?v=${manager.photoVersion}`}
-            alt={`${name} — ${manager.role[lang]}`}
+            alt={`${name} — ${manager.role[lang]} — ${t.brand}`}
             fill
             loading={index === 0 ? 'eager' : 'lazy'}
             quality={82}
