@@ -29,6 +29,7 @@ interface LocalFormValues {
   name: string;
   company: string;
   phone: string;
+  email: string;
   paperTypeId: string;
   gsm: string;
   size: string;
@@ -42,6 +43,7 @@ const INITIAL_VALUES: LocalFormValues = {
   name: '',
   company: '',
   phone: '',
+  email: '',
   paperTypeId: '',
   gsm: '',
   size: '',
@@ -174,6 +176,11 @@ export default function ContactForm({ preselectedPaperId }: { preselectedPaperId
                   <div>
                     <h3 className="font-heading text-xl font-bold text-ink">{t.contact.successTitle}</h3>
                     <p className="mt-2 text-sm leading-[165%] text-inkMuted">{state.message}</p>
+                    {state.confirmationEmailSent !== undefined && (
+                      <p className="mt-2 text-sm leading-[165%] text-inkMuted">
+                        {state.confirmationEmailSent ? t.contact.confirmationSent : t.contact.confirmationFailed}
+                      </p>
+                    )}
                   </div>
                   <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
                     <GoldLink
@@ -275,6 +282,23 @@ export default function ContactForm({ preselectedPaperId }: { preselectedPaperId
                         autoComplete="tel"
                         aria-invalid={Boolean(err?.phone)}
                         aria-describedby={err?.phone ? 'quote-phone-err' : undefined}
+                      />
+                    </Field>
+
+                    <Field id="quote-email" label={t.contact.confirmationEmail} error={err?.email}>
+                      <input
+                        id="quote-email"
+                        name="email"
+                        type="email"
+                        dir="ltr"
+                        autoComplete="email"
+                        maxLength={254}
+                        className={inputClass}
+                        value={values.email}
+                        onChange={setField('email')}
+                        placeholder="name@example.com"
+                        aria-invalid={Boolean(err?.email)}
+                        aria-describedby={err?.email ? 'quote-email-err' : undefined}
                       />
                     </Field>
 

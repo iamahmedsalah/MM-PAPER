@@ -1,6 +1,7 @@
 'use server';
 
 import { sendQuoteEmail } from '../../lib/mail';
+import { buildQuoteConfirmationEmail } from '../../lib/email-template';
 import {
   buildQuoteEmailContent,
   checkSpamSignals,
@@ -16,6 +17,7 @@ export interface QuoteActionState {
   fieldErrors?: Partial<Record<QuoteFieldName, string>>;
   whatsappUrl?: string;
   submissionId?: number;
+  confirmationEmailSent?: boolean;
 }
 
 function getStr(formData: FormData, key: string): string {
@@ -51,6 +53,7 @@ export async function submitQuote(
       name: getStr(formData, 'name'),
       company: getStr(formData, 'company'),
       phone: getStr(formData, 'phone'),
+      email: getStr(formData, 'email'),
       paperTypeId: getStr(formData, 'paperTypeId'),
       gsm: getStr(formData, 'gsm'),
       size: getStr(formData, 'size'),
@@ -90,6 +93,18 @@ export async function submitQuote(
     };
   }
 
+  let confirmationEmailSent: boolean | undefined;
+  if (parsed.data.email) {
+    const paperName = locale === 'ar' ? parsed.data.paperNameAr : parsed.data.paperNameEn;
+    try {
+      await sendQuoteEmail(buildQuoteConfirmationEmail(locale, paperName), parsed.data.email);
+      confirmationEmailSent = true;
+    } catch (err) {
+      console.error('[submitQuote] Confirmation email failed:', err instanceof Error ? err.message : 'Unknown error');
+      confirmationEmailSent = false;
+    }
+  }
+
   const whatsappUrl = buildWhatsAppQuoteUrl(parsed.data, process.env.WHATSAPP_NUMBER);
 
   // WhatsApp Business Cloud API server-side notification hook can be added here after email succeeds.
@@ -103,5 +118,6 @@ export async function submitQuote(
         : 'تم إرسال طلب عرض السعر إلى فريق المبيعات بنجاح! يمكنك فتح واتساب الآن لإرسال نفس الرسالة مباشرة.',
     whatsappUrl,
     submissionId: Date.now(),
+    confirmationEmailSent,
   };
 }

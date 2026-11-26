@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import nodemailer from 'nodemailer';
 import { COMPANY_CONTACT, COMPANY_LOCATION } from '../src/data/contact.ts';
+import { buildQuoteConfirmationEmail } from '../src/lib/email-template.ts';
 import {
   buildQuoteEmailContent,
   checkSpamSignals,
@@ -66,6 +67,33 @@ test('parses valid full quotation payload and optional minimal payload', () => {
   if (!minimal.ok) return;
   assert.equal(minimal.data.company, '');
   assert.equal(minimal.data.governorateAr, '');
+  assert.equal(minimal.data.email, '');
+});
+
+test('validates optional customer email and renders branded confirmations in both locales', () => {
+  const fields = { name: 'Test Customer', phone: '01012345678', paperTypeId: 'copy', format: 'sheet' };
+  const invalid = parseQuoteInput({ ...fields, email: 'test@example.com, other@example.com' }, 'en');
+  assert.deepEqual(invalid, { ok: false, fieldErrors: { email: 'Please enter a valid email address.' } });
+
+  const parsed = parseQuoteInput({ ...fields, email: ' customer+quotes@example.com ' }, 'en');
+  assert.ok(parsed.ok);
+  assert.equal(parsed.data.email, 'customer+quotes@example.com');
+  const salesMail = buildQuoteEmailContent(parsed.data);
+  assert.ok(salesMail.html.includes('mailto:customer%2Bquotes@example.com'));
+  assert.ok(salesMail.text.includes(parsed.data.email));
+
+  const ar = buildQuoteConfirmationEmail('ar', parsed.data.paperNameAr);
+  const en = buildQuoteConfirmationEmail('en', parsed.data.paperNameEn);
+  assert.ok(ar.html.includes('<html dir="rtl" lang="ar">'));
+  assert.ok(en.html.includes('<html dir="ltr" lang="en">'));
+  for (const [locale, message] of [['ar', ar], ['en', en]] as const) {
+    assert.ok(message.html.includes('cid:mm-logo'));
+    assert.ok(message.html.includes(COMPANY_CONTACT.whatsappHref));
+    assert.ok(message.html.includes(escapeHtml(COMPANY_LOCATION.googleMapsUrl)));
+    assert.ok(message.text.includes(COMPANY_LOCATION.address[locale]));
+    assert.ok(message.text.includes(COMPANY_CONTACT.salesEmail));
+    assert.ok(!message.text.includes(parsed.data.phoneDisplay));
+  }
 });
 
 test('rejects missing/short fields, invalid paper grade, invalid format, invalid governorate, and long notes', () => {

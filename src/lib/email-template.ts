@@ -1,4 +1,5 @@
 import { COMPANY_CONTACT, COMPANY_LOCATION } from '../data/contact.ts';
+import type { Lang } from '../i18n/types.ts';
 
 export type EmailIconName =
   | 'user'
@@ -118,6 +119,7 @@ export function renderEmailDetailGrid(items: EmailDetailItem[], dir: 'rtl' | 'lt
 }
 
 export interface MmEmailLayoutInput {
+  locale?: Lang;
   preheader?: string;
   heading: string;
   /** Trusted, already-escaped HTML content. */
@@ -133,11 +135,19 @@ function getSiteOrigin(): string {
 }
 
 /**
- * Reusable MM Paper Industry RTL email shell: table layout + inline CSS only
+ * Reusable MM Paper Industry email shell with a table layout and inline CSS
  * so Gmail, Outlook, and mobile mail apps render consistently.
  */
 export function renderMmEmailLayout(input: MmEmailLayoutInput): string {
+  const locale = input.locale ?? 'ar';
+  const ar = locale === 'ar';
+  const dir = ar ? 'rtl' : 'ltr';
+  const companyName = ar ? 'إم إم لصناعة الورق' : 'MM Paper Industry';
+  const tagline = ar
+    ? 'عراقة ممتدة منذ عام 2006 · استيراد وتجهيز وتجارة الورق'
+    : 'Since 2006 · Paper import, converting and supply';
   const origin = getSiteOrigin();
+  const siteHref = input.locale ? `${origin}/${locale}` : origin;
   const logoCid = 'cid:mm-logo';
   const font = "'Cairo', Tahoma, 'Segoe UI', Arial, sans-serif";
   const ctaButtons = [
@@ -156,7 +166,7 @@ export function renderMmEmailLayout(input: MmEmailLayoutInput): string {
     : '';
 
   return `<!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html dir="${dir}" lang="${locale}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -169,16 +179,16 @@ export function renderMmEmailLayout(input: MmEmailLayoutInput): string {
 }
 </style>
 </head>
-<body style="margin:0;padding:0;background:${mmBrand.creamSoft};font-family:${font};color:${mmBrand.midnight};direction:rtl;">
+<body style="margin:0;padding:0;background:${mmBrand.creamSoft};font-family:${font};color:${mmBrand.midnight};direction:${dir};">
 <span style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(input.preheader || input.heading)}</span>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${mmBrand.creamSoft};">
 <tr><td align="center" style="padding:28px 12px;">
   <table role="presentation" width="640" cellpadding="0" cellspacing="0" style="width:100%;max-width:640px;background:#FFFFFF;border:1px solid ${mmBrand.line};border-radius:20px;overflow:hidden;">
     <tr><td style="background:${mmBrand.navy};padding:26px 32px;text-align:center;">
-      <a href="${escapeHtml(origin)}" style="text-decoration:none;color:${mmBrand.cream};">
-        <img src="${logoCid}" width="64" height="64" alt="إم إم لصناعة الورق" style="display:block;width:64px;height:64px;border:0;margin:0 auto 10px;border-radius:12px;"/>
-        <div style="font-size:18px;font-weight:700;color:${mmBrand.cream};line-height:1.3;">إم إم لصناعة الورق</div>
-        <div style="font-size:12px;color:#E0C795;margin-top:4px;">عراقة ممتدة منذ عام 2006 · استيراد وتجهيز وتجارة الورق</div>
+      <a href="${escapeHtml(siteHref)}" style="text-decoration:none;color:${mmBrand.cream};">
+        <img src="${logoCid}" width="64" height="64" alt="${companyName}" style="display:block;width:64px;height:64px;border:0;margin:0 auto 10px;border-radius:12px;"/>
+        <div style="font-size:18px;font-weight:700;color:${mmBrand.cream};line-height:1.3;">${companyName}</div>
+        <div style="font-size:12px;color:#E0C795;margin-top:4px;">${tagline}</div>
       </a>
     </td></tr>
     <tr><td style="height:4px;background:${mmBrand.gold};font-size:0;line-height:0;">&nbsp;</td></tr>
@@ -189,21 +199,57 @@ export function renderMmEmailLayout(input: MmEmailLayoutInput): string {
     ${ctaSection}
     ${input.footerNote ? `<tr><td style="padding:0 28px 24px;text-align:center;font-size:13px;line-height:1.6;color:${mmBrand.muted};">${escapeHtml(input.footerNote)}</td></tr>` : ''}
     <tr><td style="background:${mmBrand.navy};padding:22px 28px;text-align:center;font-size:13px;line-height:1.8;color:#C2CADA;">
-      <a href="${escapeHtml(origin)}" style="color:${mmBrand.cream};text-decoration:underline;font-weight:600;">${escapeHtml(origin.replace(/^https?:\/\//, ''))}</a>
+      <a href="${escapeHtml(siteHref)}" style="color:${mmBrand.cream};text-decoration:underline;font-weight:600;">${escapeHtml(origin.replace(/^https?:\/\//, ''))}</a>
       &nbsp;·&nbsp;
       <a href="${escapeHtml(COMPANY_CONTACT.salesEmailHref)}" style="color:${mmBrand.cream};text-decoration:underline;">${escapeHtml(COMPANY_CONTACT.salesEmail)}</a>
       &nbsp;·&nbsp;
       <span dir="ltr" style="color:${mmBrand.cream};">${escapeHtml(COMPANY_CONTACT.phoneDisplay)}</span>
-      <p style="margin:10px 0 0;color:${mmBrand.cream};">${renderEmailIcon('mapPin', mmBrand.gold, 14)} <span style="vertical-align:middle;">${escapeHtml(COMPANY_LOCATION.address.ar)}</span></p>
+      <p style="margin:10px 0 0;color:${mmBrand.cream};">${renderEmailIcon('mapPin', mmBrand.gold, 14)} <span style="vertical-align:middle;">${escapeHtml(COMPANY_LOCATION.address[locale])}</span></p>
       <p style="margin:8px 0 0;">
-        <a href="${escapeHtml(COMPANY_LOCATION.googleMapsUrl)}" style="display:inline-block;padding:6px 10px;color:${mmBrand.cream};text-decoration:underline;">فتح الموقع على Google Maps</a>
-        <a href="${escapeHtml(COMPANY_CONTACT.whatsappHref)}" style="display:inline-block;padding:6px 10px;color:${mmBrand.cream};text-decoration:underline;">واتساب الشركة</a>
+        <a href="${escapeHtml(COMPANY_LOCATION.googleMapsUrl)}" style="display:inline-block;padding:6px 10px;color:${mmBrand.cream};text-decoration:underline;">${ar ? 'فتح الموقع على Google Maps' : 'Open in Google Maps'}</a>
+        <a href="${escapeHtml(COMPANY_CONTACT.whatsappHref)}" style="display:inline-block;padding:6px 10px;color:${mmBrand.cream};text-decoration:underline;">${ar ? 'واتساب الشركة' : 'Company WhatsApp'}</a>
       </p>
-      <div style="margin-top:10px;color:#94A0B8;font-size:12px;">© ${new Date().getFullYear()} إم إم لصناعة الورق · جميع الحقوق محفوظة.</div>
+      <div style="margin-top:10px;color:#94A0B8;font-size:12px;">© ${new Date().getFullYear()} ${companyName} · ${ar ? 'جميع الحقوق محفوظة.' : 'All rights reserved.'}</div>
     </td></tr>
   </table>
 </td></tr>
 </table>
 </body>
 </html>`;
+}
+
+export function buildQuoteConfirmationEmail(locale: Lang, paperName: string) {
+  const ar = locale === 'ar';
+  const heading = ar ? 'تم استلام طلب عرض السعر' : 'We received your quote request';
+  const companyName = ar ? 'إم إم لصناعة الورق' : 'MM Paper Industry';
+  const description = ar
+    ? 'شكرًا لتواصلك معنا. استلم فريق المبيعات طلبك وسيراجع المواصفات ويتواصل معك لاستكمال عرض السعر.'
+    : 'Thank you for contacting us. Our sales team will review your specifications and get back to you about your quote.';
+  const productLabel = ar ? 'نوع الورق' : 'Paper grade';
+  const whatsappLabel = ar ? 'تواصل مع المبيعات على واتساب' : 'Contact sales on WhatsApp';
+  const mapLabel = ar ? 'الموقع على الخريطة' : 'Location on Google Maps';
+
+  return {
+    subject: `${heading} — ${companyName}`,
+    html: renderMmEmailLayout({
+      locale,
+      heading,
+      preheader: description,
+      bodyHtml: `<p style="margin:0;">${escapeHtml(description)}</p>${renderEmailDetailGrid(
+        [{ icon: 'layers', label: productLabel, valueHtml: escapeHtml(paperName) }],
+        ar ? 'rtl' : 'ltr',
+      )}`,
+      primaryCta: { label: whatsappLabel, url: COMPANY_CONTACT.whatsappHref },
+    }),
+    text: [
+      heading,
+      description,
+      `${productLabel}: ${paperName}`,
+      '',
+      `${whatsappLabel}: ${COMPANY_CONTACT.whatsappHref}`,
+      COMPANY_CONTACT.salesEmail,
+      COMPANY_LOCATION.address[locale],
+      `${mapLabel}: ${COMPANY_LOCATION.googleMapsUrl}`,
+    ].join('\n'),
+  };
 }

@@ -93,7 +93,7 @@ function getTransporter(config: SmtpConfig): Transporter {
   return transporter;
 }
 
-async function sendWithHostingerApi(email: QuoteEmail, accessToken: string, logoPath: string): Promise<void> {
+async function sendWithHostingerApi(email: QuoteEmail, to: string, accessToken: string, logoPath: string): Promise<void> {
   const configuration = new Configuration({ accessToken, baseOptions: { timeout: 8_000 } });
   const { data } = await new AccountApi(configuration).getCurrentAccount();
   const mailbox = data.data.mailboxes.find(({ address }) => address.toLowerCase() === COMPANY_CONTACT.salesEmail);
@@ -105,7 +105,7 @@ async function sendWithHostingerApi(email: QuoteEmail, accessToken: string, logo
   const message = {
     ...email,
     displayName: 'MM Paper Industry',
-    to: [process.env.QUOTE_TO?.trim() || COMPANY_CONTACT.salesEmail],
+    to: [to],
     attachments: content ? [{ filename: 'mm-logo.png', content, contentType: 'image/png', cid: 'mm-logo', encoding: 'base64' }] : [],
   } satisfies Pick<V1SendRequest, 'subject' | 'html' | 'text' | 'displayName' | 'to' | 'attachments'>;
 
@@ -113,12 +113,13 @@ async function sendWithHostingerApi(email: QuoteEmail, accessToken: string, logo
   await new SendApi(configuration).sendEmail(mailbox.resourceId, message as V1SendRequest);
 }
 
-/** Send a formatted quote to the configured recipient. */
-export async function sendQuoteEmail(params: QuoteEmail): Promise<void> {
+/** Send a quote notification or a confirmation to a validated customer address. */
+export async function sendQuoteEmail(params: QuoteEmail, recipient?: string): Promise<void> {
   const logoPath = join(process.cwd(), 'public', 'android-chrome-192.png');
   const accessToken = process.env.HOSTINGER_MAIL_API_TOKEN?.trim();
   if (accessToken) {
-    await sendWithHostingerApi(params, accessToken, logoPath);
+    const to = recipient ?? (process.env.QUOTE_TO?.trim() || COMPANY_CONTACT.salesEmail);
+    await sendWithHostingerApi(params, to, accessToken, logoPath);
     return;
   }
 
@@ -130,7 +131,7 @@ export async function sendQuoteEmail(params: QuoteEmail): Promise<void> {
 
   await transporter.sendMail({
     from: config.from,
-    to: config.to,
+    to: recipient ?? config.to,
     ...params,
     attachments,
   });

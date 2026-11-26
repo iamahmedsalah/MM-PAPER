@@ -35,6 +35,7 @@ export type QuoteFieldName =
   | 'name'
   | 'company'
   | 'phone'
+  | 'email'
   | 'paperTypeId'
   | 'gsm'
   | 'size'
@@ -48,6 +49,7 @@ export interface ValidatedQuoteData {
   company: string;
   phoneDisplay: string;
   phoneIntl: string;
+  email: string;
   paperTypeId: string;
   paperNameAr: string;
   paperNameEn: string;
@@ -90,6 +92,7 @@ export interface QuoteErrorCopy {
   nameLen: string;
   phoneReq: string;
   phoneBad: string;
+  emailBad: string;
   paperBad: string;
   formatBad: string;
   governorateBad: string;
@@ -101,6 +104,7 @@ const DEFAULT_AR_ERRORS: QuoteErrorCopy = {
   nameLen: 'يجب أن يكون الاسم بين حرفين و120 حرفاً.',
   phoneReq: 'رقم الهاتف المصري مطلوب.',
   phoneBad: 'يرجى إدخال رقم موبايل مصري صحيح (مثال: 01132332148).',
+  emailBad: 'يرجى إدخال بريد إلكتروني صحيح.',
   paperBad: 'يرجى اختيار نوع الورق من القائمة.',
   formatBad: 'يرجى اختيار الشكل المطلوب (بكر أو شيت أو الاثنان).',
   governorateBad: 'يرجى اختيار محافظة صحيحة من القائمة.',
@@ -112,6 +116,7 @@ const DEFAULT_EN_ERRORS: QuoteErrorCopy = {
   nameLen: 'Name must be between 2 and 120 characters.',
   phoneReq: 'An Egyptian mobile number is required.',
   phoneBad: 'Please enter a valid Egyptian mobile number (e.g. 01132332148).',
+  emailBad: 'Please enter a valid email address.',
   paperBad: 'Please choose a paper grade from the list.',
   formatBad: 'Please select reels, sheets, or both.',
   governorateBad: 'Please select a valid governorate.',
@@ -119,6 +124,7 @@ const DEFAULT_EN_ERRORS: QuoteErrorCopy = {
 };
 
 export function createQuoteSchema(copy: QuoteErrorCopy = DEFAULT_AR_ERRORS) {
+  const email = z.email();
   return z.object({
     name: z
       .string()
@@ -132,6 +138,13 @@ export function createQuoteSchema(copy: QuoteErrorCopy = DEFAULT_AR_ERRORS) {
       .trim()
       .min(1, copy.phoneReq)
       .refine((v) => normalizeEgyptianMobile(v) !== null, copy.phoneBad),
+    email: z
+      .string()
+      .trim()
+      .max(254, copy.emailBad)
+      .refine((value) => value === '' || email.safeParse(value).success, copy.emailBad)
+      .optional()
+      .default(''),
     paperTypeId: z
       .string()
       .trim()
@@ -205,6 +218,7 @@ export function parseQuoteInput(
       company: values.company,
       phoneDisplay: phone.display,
       phoneIntl: phone.intlDigits,
+      email: values.email,
       paperTypeId: paper.id,
       paperNameAr: paper.name.ar,
       paperNameEn: paper.name.en,
@@ -255,6 +269,11 @@ export function buildQuoteEmailContent(data: ValidatedQuoteData): {
       label: 'رقم الهاتف',
       valueHtml: `<a href="${escapeHtml(telHref)}" dir="ltr" style="color:${mmBrand.navy};text-decoration:underline;">${escapeHtml(data.phoneDisplay)}</a>`,
     },
+    ...(data.email ? [{
+      icon: 'message' as const,
+      label: 'بريد العميل',
+      valueHtml: `<a href="mailto:${escapeHtml(encodeURIComponent(data.email).replace('%40', '@'))}" dir="ltr" style="color:${mmBrand.navy};text-decoration:underline;">${escapeHtml(data.email)}</a>`,
+    }] : []),
     {
       icon: 'layers',
       label: 'نوع المنتج',
@@ -325,6 +344,7 @@ export function buildQuoteEmailContent(data: ValidatedQuoteData): {
     ['المحافظة', data.governorateAr || '—'],
     ['ملاحظات', data.notes || '—'],
   ];
+  if (data.email) textRows.splice(3, 0, ['بريد العميل', data.email]);
 
   const text = [
     'طلب عرض سعر جديد — إم إم لصناعة الورق (MM Paper Industry)',
