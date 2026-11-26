@@ -44,11 +44,6 @@ export default function PaperProductPage({
 
   const specRows = [
     {
-      label: isAr ? 'نطاق الوزن (GSM)' : 'GSM Weight Range',
-      value: paper.gsmRange,
-      ltr: true,
-    },
-    {
       label: isAr ? 'المقاسات المتاحة' : 'Available Dimensions',
       value: L(detail.technical.sizes),
     },
@@ -208,10 +203,7 @@ export default function PaperProductPage({
                         >
                           {row.label}
                         </th>
-                        <td
-                          className="px-5 py-4 leading-[165%] text-ink sm:px-6"
-                          dir={row.ltr ? 'ltr' : undefined}
-                        >
+                        <td className="px-5 py-4 leading-[165%] text-ink sm:px-6">
                           {row.value}
                         </td>
                       </tr>
