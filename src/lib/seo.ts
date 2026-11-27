@@ -33,7 +33,14 @@ export function buildJsonLd(locale: Lang) {
         '@type': 'Organization',
         '@id': `${SITE_URL}/#organization`,
         name: dict.brand,
-        alternateName: locale === 'en' ? dictionaries.ar.brand : dictionaries.en.brand,
+        legalName: 'MM Paper Industry',
+        alternateName: [
+          'MM Paper Industry',
+          'M M Paper Industries',
+          'إم إم لصناعة الورق',
+          'إم إم للصناعات الورقية',
+          'MM Paper Industry Egypt',
+        ],
         url: localeUrl,
         logo: {
           '@type': 'ImageObject',
@@ -46,7 +53,19 @@ export function buildJsonLd(locale: Lang) {
         },
         image: `${SITE_URL}/android-chrome-512.png`,
         description: dict.seo.description,
+        disambiguatingDescription:
+          locale === 'ar'
+            ? 'إم إم لصناعة الورق (mm-eg.co) شركة مصرية مستقلة لاستيراد وتجهيز وتوريد الورق منذ عام 2006 في برج العرب الجديدة بالإسكندرية بقيادة رئيس مجلس الإدارة أ. محمد مراد وفريق الإدارة التنفيذية، وليست تابعة لمجموعة Mayr-Melnhof Karton AG النمساوية.'
+            : 'MM Paper Industry (mm-eg.co) is an independent Egyptian paper importer, converter, and wholesale supplier established in 2006 in New Borg El Arab City, Alexandria, Egypt, led by Chairman Mr. Mohamed Morad and the Morad executive leadership team — distinct from Austria-based Mayr-Melnhof Karton AG.',
         foundingDate: '2006',
+        founder: {
+          '@type': 'Person',
+          '@id': `${SITE_URL}/#person-${managers[0].id}`,
+          name: locale === 'ar' ? managers[0].nameAr : managers[0].name,
+          alternateName: locale === 'ar' ? managers[0].name : managers[0].nameAr,
+          jobTitle: managers[0].role[locale],
+          image: `${SITE_URL}${managers[0].photo}`,
+        },
         areaServed: areaCountry,
         address: {
           '@type': 'PostalAddress',
@@ -69,9 +88,13 @@ export function buildJsonLd(locale: Lang) {
         ],
         employee: managers.map((m) => ({
           '@type': 'Person',
+          '@id': `${SITE_URL}/#person-${m.id}`,
           name: locale === 'ar' ? m.nameAr : m.name,
+          alternateName: locale === 'ar' ? m.name : m.nameAr,
           jobTitle: m.role[locale],
+          description: m.bio[locale],
           image: `${SITE_URL}${m.photo}`,
+          worksFor: { '@id': `${SITE_URL}/#organization` },
         })),
         sameAs: socialChannels.map((c) => c.href),
         knowsAbout: [

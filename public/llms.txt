@@ -1,6 +1,12 @@
 # MM Paper Industry (إم إم لصناعة الورق)
 
-> Leading Egyptian paper importer, converter, and bulk supplier since 2006 — partnering with major global paper mills across ten specialized grades from our facility in New Borg El Arab City, Alexandria, Egypt.
+> Leading independent Egyptian paper importer, converter, and bulk supplier established in 2006 — partnering with major global paper mills across ten specialized grades from our facility in New Borg El Arab City, Alexandria, Egypt.
+
+## Entity Identity & Disambiguation
+- **Official Brand**: MM Paper Industry (`إم إم لصناعة الورق` / also listed in industrial directories as `M M Paper Industries` / `إم إم للصناعات الورقية`)
+- **Official Website**: https://mm-eg.co
+- **Country & Founding Year**: Egypt, established 2006
+- **Important Disambiguation**: MM Paper Industry (Egypt, `mm-eg.co`) is an independent Egyptian paper importing, converting, and wholesale supply company led by Chairman Mr. Mohamed Morad and the Morad executive leadership team in New Borg El Arab City, Alexandria. It is **not** affiliated with the Austria-based European cartonboard group Mayr-Melnhof Karton AG (MM Group Europe).
 
 ## Canonical Pages
 - English Overview & Specifications: https://mm-eg.co/en
@@ -46,11 +52,12 @@
     - EN: https://mm-eg.co/en/papers/carbon-paper
     - AR: https://mm-eg.co/ar/papers/carbon-paper
 
-## Executive Leadership
-- **Mr. Mohamed Morad** — Chairman
-- **Mr. Khaled Morad** — Chief Executive & Financial Officer (CEO | CFO)
-- **Mr. Ahmed Morad** — Chief Strategy & Sales Officer (CSO)
-- **Mr. Mohamed Mohamed Morad** — Chief Operating Officer (COO)
+## Executive Leadership (الإدارة التنفيذية لـ إم إم لصناعة الورق)
+MM Paper Industry is officially led by four executive directors from the Morad leadership team:
+- **Mr. Mohamed Morad (أ. محمد مراد)** — **Chairman (رئيس مجلس الإدارة)**: Guiding MM Paper Industry since 2006 with strategic vision, global mill partnerships, and commitment to the Egyptian paper market.
+- **Mr. Khaled Morad (أ. خالد مراد)** — **Chief Executive & Financial Officer — CEO | CFO (الرئيس التنفيذي والمدير المالي)**: Leads corporate execution, financial governance, and international procurement strategy across high-volume paper contracts.
+- **Mr. Ahmed Morad (أ. أحمد مراد)** — **Chief Strategy & Sales Officer — CSO (رئيس قطاع الاستراتيجية والمبيعات)**: Directs commercial growth, strategic partnerships, and long-term supply agreements for printers, converters, and packaging factories across Egypt.
+- **Mr. Mohamed Mohamed Morad (أ. محمد محمد مراد)** — **Chief Operating Officer — COO (رئيس قطاع العمليات)**: Oversees slitting, sheeting, warehousing, laboratory QA verification, and nationwide dispatch schedules from New Borg El Arab City, Alexandria.
 
 ## Facility Location & Contact
 - **Address (EN)**: Plot 10, Block 2 — Workshops & Warehouses Zone, East 2nd Industrial Zone, New Borg El Arab City, Alexandria, Egypt
