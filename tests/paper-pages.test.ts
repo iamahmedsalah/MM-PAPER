@@ -84,11 +84,12 @@ test('robots.ts explicitly allows crawling root for *, Googlebot, and Bingbot wi
   assert.ok(wildcard);
   assert.equal(wildcard.allow, '/');
 
-  const searchBots = rules.find(
-    (r) => Array.isArray(r.userAgent) && r.userAgent.includes('Bingbot') && r.userAgent.includes('Googlebot')
-  );
-  assert.ok(searchBots);
-  assert.equal(searchBots.allow, '/');
+  const bingRule = rules.find((r) => r.userAgent === 'Bingbot');
+  const googleRule = rules.find((r) => r.userAgent === 'Googlebot');
+  assert.ok(bingRule);
+  assert.ok(googleRule);
+  assert.equal(bingRule.allow, '/');
+  assert.equal(googleRule.allow, '/');
   assert.equal(config.sitemap, 'https://mm-eg.co/sitemap.xml');
 });
 

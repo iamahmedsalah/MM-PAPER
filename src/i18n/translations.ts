@@ -6,7 +6,7 @@ const en = {
   seo: {
     title: 'MM Paper Industry — Egyptian Paper Importer & Supplier (2006)',
     description:
-      'MM Paper Industry is a leading Egyptian paper company established in 2006, importing, converting, and supplying sticker paper, coloured parchment, bristol, grey-back and white-back duplex, butter paper, printing, copy A4/A3, coated couche, and carbon paper.',
+      'MM Paper Industry (est. 2006, Egypt) — wholesale paper importer, converter & supplier of duplex, coated couche, offset, copy A4/A3, bristol & sticker paper.',
     keywords: [
       'MM Paper Industry',
       'paper supplier Egypt',
@@ -250,7 +250,7 @@ const ar: Translation = {
   seo: {
     title: 'إم إم لصناعة الورق — استيراد وتجهيز وتجارة الورق منذ 2006',
     description:
-      'إم إم لصناعة الورق: عراقة ممتدة منذ عام 2006. شركة مصرية رائدة متخصصة في استيراد وتجهيز وتجارة الورق بجميع أنواعه: الاستيكر، البرشمان الملوّن، البريستول، الدوبليكس، الزبدة، الطبع، التصوير، الكوشيه، والمُكربن.',
+      'إم إم لصناعة الورق (تأسست 2006 بمصر) — استيراد وتجهيز وتوريد جملة لورق الدوبليكس، الكوشيه، الطبع، التصوير A4/A3، البريستول، الاستيكر والزبدة في برج العرب.',
     keywords: [
       'إم إم لصناعة الورق',
       'MM Paper Industry',

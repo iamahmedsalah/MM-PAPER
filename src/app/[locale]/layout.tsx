@@ -138,6 +138,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={dir} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
+        <meta httpEquiv="content-language" content={locale === 'ar' ? 'ar-EG' : 'en-EG'} />
         <ThemeInit />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
